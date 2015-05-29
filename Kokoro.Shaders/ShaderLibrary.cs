@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kokoro.Shaders
+namespace Kokoro2.Shaders
 {
     public class ShaderLibrary
     {
@@ -12,8 +14,30 @@ namespace Kokoro.Shaders
         {
             return new string[]
             {
-
+                "Shaders/GBuffer",
+                "Shaders/Lighting",
+                "Shaders/Default",
             };
+        }
+
+        public static string LoadFile(string name)
+        {
+            Assembly _assembly;
+            StreamReader _textStreamReader;
+            string res = "";
+
+            try
+            {
+                _assembly = Assembly.GetExecutingAssembly();
+                _textStreamReader = new StreamReader(_assembly.GetManifestResourceStream("Kokoro2.Shaders." + name.Replace("/", ".")));
+                res = _textStreamReader.ReadToEnd();
+                _textStreamReader.Dispose();
+            }
+            catch
+            {
+                Console.WriteLine("Error accessing resources!");
+            }
+            return res;
         }
     }
 }

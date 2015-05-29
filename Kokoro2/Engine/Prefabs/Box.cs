@@ -1,4 +1,5 @@
 ﻿using Kokoro2.Engine.Shaders;
+using Kokoro2.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +57,7 @@ namespace Kokoro2.Engine.Prefabs
                 width, height, depth        //7
             }, 0);
 
-            Bound = new BoundingVolume()
+            Bound = new BoundingBox()
             {
                 Max = new Math.Vector3(width, height, depth),
                 Min = new Math.Vector3(-width, -height, -depth)

@@ -77,7 +77,7 @@ namespace Akane.World
             //Each pixel is one tile
             FrameBuffer renderTarget = new FrameBuffer(map.Width, map.Height, PixelComponentType.RGBA16f, akane.context);
             Model tileRenderer = new FullScreenQuad();
-            tileRenderer.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Shaders/TileLayer"), FragmentShader.Load("Shaders/TileLayer"));
+            tileRenderer.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(new VertexShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer")), new FragmentShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer")));
 
             Matrix4 TileLayersOrthoMatrix = Matrix4.CreateOrthographicOffCenter(0, map.Width, -map.Height, 0, -1.0f, 1.0f);
             akane.context.Projection = TileLayersOrthoMatrix;
@@ -256,6 +256,7 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
             //also, the heightfield should be downloaded to the CPU every other frame, downscaled and ray/path traced for lighting, this should be done in parallel
             //to the GPU work for best results
 
+            //TODO fix the shader loads
         }
 
         /*

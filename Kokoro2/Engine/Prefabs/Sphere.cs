@@ -160,7 +160,7 @@ namespace Kokoro2.Engine.Prefabs
             SetUVs(UpdateMode.Static, uvs.ToArray(), 0);
             SetVertices(UpdateMode.Static, verts.ToArray(), 0);
             SetNormals(UpdateMode.Static, normals.ToArray(), 0);
-            Bound = new BoundingVolume()
+            Bound = new BoundingBox()
             {
                 Max = new Vector3(maxX, maxY, maxZ),
                 Min = new Vector3(minX, minY, minZ),

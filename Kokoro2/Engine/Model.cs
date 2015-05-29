@@ -38,15 +38,6 @@ namespace Kokoro2.Engine
 
     public class Model : IDisposable
     {
-
-        public class BoundingVolume
-        {
-            public Vector3 Min;
-            public Vector3 Max;
-            public Vector3 Position;
-            public Vector3 Up;
-        };
-
         internal static VertexArrayLL staticBuffer;
         protected static long[] staticBufferOffset;
         protected static long[] staticBufferLength;
@@ -188,7 +179,7 @@ namespace Kokoro2.Engine
         public Matrix4 World { get; set; }
         public Material[] Materials { get; set; }
         public DrawMode DrawMode { get; set; }
-        public BoundingVolume Bound;
+        public BoundingBox Bound;
 
         UpdateMode mode;
         protected bool IsDataReady = true;

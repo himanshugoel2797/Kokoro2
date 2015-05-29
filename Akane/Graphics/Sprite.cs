@@ -41,7 +41,7 @@ namespace Akane.Graphics
             Visible = true;
             LoadAnimations(animations);
 
-            spriteShader = new ShaderProgram(VertexShader.Load("Shaders/Sprite"), FragmentShader.Load("Shaders/Sprite"));
+            spriteShader = new ShaderProgram(new VertexShader(Akane.Shaders.ShaderLibrary.LoadFile("Shaders/Sprite")), new FragmentShader(Akane.Shaders.ShaderLibrary.LoadFile("Shaders/Sprite")));
             //spriteQuad = new Quad(0, 0, 10, 10);
             spriteQuad = new FullScreenQuad();
             Scale = new Vector2(1, 1);
@@ -74,7 +74,7 @@ namespace Akane.Graphics
             //buffer.Bind(manager.context);
 
             //TODO Draw sprite
-            spriteQuad.World = Matrix4.Scale(manager.AspectRatio * 2 * Scale.X, Scale.Y , 1) * Matrix4.CreateTranslation(Position.X * manager.AspectRatio * 2 * 0.25f, -Position.Y * 0.25f, 0);
+            spriteQuad.World = Matrix4.Scale(manager.AspectRatio * 2 * Scale.X, Scale.Y, 1) * Matrix4.CreateTranslation(Position.X * manager.AspectRatio * 2 * 0.25f, -Position.Y * 0.25f, 0);
             spriteQuad.Materials[0].Shader = spriteShader;
             spriteQuad.Materials[0].ColorMap = spriteImg;
             spriteQuad.Materials[0].Shader["TexSize"] = spriteImg.Size;

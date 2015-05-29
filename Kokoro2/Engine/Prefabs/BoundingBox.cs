@@ -16,7 +16,7 @@ namespace Kokoro2.Engine.Prefabs
         /// Create a new OBV object
         /// </summary>
         /// <param name="box">The bounding box as calculated from another Model</param>
-        public OBV(BoundingVolume box)
+        public OBV(BoundingBox box)
         {
             this.World = Matrix4.CreateTranslation((box.Min + box.Max) / 2) * Matrix4.Scale(box.Max - box.Min);
             this.DrawMode = Engine.DrawMode.Lines;

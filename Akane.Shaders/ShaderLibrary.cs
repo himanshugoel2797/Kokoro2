@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 
 namespace Akane.Shaders
 {
@@ -17,14 +19,24 @@ namespace Akane.Shaders
             };
         }
 
-        public static string LoadVertexShader(string name)
+        public static string LoadFile(string name)
         {
+            Assembly _assembly;
+            StreamReader _textStreamReader;
+            string res = "";
 
-        }
-
-        public static string LoadFragmentShader(string name)
-        {
-
+            try
+            {
+                _assembly = Assembly.GetExecutingAssembly();
+                _textStreamReader = new StreamReader(_assembly.GetManifestResourceStream("Akane.Shaders." + name.Replace("/", ".")));
+                res = _textStreamReader.ReadToEnd();
+                _textStreamReader.Dispose();
+            }
+            catch
+            {
+                Console.WriteLine("Error accessing resources!");
+            }
+            return res;
         }
     }
 }
