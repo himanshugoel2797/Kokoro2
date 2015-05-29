@@ -16,6 +16,16 @@ namespace Akane.Shaders
                 "Shaders/TransparentColor"
             };
         }
+
+        public static string LoadVertexShader(string name)
+        {
+
+        }
+
+        public static string LoadFragmentShader(string name)
+        {
+
+        }
     }
 }
 

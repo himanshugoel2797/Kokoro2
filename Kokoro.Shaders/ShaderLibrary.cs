@@ -6,7 +6,14 @@ using System.Threading.Tasks;
 
 namespace Kokoro.Shaders
 {
-    class GBuffer
+    public class ShaderLibrary
     {
+        public static string[] LoadShaders()
+        {
+            return new string[]
+            {
+
+            };
+        }
     }
 }

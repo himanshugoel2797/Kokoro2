@@ -33,42 +33,18 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Content Include="Shaders\Default\fragmenlt.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\Default\vertex.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\TileLayer\fragment.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\TileLayer\vertex.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\FrameBuffer\fragment.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\FrameBuffer\vertex.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\TransparentColor\fragment.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\TransparentColor\vertex.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\LayerDrawer\fragment.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\LayerDrawer\vertex.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\Sprite\fragment.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Shaders\Sprite\vertex.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <EmbeddedResource Include="Shaders\Default\fragmenlt.glsl" />
+    <EmbeddedResource Include="Shaders\Default\vertex.glsl" />
+    <EmbeddedResource Include="Shaders\TileLayer\fragment.glsl" />
+    <EmbeddedResource Include="Shaders\TileLayer\vertex.glsl" />
+    <EmbeddedResource Include="Shaders\FrameBuffer\fragment.glsl" />
+    <EmbeddedResource Include="Shaders\FrameBuffer\vertex.glsl" />
+    <EmbeddedResource Include="Shaders\TransparentColor\fragment.glsl" />
+    <EmbeddedResource Include="Shaders\TransparentColor\vertex.glsl" />
+    <EmbeddedResource Include="Shaders\LayerDrawer\fragment.glsl" />
+    <EmbeddedResource Include="Shaders\LayerDrawer\vertex.glsl" />
+    <EmbeddedResource Include="Shaders\Sprite\fragment.glsl" />
+    <EmbeddedResource Include="Shaders\Sprite\vertex.glsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -83,7 +83,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GBuffer.cs" />
+    <Compile Include="ShaderLibrary.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
