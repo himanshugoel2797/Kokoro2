@@ -122,21 +122,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Debug\DebuggerManager.cs" />
-    <Compile Include="Debug\LogViewer.cs">
+    <Compile Include="Debugger\DebuggerManager.cs" />
+    <Compile Include="Debugger\LogViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debug\LogViewer.Designer.cs">
+    <Compile Include="Debugger\LogViewer.Designer.cs">
       <DependentUpon>LogViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debug\ErrorLogger.cs" />
-    <Compile Include="Debug\MemoryMonitor.cs">
+    <Compile Include="Debugger\ErrorLogger.cs" />
+    <Compile Include="Debugger\MemoryMonitor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Debug\MemoryMonitor.Designer.cs">
+    <Compile Include="Debugger\MemoryMonitor.Designer.cs">
       <DependentUpon>MemoryMonitor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debug\ObjectAllocTracker.cs" />
+    <Compile Include="Debugger\ObjectAllocTracker.cs" />
     <Compile Include="Engine\FrameBuffer.cs" />
     <Compile Include="Engine\FrameBufferTexture.cs" />
     <Compile Include="Engine\GraphicsContext.cs" />
@@ -247,10 +247,10 @@
     <Compile Include="Physics\VPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VFS\FSReader.cs" />
-    <EmbeddedResource Include="Debug\LogViewer.resx">
+    <EmbeddedResource Include="Debugger\LogViewer.resx">
       <DependentUpon>LogViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Debug\MemoryMonitor.resx">
+    <EmbeddedResource Include="Debugger\MemoryMonitor.resx">
       <DependentUpon>MemoryMonitor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
