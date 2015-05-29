@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DB0A76C9-B908-4C67-B1D0-31559C480A4A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Kokoro2</RootNamespace>
+    <AssemblyName>Kokoro2</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>ade56eb6</NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;OPENGL;PC;GL44</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;OPENGL;PC;RELEASE;GL44</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BEPUik, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BEPUphysics.1.3.0\lib\net40\BEPUik.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BEPUphysics, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">
+      <HintPath>..\packages\BEPUphysics.1.3.0\lib\net40\BEPUphysics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BEPUutilities, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">
+      <HintPath>..\packages\BEPUphysics.1.3.0\lib\net40\BEPUutilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="LibNoise, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\LibNoise.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Desktop">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.CSharp.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces.Desktop">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Desktop">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0.0-beta2\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable">
+      <HintPath>..\packages\System.Collections.Immutable.1.1.32-beta\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.IO.Log" />
+    <Reference Include="System.Reflection.Metadata">
+      <HintPath>..\packages\System.Reflection.Metadata.1.0.17-beta\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="OpenTK">
+      <HintPath>..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl">
+      <HintPath>..\packages\OpenTK.GLControl.1.1.1589.5942\lib\NET40\OpenTK.GLControl.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Debug\DebuggerManager.cs" />
+    <Compile Include="Debug\LogViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debug\LogViewer.Designer.cs">
+      <DependentUpon>LogViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debug\ErrorLogger.cs" />
+    <Compile Include="Debug\MemoryMonitor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Debug\MemoryMonitor.Designer.cs">
+      <DependentUpon>MemoryMonitor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Debug\ObjectAllocTracker.cs" />
+    <Compile Include="Engine\FrameBuffer.cs" />
+    <Compile Include="Engine\FrameBufferTexture.cs" />
+    <Compile Include="Engine\GraphicsContext.cs" />
+    <Compile Include="Engine\HighLevel\Cameras\Camera.cs" />
+    <Compile Include="Engine\HighLevel\Cameras\FirstPersonCamera.cs" />
+    <Compile Include="Engine\HighLevel\Cameras\FollowPointCamera.cs" />
+    <Compile Include="Engine\HighLevel\CharacterControllers\CharacterControllerBase.cs" />
+    <Compile Include="Engine\HighLevel\CharacterControllers\ThirdPersonController.cs" />
+    <Compile Include="Engine\HighLevel\Entity.cs" />
+    <Compile Include="Engine\HighLevel\Font.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\GBuffer.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\Grass.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\LightingEngine.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\LightPass.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\LitMaterial.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\RayCaster.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\Voxelizer.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\VoxelCollection.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\VoxelChunk.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\VoxelRenderer.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\VoxelWorld.cs" />
+    <Compile Include="Engine\Input\Key.cs" />
+    <Compile Include="Engine\Input\Keyboard.cs" />
+    <Compile Include="Engine\Input\Mouse.cs" />
+    <Compile Include="Engine\Material.cs" />
+    <Compile Include="Engine\Model.cs" />
+    <Compile Include="Engine\Pipeline.cs" />
+    <Compile Include="Engine\PixelInfo.cs" />
+    <Compile Include="Engine\Prefabs\BoundingBox.cs" />
+    <Compile Include="Engine\Prefabs\Box.cs" />
+    <Compile Include="Engine\Prefabs\FullScreenQuad.cs" />
+    <Compile Include="Engine\Prefabs\HighResQuad.cs" />
+    <Compile Include="Engine\Prefabs\InputDataMesh.cs" />
+    <Compile Include="Engine\Prefabs\Quad.cs" />
+    <Compile Include="Engine\Prefabs\Sphere.cs" />
+    <Compile Include="Engine\Prefabs\VertexMesh.cs" />
+    <Compile Include="Engine\RenderPass.cs" />
+    <Compile Include="Engine\SceneGraph\BroadPhaseWorld.cs" />
+    <Compile Include="Engine\SceneGraph\IScene.cs" />
+    <Compile Include="Engine\SceneGraph\ITransitionEvaluator.cs" />
+    <Compile Include="Engine\SceneGraph\NarrowPhaseWorld.cs" />
+    <Compile Include="Engine\SceneGraph\ObjectBatch.cs" />
+    <Compile Include="Engine\SceneGraph\SceneManager.cs" />
+    <Compile Include="Engine\Shaders\ComputeShader.cs" />
+    <Compile Include="Engine\Shaders\FragmentShader.cs" />
+    <Compile Include="Engine\Shaders\GeometryShader.cs" />
+    <Compile Include="Physics\BEPUBody.cs" />
+    <Compile Include="Physics\PhysicsWorld.cs" />
+    <Compile Include="Engine\Shaders\Shader.cs" />
+    <Compile Include="Engine\Shaders\ShaderProgram.cs" />
+    <Compile Include="Engine\Shaders\TessellationShader.cs" />
+    <Compile Include="Engine\Shaders\VertexShader.cs" />
+    <Compile Include="Engine\Texture.cs" />
+    <Compile Include="Math\BezierCurve.cs" />
+    <Compile Include="Math\BezierCurveCubic.cs" />
+    <Compile Include="Math\BezierCurveQuadric.cs" />
+    <Compile Include="Math\Box2.cs" />
+    <Compile Include="Math\FNV1a.cs" />
+    <Compile Include="Math\Functions.cs" />
+    <Compile Include="Math\Half.cs" />
+    <Compile Include="Math\MathHelper.cs" />
+    <Compile Include="Math\Matrix2.cs" />
+    <Compile Include="Math\Matrix3.cs" />
+    <Compile Include="Math\Matrix3d.cs" />
+    <Compile Include="Math\Matrix4.cs" />
+    <Compile Include="Math\Matrix4d.cs" />
+    <Compile Include="Math\Octree.cs" />
+    <Compile Include="Math\Point.cs" />
+    <Compile Include="Math\Quaternion.cs" />
+    <Compile Include="Math\Quaterniond.cs" />
+    <Compile Include="Math\Rectangle.cs" />
+    <Compile Include="Math\Size.cs" />
+    <Compile Include="Math\Vector2.cs" />
+    <Compile Include="Math\Vector2d.cs" />
+    <Compile Include="Math\Vector2h.cs" />
+    <Compile Include="Math\Vector3.cs" />
+    <Compile Include="Math\Vector3d.cs" />
+    <Compile Include="Math\Vector3h.cs" />
+    <Compile Include="Math\Vector4.cs" />
+    <Compile Include="Math\Vector4d.cs" />
+    <Compile Include="Math\Vector4h.cs" />
+    <Compile Include="OpenGL\EnumConverters.cs" />
+    <Compile Include="OpenGL\PC\Debug.cs" />
+    <Compile Include="OpenGL\PC\FrameBufferLL.cs" />
+    <Compile Include="OpenGL\PC\GPUBufferLL.cs" />
+    <Compile Include="OpenGL\PC\GraphicsContextLL.cs" />
+    <Compile Include="OpenGL\PC\Input.cs" />
+    <Compile Include="OpenGL\PC\ShaderLL.cs" />
+    <Compile Include="OpenGL\PC\ShaderProgramLL.cs" />
+    <Compile Include="OpenGL\PC\Sound.cs" />
+    <Compile Include="OpenGL\PC\TextureLL.cs" />
+    <Compile Include="OpenGL\PC\VertexArrayLL.cs" />
+    <Compile Include="Physics\CollisionSolver.cs" />
+    <Compile Include="Physics\ICollisionBody.cs" />
+    <Compile Include="Physics\PhysicsState.cs" />
+    <Compile Include="Physics\Prefabs\AABB.cs" />
+    <Compile Include="Physics\Prefabs\PhysSphere.cs" />
+    <Compile Include="Physics\Prefabs\Ray.cs" />
+    <Compile Include="Physics\Prefabs\PhysVertexMesh.cs" />
+    <Compile Include="Physics\VEdge.cs" />
+    <Compile Include="Physics\VerletIntegrator.cs" />
+    <Compile Include="Physics\VObject.cs" />
+    <Compile Include="Physics\VPoint.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VFS\FSReader.cs" />
+    <EmbeddedResource Include="Debug\LogViewer.resx">
+      <DependentUpon>LogViewer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Debug\MemoryMonitor.resx">
+      <DependentUpon>MemoryMonitor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ShaderLib\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LibNoise.dll" />
+    <Content Include="logo.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
