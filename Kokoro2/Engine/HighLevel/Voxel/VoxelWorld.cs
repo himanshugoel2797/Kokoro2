@@ -37,7 +37,7 @@ namespace Kokoro2.Engine.HighLevel.Voxel
                 
                 //TODO Fix the shader setup for the voxelworld
 
-                renderers[i].Materials[0].ColorMap = voxelTypes.Atlas;
+                renderers[i].Materials[0].AlbedoMap = voxelTypes.Atlas;
             }
         }
 

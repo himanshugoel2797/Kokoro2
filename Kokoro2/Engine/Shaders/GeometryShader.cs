@@ -13,7 +13,7 @@ namespace Kokoro2.Engine.Shaders
 
         public static GeometryShader Load(string dir)
         {
-            return new GeometryShader(new StreamReader(VFS.FSReader.OpenFile(dir + "/geometry.glsl")).ReadToEnd());
+            return new GeometryShader(Shader.GetFile(dir + "/geometry.glsl"));
         }
     }
 }

@@ -80,6 +80,11 @@ namespace Kokoro2.Math
             return null;
         }
 
+        public void BalanceOctree()
+        {
+            //TODO Get all the objects in the tree and then clear the tree and place each object in the tree again
+            throw new NotImplementedException();
+        }
 
         /// 
 

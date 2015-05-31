@@ -47,7 +47,7 @@ namespace Kokoro2.Engine.Prefabs
                 x + width, 0, y,
                 x, 0, y
             }, 0);
-            Materials[0] = new Material { ColorMap = tex };
+            Materials[0] = new Material { AlbedoMap = tex };
 
             Bound = new BoundingBox()
             {

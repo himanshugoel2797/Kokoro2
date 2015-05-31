@@ -84,6 +84,7 @@ namespace Kokoro2.Engine
         }
         public Texture(string filename, bool delayedLoad = false)
         {
+            //TODO make this write to a texture array where the ID returned is the layer, additionally maintain a GPU buffer with the normalized sizes and offsets of the textures in their respective layers
             lock (locker)
             {
                 if (loadedImages.ContainsKey(filename))

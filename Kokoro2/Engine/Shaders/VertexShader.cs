@@ -13,7 +13,7 @@ namespace Kokoro2.Engine.Shaders
 
         public static VertexShader Load(string dir)
         {
-            return new VertexShader(new StreamReader(VFS.FSReader.OpenFile(dir + "/vertex.glsl")).ReadToEnd());
+            return new VertexShader(Shader.GetFile(dir + "/vertex.glsl"));
         }
     }
 }

@@ -320,6 +320,18 @@ namespace Kokoro2.Engine
         public void Clear(Vector4 col) { Clear(col.X, col.Y, col.Z, col.W); }
         #endregion
 
+        #region Draw
+        public void Draw(Model m)
+        {
+            base.AddDraw(m);
+        }
+
+        public void DrawBatch(Model[] m, Shaders.ShaderProgram shader)
+        {
+
+        }
+        #endregion
+
         #region Game Loop
         /// <summary>
         /// The thread running the Update Loop

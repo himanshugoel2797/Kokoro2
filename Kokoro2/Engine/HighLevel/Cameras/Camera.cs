@@ -23,7 +23,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         /// </summary>
         public Matrix4 Projection { get; internal set; }
 
-        public Model.BoundingVolume Frustum { get; internal set; }
+        public BoundingFrustum Frustum { get; internal set; }
 
         Vector3 pos;
         /// <summary>
@@ -70,17 +70,8 @@ namespace Kokoro2.Engine.HighLevel.Cameras
 
         public void CalculateFrustum(float fov, float aspectRatio, float nearClip, float farClip)
         {
-            float preComp = 2 * (float)System.Math.Tan(fov / 2);
-            float hNear = preComp * nearClip;
-            float wNear = aspectRatio * hNear;
-            float hFar = preComp * farClip;
-            float wFar = hFar * aspectRatio;
-
-            Frustum = new Model.BoundingVolume()
-            {
-                Max = new Vector3(wFar, hFar, farClip),
-                Min = new Vector3(wNear, hNear, nearClip)
-            };
+            SetProjection(fov, aspectRatio, nearClip, farClip);
+            Frustum = new BoundingFrustum(Projection * View);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Kokoro2.Engine.HighLevel.Voxel
 
     public class VoxelChunk
     {
-        public Voxel[, ,] Info;
+        public Voxel[,,] Info;
         public int Side;
 
         internal List<float> Vertices, Normals, UVs;
@@ -55,11 +55,10 @@ namespace Kokoro2.Engine.HighLevel.Voxel
             if (!Info[x, y, z].Active) return false;    //This voxel isn't visible if it isn't active
             else if (x == 0 | y == 0 | z == 0 | x == (Side - 1) | y == (Side - 1) | z == (Side - 1)) return true;      //If anything is on the array boundary, it is definitely a surface if it is enabled
             else if
-                ((!Info[(x - 1), y, z].Active | !Info[(x + 1), y, z].Active | !Info[x, (y - 1), z].Active | !Info[x, (y + 1), z].Active | !Info[x, y, (z + 1)].Active | !Info[x, y, (z - 1)].Active)) return false;
+                ((!Info[(x - 1), y, z].Active | !Info[(x + 1), y, z].Active | !Info[x, (y - 1), z].Active | !Info[x, (y + 1), z].Active | !Info[x, y, (z + 1)].Active | !Info[x, y, (z - 1)].Active))
+                return false;
             else return true;
             //perform more thorough checks, if there is no block on any face, then this is a surface voxel
-
-            return false;   //If all the checks failed this isn't a surface voxel
         }
     }
 
@@ -70,7 +69,7 @@ namespace Kokoro2.Engine.HighLevel.Voxel
 
         public VoxelOctree(float worldSide, int seed = -1)
         {
-            Data = new Octree<VoxelChunk>();
+            Data = new Octree<VoxelChunk>(worldSide, 1);
             Side = worldSide;
         }
     }

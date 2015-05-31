@@ -136,7 +136,7 @@ namespace Kokoro2.Engine.HighLevel.Voxel
                 base.UpdateNormals(Normals.ToArray(), 0);
                 base.UpdateUVs(UVs.ToArray(), 0);
 
-                this.Materials[0].ColorMap = voxelInfo.Atlas;
+                this.Materials[0].AlbedoMap = voxelInfo.Atlas;
             }
             IndexCount = Indices.Count;
             if (IndexCount > allocSize) throw new OverflowException();

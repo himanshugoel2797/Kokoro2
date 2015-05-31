@@ -80,6 +80,16 @@ namespace Kokoro2.OpenGL.PC
             Window.SwapBuffers();
         }
 
+        protected void AddDraw(Kokoro2.Engine.Model m)
+        {
+            //Place the model object into a bucket depending on its shader
+        }
+
+        protected void AddDrawBatch(Kokoro2.Engine.Model[] m, ShaderProgramLL shader)
+        {
+
+        }
+
         internal static void Draw(Engine.DrawMode dm, uint first, uint count, uint baseVertex)
         {
 

@@ -13,10 +13,9 @@ namespace Kokoro2.Engine
     public class Material
     {
         public string Name { get; set; }
-        public Texture ColorMap { get; set; }
-        public Texture LightingMap { get; set; }
-        public Texture NormalMap { get; set; }
-        public Texture EmissiveMap { get; set; }
+        public Texture AlbedoMap { get; set; }
+        public Texture DerivativeAOCavityMicrosurfaceMap { get; set; }  //Derivative map in R, AO in G, cavity in B, microsurface in A
+        public Texture ReflectivityMap { get; set; }
         public ShaderProgram Shader { get; set; }
 
         public virtual void Apply(GraphicsContext context, Model m)
@@ -27,10 +26,9 @@ namespace Kokoro2.Engine
             Shader["ZNear"] = context.ZNear;
             Shader["ZFar"] = context.ZFar;
 
-            if (ColorMap != null) Shader["ColorMap"] = ColorMap;
-            if (LightingMap != null) Shader["LightingMap"] = LightingMap;
-            if (NormalMap != null) Shader["NormalMap"] = NormalMap;
-            if (EmissiveMap != null) Shader["EmissiveMap"] = EmissiveMap;
+            if (AlbedoMap != null) Shader["AlbedoMap"] = AlbedoMap;
+            if (DerivativeAOCavityMicrosurfaceMap != null) Shader["DerivativeAOCavityMicrosurfaceMap"] = DerivativeAOCavityMicrosurfaceMap;
+            if (ReflectivityMap != null) Shader["ReflectivityMap"] = ReflectivityMap;
 
             Shader.Apply(context);
         }

@@ -163,8 +163,7 @@ namespace Kokoro2.Engine.Prefabs
             Bound = new BoundingBox()
             {
                 Max = new Vector3(maxX, maxY, maxZ),
-                Min = new Vector3(minX, minY, minZ),
-                Up = Vector3.UnitY
+                Min = new Vector3(minX, minY, minZ)
             };
         }
     }

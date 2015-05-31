@@ -10,7 +10,7 @@ namespace Akane.Launcher
     {
         static void Main(string[] args)
         {
-            GameInitializer initializer = new GameInitializer();
+            //GameInitializer initializer = new GameInitializer();
         }
     }
 }

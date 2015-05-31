@@ -185,7 +185,7 @@ namespace Akane.World
                     MinMaxTileset.Add(new Vector2(t.FirstGid, CalculateFinalGID(t.FirstGid, (int)t.Image.Width, (int)t.Image.Height, t.TileWidth, t.TileHeight)));
 
                     manager.context.Clear(0, 0, 0, 0);
-                    quad.Materials[0].ColorMap = new Texture(t.Image.Source);
+                    quad.Materials[0].AlbedoMap = new Texture(t.Image.Source);
                     quad.Materials[0].Shader["TransparentColor"] = new Vector3(t.Image.Trans.R / 255f, t.Image.Trans.G / 255f, t.Image.Trans.B / 255f);
 
                     quad.Draw(manager.context);
@@ -197,7 +197,7 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
 , FrameBufferAttachments.ColorAttachment0, manager.context);
                     //if (i < map.Tilesets.Count - 1) tileSetTmpBuffer = new FrameBuffer((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i + 1].Image.Height, PixelComponentType.RGBA8, manager.context);
 
-                    quad.Materials[0].ColorMap.Dispose();
+                    quad.Materials[0].AlbedoMap.Dispose();
 
                     if (t.Properties.ContainsKey("HeightMap"))
                     {
@@ -222,7 +222,7 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
                 {
                     if (curMax < MinMaxTileset[i].Y)
                     {
-                        quad.Materials[0].ColorMap = TextureAtlases[i];
+                        quad.Materials[0].AlbedoMap = TextureAtlases[i];
                         quad.Materials[0].Shader["HeightMap"] = HeightMaps[i];
                         quad.Materials[0].Shader["firstGid"] = (float)MinMaxTileset[i].X;
                         quad.Materials[0].Shader["layerNum"] = (float)layer;
@@ -246,7 +246,7 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
             var tmp = quad.Materials[0].Shader;
 
             quad.Materials[0].Shader = DefaultShader;
-            quad.Materials[0].ColorMap = tileMapPhaseA["Color"];
+            quad.Materials[0].AlbedoMap = tileMapPhaseA["Color"];
             quad.Draw(manager.context);
             quad.Materials[0].Shader = tmp;
 

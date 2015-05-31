@@ -35,7 +35,7 @@ namespace Kokoro2.Engine
             var tmp = FrameBuffer.GetCurrentFrameBuffer();
             RenderTarget.Bind(context);
             quad.Materials[0].Shader = Shader;
-            quad.Materials[0].ColorMap = Diffuse;
+            quad.Materials[0].AlbedoMap = Diffuse;
             quad.Draw(context);
             tmp.Bind(context);
         }

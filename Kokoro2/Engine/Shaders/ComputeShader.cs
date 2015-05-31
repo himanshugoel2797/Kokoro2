@@ -15,7 +15,7 @@ namespace Kokoro2.Engine.Shaders
 
         public static ComputeShader Load(string dir)
         {
-            return new ComputeShader(new StreamReader(VFS.FSReader.OpenFile(dir + "/compute.glsl")).ReadToEnd());
+            return new ComputeShader(Shader.GetFile(dir + "/compute.glsl"));
         }
     }
 }

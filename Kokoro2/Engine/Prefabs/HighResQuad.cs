@@ -82,7 +82,7 @@ namespace Kokoro2.Engine.Prefabs
             SetVertices(UpdateMode.Static, verts.ToArray(), 0);
             SetNormals(UpdateMode.Static, norms.ToArray(), 0);
 
-            Materials[0] = new Material { ColorMap = tex };
+            Materials[0] = new Material { AlbedoMap = tex };
 
 
             World = Matrix4.Identity;

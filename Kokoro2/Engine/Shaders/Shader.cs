@@ -49,6 +49,38 @@ namespace Kokoro2.Engine.Shaders
             }
         }
 
+        #region Shader library loader
+        static Shader()
+        {
+            LoadCalls = new List<Func<string, string>>();
+            StringToLoader = new Dictionary<string, int>();
+
+            //Load the default shader library at initialization
+            LoadLibrary(Kokoro2.Shaders.ShaderLibrary.LoadFile, Kokoro2.Shaders.ShaderLibrary.LoadShaders());
+        }
+        static List<Func<string, string>> LoadCalls;
+        static Dictionary<string, int> StringToLoader;
+
+        public static void LoadLibrary(Func<string, string> loadCall, string[] options)
+        {
+            LoadCalls.Add(loadCall);
+            int index = LoadCalls.Count - 1;
+
+            for (int i = 0; i < options.Length; i++) StringToLoader.Add(options[i], index);
+        }
+
+        protected static string GetFile(string file)
+        {
+            if (StringToLoader.ContainsKey(file))
+            {
+                return LoadCalls[StringToLoader[file]](file);
+            }
+            else
+            {
+                throw new System.IO.FileNotFoundException($"The shader '{file}' could not be found");
+            }
+        }
+        #endregion
 #if DEBUG
         ~Shader()
         {

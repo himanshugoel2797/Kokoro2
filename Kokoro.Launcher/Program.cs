@@ -19,7 +19,7 @@ namespace Kokoro.Launcher
             form.Controls.Add(context.ViewportControl);
             form.ClientSize = new System.Drawing.Size(960, 540);
 
-            Kokoro2.Game.Game game = new Game.Game(context);
+            Kokoro2.Game.Game game = new Kokoro2.Game.Game(context);
             form.ShowDialog();
             return;
         }
