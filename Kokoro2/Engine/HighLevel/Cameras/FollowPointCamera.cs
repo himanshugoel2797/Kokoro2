@@ -26,7 +26,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         /// </summary>
         /// <param name="Position">The Position of the Camera</param>
         /// <param name="Direction">The Direction the Camera initially faces</param>
-        public FollowPointCamera()
+        public FollowPointCamera(GraphicsContext context) : base(context)
         {
 
         }
@@ -47,6 +47,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
 
             mousePos = Mouse.NDMousePos;
 
+            Direction = Target;
             View = Matrix4.LookAt(Position, Target, Up);
             base.Update(interval, Context);
 

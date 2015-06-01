@@ -14,8 +14,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
     /// </summary>
     public class FirstPersonCamera : Camera
     {//TODO setup collisions
-
-        public Vector3 Direction;
+        
         public Vector3 Up;
 
         float leftrightRot = MathHelper.PiOver2;
@@ -34,7 +33,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         /// </summary>
         /// <param name="Position">The Position of the Camera</param>
         /// <param name="Direction">The Direction the Camera initially faces</param>
-        public FirstPersonCamera(Vector3 Position, Vector3 Direction)
+        public FirstPersonCamera(GraphicsContext context, Vector3 Position, Vector3 Direction) : base(context)
         {
             this.Position = Position;
             this.Direction = Direction;
@@ -96,6 +95,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
                 Position += Right * (float)(moveSpeed * interval / 10000f);
             }
 
+#if DEBUG
             if (Keyboard.IsKeyPressed(Key.PageDown) || Keyboard.IsKeyPressed(Key.S))
             {
                 Position -= cameraRotatedUpVector * (float)(moveSpeed * interval / 10000f);
@@ -124,6 +124,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
                 moveSpeed -= (float)moveSpeedGradient / 1000f;
                 Debug.ErrorLogger.AddMessage(0, "[INPUT] moveSpeed = " + moveSpeed, Debug.DebugType.Marker, Debug.Severity.Notification);
             }
+#endif
             //View = UpdateViewMatrix();
             this.Up = cameraRotatedUpVector;
             View = Matrix4.LookAt(Position, Position + Direction, cameraRotatedUpVector);

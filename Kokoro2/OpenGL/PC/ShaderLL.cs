@@ -52,7 +52,9 @@ namespace Kokoro2.OpenGL.PC
             {
                 Kokoro2.Debug.ErrorLogger.AddMessage(id, "RESULT: " + result + "\n" + GL.GetShaderInfoLog(id), Kokoro2.Debug.DebugType.Error, Kokoro2.Debug.Severity.High);
                 Kokoro2.Debug.ErrorLogger.AddMessage(id, fshader, Kokoro2.Debug.DebugType.Other, Kokoro2.Debug.Severity.High);
+#if DEBUG
                 Kokoro2.Debug.DebuggerManager.logger.Pause = true;
+#endif
             }
         }
 

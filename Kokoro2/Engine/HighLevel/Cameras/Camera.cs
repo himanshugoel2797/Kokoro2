@@ -41,14 +41,17 @@ namespace Kokoro2.Engine.HighLevel.Cameras
             }
         }
 
+        public Vector3 Direction;
+
         /// <summary>
         /// Create a new Camera object
         /// </summary>
-        public Camera()
+        public Camera(GraphicsContext context)
         {
+            Direction = Vector3.UnitX;
             View = Matrix4.LookAt(new Vector3(-1, 0, 0), Vector3.Zero, Vector3.UnitY);
             Position = -Vector3.UnitX;
-            SetProjection(0.7853f, 16f / 9f, 0.1f, 1000f);
+            CalculateFrustum(0.7853f, 16f / 9f, context.ZNear, context.ZFar);
         }
 
         /// <summary>
@@ -59,13 +62,11 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         public virtual void Update(double interval, GraphicsContext Context)
         {
             Context.View = View;
-            Context.Projection = Projection;
         }
 
         public void SetProjection(float fov, float aspectRatio, float nearClip, float farClip)
         {
             Projection = Matrix4.CreatePerspectiveFieldOfView(fov, aspectRatio, nearClip, farClip);
-            CalculateFrustum(fov, aspectRatio, nearClip, farClip);
         }
 
         public void CalculateFrustum(float fov, float aspectRatio, float nearClip, float farClip)

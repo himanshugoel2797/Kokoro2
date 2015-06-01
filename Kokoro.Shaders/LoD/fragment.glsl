@@ -1,9 +1,9 @@
 ﻿#version 430 core
 
-in vec2 UV;
-in float depth;
-in vec3 worldXY;
-smooth in vec3 normPos;
+in vec2 UV_o2;
+in float depth_o2;
+in vec3 worldXY_o2;
+smooth in vec3 normPos_o2;
 in vec2 logBufDat;
 
 layout(location = 0) out vec4 RGBA0;
@@ -25,31 +25,32 @@ vec2 encode (vec3 n)
 
 void main()
 {
-		vec4 data = texture2D(DerivativeAOCavityMicrosurfaceMap, UV);
+		vec4 data = texture2D(DerivativeAOCavityMicrosurfaceMap, UV_o2);
 
-		vec3 dpdx = dFdx(worldXY);
-		vec3 dpdy = dFdy(worldXY);
+		vec3 dpdx = dFdx(worldXY_o2);
+		vec3 dpdy = dFdy(worldXY_o2);
 
 		float dhdx = dFdx(data.r);
 		float dhdy = dFdy(data.r);
 
-		vec3 r1 = cross(dpdy, normPos);
-		vec3 r2 = cross(normPos, dpdx);
+		vec3 r1 = cross(dpdy, normPos_o2);
+		vec3 r2 = cross(normPos_o2, dpdx);
 
-		vec3 finalNormal = normalize(normPos - (r1 * dhdx + r2 * dhdy)/dot(dpdx, r1) );
+		vec3 finalNormal = normalize(normPos_o2 - (r1 * dhdx + r2 * dhdy)/dot(dpdx, r1) );
 
 		Normal0.rg = encode(finalNormal);	//Compress the normal data so we can eliminate one texture
 		Normal0.b = data.g;	//AO Map
 		Normal0.a = data.b;	//Cavity Map
 
 
-		RGBA0 = texture2D(AlbedoMap, UV);
+		RGBA0 = texture2D(AlbedoMap, UV_o2);
 
-		Material0 = texture2D(ReflectivityMap, UV);
+		Material0 = texture2D(ReflectivityMap, UV_o2);
 
-		Depth0.r = depth/50;
-		Depth0.gb = worldXY.xy;
+		Depth0.r = depth_o2/50;
+		Depth0.gb = worldXY_o2.xy;
 		Depth0.a = data.a;	//Microsurface Map
 
-		//We might have to write to gl_FragDepth here, but for now I think it's fine
+		//We might have to write to gl_Fragdepth_o2 here, but for now I think it's fine
+		gl_FragDepth = log2(logBufDat.y) * logBufDat.x;
 }

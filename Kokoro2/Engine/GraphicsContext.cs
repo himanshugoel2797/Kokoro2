@@ -151,7 +151,15 @@ namespace Kokoro2.Engine
         /// <summary>
         /// Set the Projection Matrix
         /// </summary>
-        public Matrix4 Projection { get; set; }
+        public Matrix4 Projection { get
+            {
+                return Camera.Projection;
+            }
+            set
+            {
+                Camera.Projection = value;
+            }
+            }
 
         /// <summary>
         /// Set the View Matrix
@@ -294,6 +302,14 @@ namespace Kokoro2.Engine
                 SetWinSize(value);
             }
         }
+
+        public int PatchSize
+        {
+            set
+            {
+                SetPatchSize(value);
+            }
+        }
         #endregion
 
         //TODO fix MSAA
@@ -328,7 +344,7 @@ namespace Kokoro2.Engine
 
         public void DrawBatch(Model[] m, Shaders.ShaderProgram shader)
         {
-
+            base.AddDrawBatch(m, shader);
         }
         #endregion
 
@@ -442,8 +458,8 @@ namespace Kokoro2.Engine
                 Debug.ErrorLogger.StartLogger(true);
                 Debug.ErrorLogger.AddMessage(0, "Engine Started", Debug.DebugType.Marker, Debug.Severity.Notification);
 
-                ZNear = 0.1f;
-                ZFar = 1000f;
+                ZNear = 0.0001f;
+                ZFar = 1000000f;
                 DepthWrite = true;
                 Viewport = new Vector4(0, 0, WindowSize.X, WindowSize.Y);
 
@@ -454,7 +470,7 @@ namespace Kokoro2.Engine
 
                 //Spawn threads for each: Update, Physics, Animation, Render
                 UpdateThread.Start();
-                ResourceManagerThread.Start();
+                //TODO ResourceManagerThread.Start();
             };
         }
 

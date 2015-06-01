@@ -14,9 +14,17 @@ namespace Kokoro2.Shaders
         {
             return new string[]
             {
-                "Shaders/GBuffer",
-                "Shaders/Lighting",
-                "Shaders/Default",
+                "GBuffer/fragment.glsl",
+                "GBuffer/vertex.glsl",
+                "PBR/fragment.glsl",
+                "Default/fragment.glsl",
+                "Default/vertex.glsl",
+                "FrameBuffer/fragment.glsl",
+                "FrameBuffer/vertex.glsl",
+                "LoD/fragment.glsl",
+                "LoD/vertex.glsl",
+                "LoD/tessEval.glsl",
+                "LoD/tessControl.glsl"
             };
         }
 

@@ -25,6 +25,8 @@ namespace Kokoro2.Engine
             Shader["Projection"] = context.Projection;
             Shader["ZNear"] = context.ZNear;
             Shader["ZFar"] = context.ZFar;
+            Shader["EyePos"] = context.Camera.Position;
+            Shader["EyeDir"] = context.Camera.Direction;
 
             if (AlbedoMap != null) Shader["AlbedoMap"] = AlbedoMap;
             if (DerivativeAOCavityMicrosurfaceMap != null) Shader["DerivativeAOCavityMicrosurfaceMap"] = DerivativeAOCavityMicrosurfaceMap;

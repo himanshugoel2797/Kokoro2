@@ -50,6 +50,7 @@ namespace Kokoro2.OpenGL.PC
             //Depth Test is always enabled, it's a matter of what the depth function is
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.LineSmooth);
+            GL.Enable(EnableCap.DepthClamp);
             GL.LineWidth(4);
 
         }
@@ -83,11 +84,12 @@ namespace Kokoro2.OpenGL.PC
         protected void AddDraw(Kokoro2.Engine.Model m)
         {
             //Place the model object into a bucket depending on its shader
+            m.Draw((this as Kokoro2.Engine.GraphicsContext));   //TODO make this proper   
         }
 
         protected void AddDrawBatch(Kokoro2.Engine.Model[] m, ShaderProgramLL shader)
         {
-
+            throw new NotImplementedException();
         }
 
         internal static void Draw(Engine.DrawMode dm, uint first, uint count, uint baseVertex)
@@ -361,6 +363,10 @@ namespace Kokoro2.OpenGL.PC
             GL.PointSize(size);
         }
 
+        protected void SetPatchSize(int size)
+        {
+            GL.PatchParameter(PatchParameterInt.PatchVertices, size);
+        }
         #endregion
     }
 }

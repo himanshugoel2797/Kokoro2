@@ -7,7 +7,7 @@
     <ProjectGuid>{3CC9E16B-C337-420E-A9D2-D7203CE4ABFE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Kokoro.Shaders</RootNamespace>
+    <RootNamespace>Kokoro2.Shaders</RootNamespace>
     <AssemblyName>Kokoro.Shaders</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -35,6 +35,8 @@
     <None Include="App.config" />
     <EmbeddedResource Include="Default\fragment.glsl" />
     <EmbeddedResource Include="Default\vertex.glsl" />
+    <EmbeddedResource Include="FrameBuffer\fragment.glsl" />
+    <EmbeddedResource Include="FrameBuffer\vertex.glsl" />
     <None Include="Fur\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -43,6 +45,11 @@
     </None>
     <EmbeddedResource Include="Lighting\fragment.glsl" />
     <EmbeddedResource Include="Lighting\vertex.glsl" />
+    <EmbeddedResource Include="PBR\fragment.glsl" />
+    <EmbeddedResource Include="LoD\tessControl.glsl" />
+    <EmbeddedResource Include="LoD\tessEval.glsl" />
+    <EmbeddedResource Include="LoD\fragment.glsl" />
+    <EmbeddedResource Include="LoD\vertex.glsl" />
     <None Include="Radiosity PassB\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

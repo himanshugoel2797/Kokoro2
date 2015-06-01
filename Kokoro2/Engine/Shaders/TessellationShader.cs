@@ -24,6 +24,11 @@ namespace Kokoro2.Engine.Shaders
             control = new TessellationControlShader(controlShader);
             SetPatchSize(3);
         }
+
+        public static TessellationShader Load(string controlShaderName, string evalShaderName)
+        {
+            return new TessellationShader(Shader.GetFile(controlShaderName + "/tessControl.glsl"), Shader.GetFile(evalShaderName + "/tessEval.glsl"));
+        }
     }
 
     class TessellationControlShader : Shader

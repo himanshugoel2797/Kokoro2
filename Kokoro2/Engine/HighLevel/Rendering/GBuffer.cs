@@ -31,7 +31,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             buffer.Add("Material0", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment3, context);
 
             //TODO setup the new GBufferShader
-            GBufferShader = new ShaderProgram(VertexShader.Load("Shaders/GBuffer"), FragmentShader.Load("Shaders/GBuffer"));
+            GBufferShader = new ShaderProgram(VertexShader.Load("GBuffer"), FragmentShader.Load("GBuffer"));
         }
 
         public void Add(string name, FrameBufferTexture tex, FrameBufferAttachments attachment, GraphicsContext context)

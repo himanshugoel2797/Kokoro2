@@ -183,8 +183,51 @@ namespace Kokoro2.OpenGL.PC
             }
         }
 
+        public void BufferData<T>(T data, int offset = 0, int length = -1)
+        {
+            if (updateMode == UpdateMode.Dynamic)   //Write to the persistent mapped buffer
+            {
+                if (offset + length > memSize) throw new OutOfMemoryException("There is a memory overflow here!");
+
+                #region Persistent Mapping
+                // waiting for the buffer
+                WaitSyncStatus waitReturn = WaitSyncStatus.TimeoutExpired;
+                while (waitReturn != WaitSyncStatus.AlreadySignaled && waitReturn != WaitSyncStatus.ConditionSatisfied)
+                {
+                    waitReturn = GL.ClientWaitSync(syncObj, ClientWaitSyncFlags.SyncFlushCommandsBit, 1);   //TODO depending on how much time this can take, we might want to do other work in the meantime
+                }
+
+                //Write the data
+                Marshal.StructureToPtr(data, (mappedPtr + offset), false);
+                #endregion
+            }
+            else if (updateMode == UpdateMode.Static)
+            {
+                #region Buffer Data
+                GL.BindBuffer(target, staticID);
+                if (offset == 0) GL.BufferData(target, (IntPtr)((length == -1) ? Marshal.SizeOf(data) : length), getBytes(data), BufferUsageHint.StaticDraw);
+                else GL.BufferSubData(target, (IntPtr)(offset), (IntPtr)((length == -1) ? Marshal.SizeOf(data) : length), getBytes(data));
+                GL.BindBuffer(target, 0);
+                #endregion
+            }
+        }
+
+        byte[] getBytes<T>(T str)
+        {
+            int size = Marshal.SizeOf(str);
+            byte[] arr = new byte[size];
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+
+            Marshal.StructureToPtr(str, ptr, true);
+            Marshal.Copy(ptr, arr, 0, size);
+            Marshal.FreeHGlobal(ptr);
+
+            return arr;
+        }
+
         //TODO Update these comments, offsets and lenths are valid for everything
-        
+        //TODO several possible bug fixes, the length checks need to be made more robust for general purpose use
+
         /// <summary>
         /// Put data into the buffer
         /// </summary>

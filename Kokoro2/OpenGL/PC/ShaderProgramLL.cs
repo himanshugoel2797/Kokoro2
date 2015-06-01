@@ -49,7 +49,7 @@ namespace Kokoro2.OpenGL.PC
         public void AttachShader(Shader s, string[] transformVars = null)
         {
 
-            if (s.GetShaderType() != ShaderTypes.TessellationControl) shaderStages[(int)s.GetShaderType()] = s;
+            if (s.GetShaderType() != ShaderTypes.TessellationComb) shaderStages[(int)s.GetShaderType()] = s;
             else
             {
                 var shad = s as TessellationShader;
