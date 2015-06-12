@@ -7,12 +7,7 @@ in vec3 worldXY[];
 smooth in vec3 normPos[];
 
 uniform mat4 World;
-
-uniform float ZFar;
-uniform float ZNear;
-
 uniform vec3 EyePos;
-
 
 out vec2 UV_o[];
 out vec3 worldXY_o[];
@@ -22,7 +17,7 @@ float GetTessLevel(float Distance0, float Distance1)
 {
     float AvgDistance = (Distance0 + Distance1) / 2.0;
 
-    return 10 - clamp(AvgDistance/10, 1, 10);
+    return (40 - clamp(AvgDistance/500, 0, 39));
 }
 
 void main()

@@ -33,7 +33,7 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 
 void main()
 {
-UV_o2 = interpolate2D(UV_o[0], UV_o[1], UV_o[2]);
+	UV_o2 = interpolate2D(UV_o[0], UV_o[1], UV_o[2]);
    	normPos_o2 = interpolate3D(normPos_o[0], normPos_o[1], normPos_o[2]);
    	normPos_o2 = normalize(normPos_o2);
    	vec3 position = (interpolate3D(worldXY_o[0], worldXY_o[1], worldXY_o[2]));
@@ -47,7 +47,8 @@ UV_o2 = interpolate2D(UV_o[0], UV_o[1], UV_o[2]);
 
 	depth_o2 = (gl_Position.z * gl_Position.w - ZNear)/(ZFar - ZNear);
 
-	gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * FCOEF - ZNear;
+	gl_Position.z = log2(max(ZNear, 1.0 + gl_Position.w)) * FCOEF - 1.0;
 	logBufDat.y = 1.0 + gl_Position.w;
+
 	worldXY_o2 = (World * vec4(position, 1)).xyz;
 }

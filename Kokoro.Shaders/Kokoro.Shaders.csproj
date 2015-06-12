@@ -37,6 +37,7 @@
     <EmbeddedResource Include="Default\vertex.glsl" />
     <EmbeddedResource Include="FrameBuffer\fragment.glsl" />
     <EmbeddedResource Include="FrameBuffer\vertex.glsl" />
+    <EmbeddedResource Include="AtmosphereFromSpace\vertex.glsl" />
     <None Include="Fur\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -50,6 +51,11 @@
     <EmbeddedResource Include="LoD\tessEval.glsl" />
     <EmbeddedResource Include="LoD\fragment.glsl" />
     <EmbeddedResource Include="LoD\vertex.glsl" />
+    <EmbeddedResource Include="RSM\fragment.glsl" />
+    <EmbeddedResource Include="RSM\vertex.glsl" />
+    <EmbeddedResource Include="Sphere\tessControl.glsl" />
+    <EmbeddedResource Include="Sphere\tessEval.glsl" />
+    <EmbeddedResource Include="AtmosphereFromSpace\fragment.glsl" />
     <None Include="Radiosity PassB\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -47,13 +47,20 @@ namespace Kokoro2.OpenGL.PC
             }
         }
 
-        public VertexArrayLL(int bufferCount, long bufferSize, Kokoro2.Engine.UpdateMode updateMode, Kokoro2.Engine.BufferUse[] bufferUses, int[] elementCount)
+        public VertexArrayLL(int bufferCount, long bufferSize, long indexCount, Kokoro2.Engine.UpdateMode updateMode, Kokoro2.Engine.BufferUse[] bufferUses, int[] elementCount)
         {
             //Generate all GPUBuffers
             buffers = new GPUBufferLL[bufferCount];
             for (int i = 0; i < bufferCount; i++)
             {
-                buffers[i] = new GPUBufferLL(updateMode, bufferUses[i], bufferSize * elementCount[i] * 8);  //NOTE: bufferSize no longer refers to the number of bytes of data, but the number of elements in total
+                if (bufferUses[i] == Engine.BufferUse.Index)
+                {
+                    buffers[i] = new GPUBufferLL(updateMode, bufferUses[i], indexCount * sizeof(uint));
+                }
+                else
+                {
+                    buffers[i] = new GPUBufferLL(updateMode, bufferUses[i], bufferSize * elementCount[i] * sizeof(float));  //NOTE: bufferSize no longer refers to the number of bytes of data, but the number of elements in total
+                }
             }
 
             this.elementCount = elementCount;

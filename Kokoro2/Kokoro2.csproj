@@ -146,6 +146,7 @@
     <Compile Include="Engine\HighLevel\CharacterControllers\CharacterControllerBase.cs" />
     <Compile Include="Engine\HighLevel\CharacterControllers\ThirdPersonController.cs" />
     <Compile Include="Engine\HighLevel\Font.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\LightProbeBuffer.cs" />
     <Compile Include="Engine\HighLevel\Rendering\GBuffer.cs" />
     <Compile Include="Engine\HighLevel\Rendering\Grass.cs" />
     <Compile Include="Engine\HighLevel\Rendering\LightingEngine.cs" />
@@ -154,11 +155,22 @@
     <Compile Include="Engine\HighLevel\Rendering\LitMaterial.cs" />
     <Compile Include="Engine\HighLevel\Rendering\RayCaster.cs" />
     <Compile Include="Engine\HighLevel\Rendering\Voxelizer.cs" />
-    <Compile Include="Engine\HighLevel\Voxel\VoxelCollection.cs" />
-    <Compile Include="Engine\HighLevel\Voxel\VoxelChunk.cs" />
-    <Compile Include="Engine\HighLevel\Voxel\VoxelRenderer.cs" />
-    <Compile Include="Engine\HighLevel\Voxel\VoxelWorld.cs" />
     <Compile Include="Engine\Entity.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\density.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\Givens.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\Mat3.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\MatUtils.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\mesh.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\Octree.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\OctreeDrawInfo.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\OctreeNode.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\OctreeNodeType.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\QefData.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\QefSolver.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\Schur2.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\SMat3.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\SVD.cs" />
+    <Compile Include="Engine\HighLevel\Voxel\VoxelMesh.cs" />
     <Compile Include="Engine\Input\Key.cs" />
     <Compile Include="Engine\Input\Keyboard.cs" />
     <Compile Include="Engine\Input\Mouse.cs" />
@@ -175,6 +187,8 @@
     <Compile Include="Engine\Prefabs\Sphere.cs" />
     <Compile Include="Engine\Prefabs\VertexMesh.cs" />
     <Compile Include="Engine\RenderPass.cs" />
+    <Compile Include="Engine\SceneGraph\Controller.cs" />
+    <Compile Include="Engine\SceneGraph\Entities\RenderableEntity.cs" />
     <Compile Include="Engine\SceneGraph\IScene.cs" />
     <Compile Include="Engine\SceneGraph\ITransitionEvaluator.cs" />
     <Compile Include="Engine\SceneGraph\ObjectBatch.cs" />
@@ -303,6 +317,9 @@
   <ItemGroup>
     <Content Include="LibNoise.dll" />
     <Content Include="logo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Engine\SceneGraph\Controllers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

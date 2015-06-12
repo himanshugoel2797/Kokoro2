@@ -12,9 +12,16 @@ namespace Kokoro2.Engine
     {
         public Entity Parent;
         public Vector3 Position;
+        public Quaternion Rotation;
+        public Matrix4 WorldTransform;
         public float Radius;
         public uint ID;
-        public abstract void Activate(GraphicsContext context, double interval);
+
+        public virtual void Activate(GraphicsContext context, double interval)
+        {
+            WorldTransform = Matrix4.CreateTranslation(Position) * Matrix4.CreateRotation(Rotation);
+            if (this.Parent != null) WorldTransform *= this.Parent.WorldTransform;  //Build the transformations properly, this entity should be translated by its parents
+        }
         public abstract void Update(GraphicsContext context, double interval);
     }
 }

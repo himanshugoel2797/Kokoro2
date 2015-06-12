@@ -1,0 +1,32 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core" #>
+
+#if OPENGL
+
+<# Type[] types = new[] {
+    typeof(Int16), typeof(Int32), typeof(Int64),
+    typeof(UInt16), typeof(UInt32), typeof(UInt64), typeof(byte), typeof(float)
+    };
+#>
+
+using System;
+
+namespace Kokoro3.OpenGL{
+public partial class MemoryBlock {
+    <# foreach (var type in types) { 
+    #>
+        public static void BufferData (<#= type.Name #>[] data, uint len) {
+            unsafe
+			{
+				fixed (<#= type.Name #>* SystemMemory = &data[0])
+                    {
+                        Marshal.Copy(data, 0, Location, len);
+                    }
+			}
+        }
+    <#
+    } #>
+}
+}
+#endif

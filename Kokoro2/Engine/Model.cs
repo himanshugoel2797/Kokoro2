@@ -204,7 +204,7 @@ namespace Kokoro2.Engine
             staticBufferLength[1] = 30000000;
             staticBufferLength[2] = 30000000;
             staticBufferLength[3] = 20000000;
-            staticBuffer = new VertexArrayLL(4, staticBufferLength[0], UpdateMode.Dynamic, new BufferUse[] { BufferUse.Index, BufferUse.Array, BufferUse.Array, BufferUse.Array }, new int[] { 1, 3, 3, 2 });
+            staticBuffer = new VertexArrayLL(4, staticBufferLength[0], staticBufferLength[0], UpdateMode.Dynamic, new BufferUse[] { BufferUse.Index, BufferUse.Array, BufferUse.Array, BufferUse.Array }, new int[] { 1, 3, 3, 2 });
 
 
             if (dynamicBuffer != null) dynamicBuffer.Dispose();
@@ -214,7 +214,7 @@ namespace Kokoro2.Engine
             dynamicBufferLength[1] = 3000000;
             dynamicBufferLength[2] = 3000000;
             dynamicBufferLength[3] = 2000000;
-            dynamicBuffer = new VertexArrayLL(4, dynamicBufferLength[0], UpdateMode.Dynamic, new BufferUse[] { BufferUse.Index, BufferUse.Array, BufferUse.Array, BufferUse.Array }, new int[] { 1, 3, 3, 2 });
+            dynamicBuffer = new VertexArrayLL(4, dynamicBufferLength[0], dynamicBufferLength[0], UpdateMode.Dynamic, new BufferUse[] { BufferUse.Index, BufferUse.Array, BufferUse.Array, BufferUse.Array }, new int[] { 1, 3, 3, 2 });
         }
 
         public static void ResetModelStorage()

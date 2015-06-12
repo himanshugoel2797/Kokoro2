@@ -47,9 +47,9 @@ void main()
 
 		Material0 = texture2D(ReflectivityMap, UV);
 
-		Depth0.r = depth/50;
-		Depth0.gb = worldXY.xy;
+		Depth0.rgb = worldXY.xyz;
 		Depth0.a = data.a;	//Microsurface Map
 
 		//We might have to write to gl_FragDepth here, but for now I think it's fine
+		gl_FragDepth = log2(logBufDat.y) * logBufDat.x;
 }

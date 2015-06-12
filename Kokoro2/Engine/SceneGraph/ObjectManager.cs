@@ -11,16 +11,13 @@ namespace Kokoro2.Engine.SceneGraph
     public class ObjectManager : Entity
     {
         public Octree<Entity> ObjectTree;
-
-        public Octree<LightSource> Lights;
-
+        
         //TODO setup a system that maintains a mirror of 'Lights' in a GPU buffer which can then be passed into a compute shader for GI calculation
         //The compute shader performs ray casts onto a spherical grid tree, evaluating the flux at a coarse resolution on each sphere on the same level, each sphere then distributes the flux onto its own children
 
         public ObjectManager(int worldSize, int depth)
         {
             ObjectTree = new Octree<Entity>(worldSize, depth);
-            Lights = new Octree<LightSource>(worldSize, depth);
         }
 
         #region Entity Octree Management
@@ -37,23 +34,13 @@ namespace Kokoro2.Engine.SceneGraph
         }
         #endregion
 
-        #region Light Octree Management
-        public void Add(LightSource e)
-        {
-            e.Parent = this;
-            Lights.Add(e, e.Position, e.Radius);
-        }
-
-        public void Remove(LightSource e)
-        {
-            e.Parent = null;
-            Lights.Remove(e);
-        }
-        #endregion
-
         public override void Activate(GraphicsContext context, double interval)
         {
-            ObjectTree.GetVisibleObjects(context.Camera.Frustum, context.Camera.View, context.Camera.Projection, ContainmentType.Contains);
+            var objects = ObjectTree.GetVisibleObjects(context.Camera.Frustum, context.Camera.View, context.Camera.Projection, ContainmentType.Contains);
+            for(int i = 0; i < objects.Count; i++)
+            {
+                objects[i].Activate(context, interval);
+            }
         }
 
         public override void Update(GraphicsContext context, double interval)

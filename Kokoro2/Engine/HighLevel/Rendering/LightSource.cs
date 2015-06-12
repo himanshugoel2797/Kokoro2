@@ -14,5 +14,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         public Entity Parent;       //The light only affects the objects under the same parent
         public float Radius;        //The radius of the light for the GI system to process, this is not the radius of influence of the light
         public double Intensity;    //Store the intensity in lumens
+        public bool LightProbeEnabled;
+        public bool CastShadow;
+        public LightProbeBuffer LightProbe;
     }
 }

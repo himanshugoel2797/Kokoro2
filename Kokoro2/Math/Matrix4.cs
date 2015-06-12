@@ -411,6 +411,15 @@ namespace Kokoro2.Math
             return result;
         }
 
+        public static Matrix4 CreateRotation(Quaternion q)
+        {
+            q.Normalize();
+            return new Matrix4(
+      1.0f - 2.0f * q.Y * q.Y - 2.0f * q.Z * q.Z, 2.0f * q.X * q.Y - 2.0f * q.Z * q.W, 2.0f * q.X * q.Z + 2.0f * q.Y * q.W, 0.0f,
+    2.0f * q.X * q.Y + 2.0f * q.Z * q.W, 1.0f - 2.0f * q.X * q.X - 2.0f * q.Z * q.Z, 2.0f * q.Y * q.Z - 2.0f * q.X * q.W, 0.0f,
+    2.0f * q.X * q.Z - 2.0f * q.Y * q.W, 2.0f * q.Y * q.Z + 2.0f * q.X * q.W, 1.0f - 2.0f * q.X * q.X - 2.0f * q.Y * q.Y, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f);
+        }
         #endregion
 
         #region CreateTranslation
@@ -1210,7 +1219,7 @@ namespace Kokoro2.Math
                 Row3 == other.Row3;
         }
 
-        public static explicit operator float[](Matrix4 mat)
+        public static explicit operator float[] (Matrix4 mat)
         {
             return new float[]{
                 mat.M11, mat.M12, mat.M13, mat.M14,
