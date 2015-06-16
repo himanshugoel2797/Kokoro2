@@ -12,10 +12,12 @@ namespace Kokoro3.OpenGL
 {
     public partial class MemoryBlock : IDisposable
     {
-        private IntPtr Location;
-        private int ID;
+        public IntPtr Location { get; private set; }
+        internal int ID;
         private BufferStorageFlags flags;
         private BufferTarget target;
+
+        public uint Size { get; private set; }
 
         public MemoryBlock(uint allocSize, BufferUse use)
         {
@@ -25,7 +27,7 @@ namespace Kokoro3.OpenGL
 #if DEBUG
             flags |= BufferStorageFlags.MapReadBit;
 #endif
-
+            Size = allocSize;
             ID = GL.GenBuffer();
             int prevBuffer = LLDevice.BindBuffer(target, ID);
             GL.BufferStorage(target, (IntPtr)allocSize, IntPtr.Zero, flags);

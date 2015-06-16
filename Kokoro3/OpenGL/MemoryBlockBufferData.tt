@@ -11,19 +11,21 @@
 #>
 
 using System;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace Kokoro3.OpenGL{
 public partial class MemoryBlock {
     <# foreach (var type in types) { 
     #>
-        public static void BufferData (<#= type.Name #>[] data, uint len) {
-            unsafe
-			{
-				fixed (<#= type.Name #>* SystemMemory = &data[0])
-                    {
-                        Marshal.Copy(data, 0, Location, len);
-                    }
-			}
+        public void BufferData (<#= type.Name #>[] data, uint len) {
+            <# if (type == typeof(UInt16) || type == typeof(UInt32) || type == typeof(UInt64)) { #>
+					var tmp = data.SelectMany(BitConverter.GetBytes).ToArray();
+					Marshal.Copy(tmp, 0, Location, (int)len);
+			<# } else {#>
+
+                        Marshal.Copy(data, 0, Location, (int)len);
+						<# } #>
         }
     <#
     } #>

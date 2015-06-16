@@ -34,6 +34,25 @@ namespace Kokoro3.OpenGL
             return PixelInternalFormat.Rgba8;   //This will never be called, it avoids compiler errors
         }
 
+        public static SizedInternalFormat ESizedInternalFormat(Engine.PixelComponentType pct)
+        {
+            if (pct == Engine.PixelComponentType.RGBA16f) return SizedInternalFormat.Rgba16f;
+            else if (pct == Engine.PixelComponentType.RGBA32f) return SizedInternalFormat.Rgba32f;
+            else if (pct == Engine.PixelComponentType.RGBA8) return SizedInternalFormat.Rgba8;
+
+            return SizedInternalFormat.Rgba16f;
+        }
+
+        public static TextureTarget ETextureTarget(Engine.TextureType tType)
+        {
+            if (tType == Engine.TextureType.Texture1D) return TextureTarget.Texture1D;
+            else if (tType == Engine.TextureType.Texture2D) return TextureTarget.Texture2D;
+            else if (tType == Engine.TextureType.Texture2DArray) return TextureTarget.Texture2DArray;
+            else if (tType == Engine.TextureType.Texture3D) return TextureTarget.Texture3D;
+
+            return TextureTarget.Texture2D;
+        }
+
         public static PixelType EPixelType(Engine.PixelType type)
         {
             if (type == Engine.PixelType.UByte332) return OpenTK.Graphics.OpenGL4.PixelType.UnsignedByte332;
@@ -87,7 +106,7 @@ namespace Kokoro3.OpenGL
         {
             return (BlendingFactorSrc)Enum.Parse(typeof(BlendingFactorSrc), factor.ToString());
         }
-        
+
         public static Engine.Input.Key OKey(OpenTK.Input.Key k)
         {
             return (Engine.Input.Key)Enum.Parse(typeof(Engine.Input.Key), k.ToString());
@@ -110,6 +129,7 @@ namespace Kokoro3.OpenGL
             else if (use == Engine.BufferUse.ShaderStorage) return BufferTarget.ShaderStorageBuffer;
             else if (use == Engine.BufferUse.Uniform) return BufferTarget.UniformBuffer;
             else if (use == Engine.BufferUse.Indirect) return BufferTarget.DrawIndirectBuffer;
+            else if (use == Engine.BufferUse.Pixel) return BufferTarget.PixelUnpackBuffer;
 
             return BufferTarget.ArrayBuffer;    //Flow should never reach this
         }

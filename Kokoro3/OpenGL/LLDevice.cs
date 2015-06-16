@@ -31,6 +31,15 @@ namespace Kokoro3.OpenGL
             currentBoundBuffer[BufferTarget.TransformFeedbackBuffer] = 0;
             currentBoundBuffer[BufferTarget.UniformBuffer] = 0;
             #endregion
+
+            #region curBoundTex Initialization
+            curBoundTex = new Dictionary<TextureTarget, int>();
+            curBoundTex[TextureTarget.Texture1D] = 0;
+            curBoundTex[TextureTarget.Texture2D] = 0;
+            curBoundTex[TextureTarget.Texture2DArray] = 0;
+            curBoundTex[TextureTarget.Texture1DArray] = 0;
+            curBoundTex[TextureTarget.Texture3D] = 0;
+            #endregion
         }
 
         #region Buffer Management
@@ -42,19 +51,31 @@ namespace Kokoro3.OpenGL
             currentBoundBuffer[target] = id;
             return curBuf;
         }
+        //NOTE BindBufferBase changes bindingpoint state without reporting it, this might need changing later
+        internal static int BindBufferBase(BufferTarget target, int id, int bindingPoint)
+        {
+            //Mostly the same as BindBuffer except it's constrained for certain purposes
+            if (target != BufferTarget.TransformFeedbackBuffer && target != BufferTarget.UniformBuffer && target != BufferTarget.ShaderStorageBuffer && target != BufferTarget.AtomicCounterBuffer)
+                throw new ArgumentException("BindBufferBase may only be used with TransformFeedbackBuffer and UniformBuffer");
+
+            int curBuf = currentBoundBuffer[target];
+            GL.BindBufferBase((BufferRangeTarget)target, bindingPoint, id);
+            currentBoundBuffer[target] = id;
+            return curBuf;
+        }
         internal static int GetBoundBufferID(BufferTarget target)
         {
             return currentBoundBuffer[target];
         }
         #endregion
 
-        #region TextureArrayManagement
-        static int curBoundTexArray = 0;
-        internal static int BindTexArray(int id)
+        #region Texture Management
+        static Dictionary<TextureTarget, int> curBoundTex;
+        internal static int BindTex(TextureTarget t, int id)
         {
-            if (id != curBoundTexArray) GL.BindTexture(TextureTarget.Texture2DArray, id);
-            int tmp = curBoundTexArray;
-            curBoundTexArray = id;
+            if (id != curBoundTex[t]) GL.BindTexture(t, id);
+            int tmp = curBoundTex[t];
+            curBoundTex[t] = id;
             return tmp;
         }
         #endregion
@@ -65,8 +86,19 @@ namespace Kokoro3.OpenGL
         {
             int curFBuf = curBoundFrameBuffer;
             curBoundFrameBuffer = ID;
-            if (curBoundFrameBuffer != ID) GL.BindFramebuffer(FramebufferTarget.Framebuffer, ID);
+            if (curFBuf != ID) GL.BindFramebuffer(FramebufferTarget.Framebuffer, ID);
             return curFBuf;
+        }
+        #endregion
+
+        #region ShaderProgram
+        static int curShaderProgramID = 0;
+        internal static int BindShaderProgram(int id)
+        {
+            int prev = curShaderProgramID;
+            curShaderProgramID = id;
+            if (prev != id) GL.UseProgram(id);
+            return prev;
         }
         #endregion
     }
