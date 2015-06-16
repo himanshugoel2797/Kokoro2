@@ -133,5 +133,22 @@ namespace Kokoro3.OpenGL
 
             return BufferTarget.ArrayBuffer;    //Flow should never reach this
         }
+
+        public static int ETextureFilter(Engine.TextureFilter filter)
+        {
+            if (filter == Engine.TextureFilter.Linear) return (int)All.Linear;
+            else if (filter == Engine.TextureFilter.Nearest) return (int)All.Nearest;
+
+            return (int)All.Linear;
+        }
+
+        public static int ETextureWrapMode(Engine.TextureWrapMode wrap)
+        {
+            if (wrap == Engine.TextureWrapMode.Clamp) return (int)All.ClampToBorder;
+            else if (wrap == Engine.TextureWrapMode.Repeat) return (int)All.Repeat;
+
+            return (int)All.Repeat;
+        }
+
     }
 }

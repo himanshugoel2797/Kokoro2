@@ -11,5 +11,7 @@ namespace Kokoro3.Common
     {
         public Matrix4 Projection;
         public Camera Camera;
+
+
     }
 }

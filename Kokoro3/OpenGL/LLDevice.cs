@@ -12,6 +12,10 @@ namespace Kokoro3.OpenGL
     {
         //Contains methods related to managing the opengl state machine so that we can cut down on state changes as much as possible
 
+        //NOTE This value can be changed to adjust the amount of textures that can be bound
+        internal static int slotCount = 16;
+
+
         static LLDevice()
         {
             #region currentBoundBuffer Initialization
@@ -33,12 +37,16 @@ namespace Kokoro3.OpenGL
             #endregion
 
             #region curBoundTex Initialization
-            curBoundTex = new Dictionary<TextureTarget, int>();
-            curBoundTex[TextureTarget.Texture1D] = 0;
-            curBoundTex[TextureTarget.Texture2D] = 0;
-            curBoundTex[TextureTarget.Texture2DArray] = 0;
-            curBoundTex[TextureTarget.Texture1DArray] = 0;
-            curBoundTex[TextureTarget.Texture3D] = 0;
+            curBoundTex = new Dictionary<TextureTarget, int>[slotCount];
+            for (int i = 0; i < curBoundTex.Length; i++)
+            {
+                curBoundTex[i] = new Dictionary<TextureTarget, int>();
+                curBoundTex[i][TextureTarget.Texture1D] = 0;
+                curBoundTex[i][TextureTarget.Texture2D] = 0;
+                curBoundTex[i][TextureTarget.Texture2DArray] = 0;
+                curBoundTex[i][TextureTarget.Texture1DArray] = 0;
+                curBoundTex[i][TextureTarget.Texture3D] = 0;
+            }
             #endregion
         }
 
@@ -70,13 +78,22 @@ namespace Kokoro3.OpenGL
         #endregion
 
         #region Texture Management
-        static Dictionary<TextureTarget, int> curBoundTex;
+        static int curSlot = 0;
+        static Dictionary<TextureTarget, int>[] curBoundTex;
         internal static int BindTex(TextureTarget t, int id)
         {
-            if (id != curBoundTex[t]) GL.BindTexture(t, id);
-            int tmp = curBoundTex[t];
-            curBoundTex[t] = id;
+            if (id != curBoundTex[curSlot][t]) GL.BindTexture(t, id);
+            int tmp = curBoundTex[curSlot][t];
+            curBoundTex[curSlot][t] = id;
             return tmp;
+        }
+        internal static int SetActiveSlot(int slot)
+        {
+            if (slot >= slotCount) throw new ArgumentException($"The slot #{slot} is invalid, valid values are from 0 to {slotCount - 1}");
+            int prev = curSlot;
+            curSlot = slot;
+            GL.ActiveTexture(TextureUnit.Texture0 + curSlot);
+            return prev;
         }
         #endregion
 

@@ -50,7 +50,25 @@ namespace Kokoro3.OpenGL
         #endregion
 
         #region Texture State
+        public static int MaxTextureLocations
+        {
+            get
+            {
+                return LLDevice.slotCount;
+            }
+        }
 
+        static Texture curTex;
+        public static Texture BindTexture(Texture tex, int location)
+        {
+            if (location > MaxTextureLocations) throw new ArgumentOutOfRangeException($"Specified location {location} is out of range");
+            Texture prev = curTex;
+            curTex = tex;
+            int prevLoc = LLDevice.SetActiveSlot(location);
+            LLDevice.BindTex(OpenGL.EnumConverters.ETextureTarget(tex.TexType), tex.ID);
+            LLDevice.SetActiveSlot(prevLoc);
+            return prev;
+        }
         #endregion
 
         #region ShaderProgram State

@@ -50,7 +50,10 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="Common\GameDevice.cs" />
+    <Compile Include="Common\StackedStateMachine.cs" />
+    <Compile Include="Common\StateMachineBase.cs" />
     <Compile Include="Common\RenderSurface.cs" />
+    <Compile Include="Common\StateMachine.cs" />
     <Compile Include="Engine\Enums.cs" />
     <Compile Include="Engine\Input\Key.cs" />
     <Compile Include="Engine\Input\Keyboard.cs" />
@@ -107,8 +110,6 @@
     <Compile Include="OpenGL\Shader.cs" />
     <Compile Include="OpenGL\ShaderProgram.cs" />
     <Compile Include="OpenGL\Texture.cs" />
-    <Compile Include="OpenGL\Texture2D.cs" />
-    <Compile Include="OpenGL\TextureArray.cs" />
     <Compile Include="OpenGL\TextureStorage.cs" />
     <Compile Include="OpenGL\TextureView.cs" />
     <Compile Include="OpenGL\UniformBuffer.cs" />
