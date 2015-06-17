@@ -50,9 +50,9 @@
       <Project>{3cc9e16b-c337-420e-a9d2-d7203ce4abfe}</Project>
       <Name>Kokoro.Shaders</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Kokoro2\Kokoro2.csproj">
-      <Project>{db0a76c9-b908-4c67-b1d0-31559c480a4a}</Project>
-      <Name>Kokoro2</Name>
+    <ProjectReference Include="..\Kokoro3\Kokoro3.csproj">
+      <Project>{5890cdc7-ae93-45b6-a0af-0599b29ab985}</Project>
+      <Name>Kokoro3</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

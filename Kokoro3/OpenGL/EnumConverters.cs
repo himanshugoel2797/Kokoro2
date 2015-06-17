@@ -106,7 +106,7 @@ namespace Kokoro3.OpenGL
         {
             return (BlendingFactorSrc)Enum.Parse(typeof(BlendingFactorSrc), factor.ToString());
         }
-
+        /*
         public static Engine.Input.Key OKey(OpenTK.Input.Key k)
         {
             return (Engine.Input.Key)Enum.Parse(typeof(Engine.Input.Key), k.ToString());
@@ -116,6 +116,7 @@ namespace Kokoro3.OpenGL
         {
             return (OpenTK.Input.Key)Enum.Parse(typeof(OpenTK.Input.Key), k.ToString());
         }
+        */
 
         public static OpenTK.Graphics.OpenGL4.All EDrawMode(Engine.DrawMode mode)
         {

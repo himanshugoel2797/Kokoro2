@@ -1,4 +1,5 @@
 ﻿#if OPENGL
+using Kokoro3.Math;
 using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
@@ -79,6 +80,26 @@ namespace Kokoro3.OpenGL
             curShader = shader;
             LLDevice.BindShaderProgram(shader.ID);
             return prev;
+        }
+        #endregion
+
+        #region OpenGL General functions
+        public static void SetClearColor(Vector4 color)
+        {
+            GL.ClearColor(color.X, color.Y, color.Z, color.W);
+        }
+        public static void ClearColorBuffer()
+        {
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+        }
+        public static void ClearDepthBuffer()
+        {
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+        }
+        public static void CheckError()
+        {
+            var err = GL.GetError();
+            if (err != ErrorCode.NoError) throw new Exception(err.ToString());
         }
         #endregion
     }

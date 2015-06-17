@@ -60,7 +60,7 @@ namespace Kokoro3.Engine
 
     public enum BufferUse
     {
-        Array, Index, Uniform, ShaderStorage, Indirect, Pixel
+        Array, Index, Uniform, ShaderStorage, Indirect, Pixel, Texture
     }
 
     public enum PixelFormat

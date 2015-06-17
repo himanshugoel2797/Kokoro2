@@ -1,5 +1,5 @@
-﻿using Kokoro2.Engine;
-using Kokoro2.Engine.SceneGraph;
+﻿using Kokoro3.Engine;
+using Kokoro3.Common;
 using Sandbox;
 using System;
 using System.Collections.Generic;
@@ -7,24 +7,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kokoro2.Game
+namespace Kokoro.Game
 {
     public class Game
     {
-        public Game(GraphicsContext context)
+        public Game(GameDevice context)
         {
-            context.Initialize += Initialize;
-            context.Start(160000, 160000);
+            context.Start(Initialize);
         }
 
-        public SceneManager manager;
+        public StateMachine scenes;
 
-        public void Initialize(GraphicsContext context)
+        public void Initialize(GameDevice context)
         {
-            manager = new SceneManager();
-            manager.Register(context);
-            manager.Add("SphereRenderTest", new SphereRenderTest());
-            manager.Activate("SphereRenderTest");
+            scenes = new StateMachine();
+            scenes.Initialize(context);
+            scenes.Add("SphereRenderTest", new SphereRenderTest(context));
+            scenes.Activate("SphereRenderTest");
+
+            context.Update += scenes.Update;
+            context.Render += scenes.Render;
         }
 
     }

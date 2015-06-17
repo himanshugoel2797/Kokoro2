@@ -13,13 +13,26 @@ namespace Kokoro3.Common
     {
 #if OPENGL
         private FrameBuffer renderTarget;
+        private TextureView[] boundTex;
 
         public RenderSurface(int width, int height)
         {
             renderTarget = new FrameBuffer();
+            boundTex = new TextureView[FrameBuffer.MinimumAttachments];
         }
 
-        public void AttachRenderTarget(string id)
+        public void AttachRenderTarget(int attachment, TextureView tex)
+        {
+            renderTarget.AttachTextureView((Engine.FrameBufferAttachments)attachment, tex, 0);
+            boundTex[attachment] = tex;
+        }
+
+        public void AttachDepthBuffer()
+        {
+            //TODO create depth rendertarget and attach it to the framebuffer
+            //TODO add size verification
+            //TODO add framebuffer tests
+        }
 
 #endif        
     }

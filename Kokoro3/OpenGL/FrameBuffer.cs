@@ -13,13 +13,15 @@ namespace Kokoro3.OpenGL
         internal int ID;
         internal List<DrawBuffersEnum> fbufAttachments;
 
+        public const int MinimumAttachments = 8;
+
         public FrameBuffer()
         {
             ID = GL.GenFramebuffer();
             fbufAttachments = new List<DrawBuffersEnum>();
         }
 
-        public void AttachTextureLayer(Engine.FrameBufferAttachments attachment, Texture t, int layer, int level)
+        public void AttachTextureView(Engine.FrameBufferAttachments attachment, TextureView t, int level)
         {
             //Maintain state
             int prevFBuf = LLDevice.BindFrameBuffer(ID);
@@ -29,7 +31,7 @@ namespace Kokoro3.OpenGL
             if (!fbufAttachments.Contains(att)) fbufAttachments.Add(att);
             fbufAttachments.Sort();
 
-            GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, EnumConverters.EFrameBufferAttachment(attachment), t.ID, 0, layer);
+            GL.FramebufferTexture(FramebufferTarget.Framebuffer, EnumConverters.EFrameBufferAttachment(attachment), t.ID, level);
             GL.DrawBuffers(fbufAttachments.Count, fbufAttachments.ToArray());
 #if DEBUG
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete) throw new Exception(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer).ToString());

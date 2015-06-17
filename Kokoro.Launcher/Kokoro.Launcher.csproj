@@ -62,9 +62,9 @@
     <Content Include="Resources.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kokoro2\Kokoro2.csproj">
-      <Project>{db0a76c9-b908-4c67-b1d0-31559c480a4a}</Project>
-      <Name>Kokoro2</Name>
+    <ProjectReference Include="..\Kokoro3\Kokoro3.csproj">
+      <Project>{5890cdc7-ae93-45b6-a0af-0599b29ab985}</Project>
+      <Name>Kokoro3</Name>
     </ProjectReference>
     <ProjectReference Include="..\Sandbox\Sandbox.csproj">
       <Project>{cff25fa6-291d-4860-aebb-ad2a55ab849b}</Project>

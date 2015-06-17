@@ -1,5 +1,6 @@
-﻿using Kokoro2.Engine;
-using Kokoro2.Math;
+﻿using Kokoro3.Common;
+using Kokoro3.Engine;
+using Kokoro3.Math;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +11,16 @@ namespace Kokoro.Launcher
 {
     class Program
     {
-        static GraphicsContext context;
+        static GameDevice context;
         static void Main(string[] args)
         {
             Form1 form = new Form1();
-            context = new GraphicsContext(new Vector2(10, 10));
-            context.ViewportControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            form.Controls.Add(context.ViewportControl);
+            context = new GameDevice();
+            context.GraphicsControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            form.Controls.Add(context.GraphicsControl);
             form.ClientSize = new System.Drawing.Size(960, 540);
 
-            Kokoro2.Game.Game game = new Kokoro2.Game.Game(context);
+            Kokoro.Game.Game game = new Kokoro.Game.Game(context);
             form.ShowDialog();
             return;
         }

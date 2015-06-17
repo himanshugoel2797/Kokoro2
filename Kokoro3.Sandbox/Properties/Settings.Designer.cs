@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kokoro2.IDE.Properties
+namespace Kokoro3.Sandbox.Properties
 {
 
 

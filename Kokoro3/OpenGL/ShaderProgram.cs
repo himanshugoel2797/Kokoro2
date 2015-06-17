@@ -64,7 +64,7 @@ namespace Kokoro3.OpenGL
             if (result != 0)
             {
                 //TODO submit bug fix in OpenTK and update binaries used so this can actually be used
-                GL.GetProgram(ID, GetProgramParameterName.ProgramBinaryLength, out result);
+                GL.GetProgram(ID, (GetProgramParameterName)All.ProgramBinaryLength, out result);
 
                 int outLength = 0;
                 BinaryFormat bFormat;

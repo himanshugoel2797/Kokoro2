@@ -28,6 +28,11 @@ namespace Kokoro3.Common
             children.Remove(name);
         }
 
+        public void Activate(string name)
+        {
+            curScene = children[name];
+        }
+
         public StateMachineBase this[string name]
         {
             get

@@ -19,7 +19,7 @@ namespace Kokoro3.Common
 
         public abstract void Update(double interval);
 
-        public abstract void Render(double interval)
+        public abstract void Render(double interval);
 
     }
 }
