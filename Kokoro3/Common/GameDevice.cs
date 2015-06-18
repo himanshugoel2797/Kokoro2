@@ -12,6 +12,17 @@ using DisplayDevice = OpenTK.DisplayDevice;
 using Kokoro3.OpenGL;
 using System.Diagnostics;
 
+
+//TODO use AMD Compressor for Kokoro3.Sandbox
+//TODO Finish RenderSurface implementation
+//TODO setup shader uniform system
+//TODO finish multidrawindirect with buffertextures
+//TODO write test for multidrawindirect
+//TODO bring over primitive generation
+//TODO setup compute shader pipeline
+//TODO setup physics
+//TODO combine physics, audio and graphics into entity
+
 namespace Kokoro3.Common
 {
     public class GameDevice

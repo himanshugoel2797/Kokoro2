@@ -21,7 +21,7 @@ namespace Kokoro3.OpenGL
             fbufAttachments = new List<DrawBuffersEnum>();
         }
 
-        public void AttachTextureView(Engine.FrameBufferAttachments attachment, TextureView t, int level)
+        public void AttachTexture(Engine.FrameBufferAttachments attachment, Texture t, int level)
         {
             //Maintain state
             int prevFBuf = LLDevice.BindFrameBuffer(ID);

@@ -109,6 +109,8 @@
     <Compile Include="OpenAL\AudioData.cs" />
     <Compile Include="OpenAL\AudioDevice.cs" />
     <Compile Include="OpenAL\AudioSource.cs" />
+    <Compile Include="OpenGL\BufferTexture.cs" />
+    <Compile Include="OpenGL\DDSLoader.cs" />
     <Compile Include="OpenGL\EnumConverters.cs" />
     <Compile Include="OpenGL\Fence.cs" />
     <Compile Include="OpenGL\FrameBuffer.cs" />
@@ -126,7 +128,6 @@
     <Compile Include="OpenGL\ShaderProgram.cs" />
     <Compile Include="OpenGL\Texture.cs" />
     <Compile Include="OpenGL\TextureStorage.cs" />
-    <Compile Include="OpenGL\TextureView.cs" />
     <Compile Include="OpenGL\UniformBuffer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

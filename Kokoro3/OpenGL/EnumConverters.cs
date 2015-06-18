@@ -31,7 +31,7 @@ namespace Kokoro3.OpenGL
             else if (pct == Engine.PixelComponentType.RGBA8) return PixelInternalFormat.Rgba8;
             else if (pct == Engine.PixelComponentType.SRGBA8) return PixelInternalFormat.Srgb8Alpha8;
 
-            return PixelInternalFormat.Rgba8;   //This will never be called, it avoids compiler errors
+            return (PixelInternalFormat)pct;   //This will never be called, it avoids compiler errors
         }
 
         public static SizedInternalFormat ESizedInternalFormat(Engine.PixelComponentType pct)
@@ -40,7 +40,7 @@ namespace Kokoro3.OpenGL
             else if (pct == Engine.PixelComponentType.RGBA32f) return SizedInternalFormat.Rgba32f;
             else if (pct == Engine.PixelComponentType.RGBA8) return SizedInternalFormat.Rgba8;
 
-            return SizedInternalFormat.Rgba16f;
+            return (SizedInternalFormat)pct;
         }
 
         public static TextureTarget ETextureTarget(Engine.TextureType tType)
