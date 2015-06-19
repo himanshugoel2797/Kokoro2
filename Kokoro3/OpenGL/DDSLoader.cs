@@ -324,6 +324,10 @@ namespace Kokoro3.OpenGL
                 #region Generate and Bind Handle
                 #endregion Generate and Bind Handle
 
+                width = _Width;
+                height = _Height;
+                pct = _PixelInternalFormat;
+
                 int Cursor = HeaderSizeInBytes;
                 // foreach face in the cubemap, get all it's mipmaps levels. Only one iteration for Texture2D
                 for (int Slices = 0; Slices < _Depth; Slices++)

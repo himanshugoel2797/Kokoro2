@@ -99,6 +99,7 @@ namespace Kokoro3.OpenGL
         #endregion
 
         internal int ID;
+        internal int attachedSlot = -1;
         public Engine.TextureType TexType;
         public Vector2 Size;
 

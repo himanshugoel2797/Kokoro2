@@ -1,4 +1,5 @@
 ﻿#if OPENGL
+using Kokoro3.Math;
 using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
@@ -161,6 +162,86 @@ namespace Kokoro3.OpenGL
         public void BindUniormBufferObject(string name, UniformBuffer buffer, int bindingPoint)
         {
             GL.UniformBlockBinding(ID, Mappings[name], bindingPoint);
+        }
+        public void SetUniform(string name, Matrix4 mat)
+        {
+            GL.ProgramUniformMatrix4(ID, Mappings[name], 1, false, (float[])mat);
+        }
+        public void SetUniform(string name, Matrix3 mat)
+        {
+            GL.ProgramUniformMatrix3(ID, Mappings[name], 1, false, (float[])mat);
+        }
+        public void SetUniform(string name, Matrix2 mat)
+        {
+            GL.ProgramUniformMatrix2(ID, Mappings[name], 1, false, (float[])mat);
+        }
+        public void SetUniform(string name, float val)
+        {
+            GL.ProgramUniform1(ID, Mappings[name], val);
+        }
+        public void SetUniform(string name, int val)
+        {
+            GL.ProgramUniform1(ID, Mappings[name], val);
+        }
+        public void SetUniform(string name, double val)
+        {
+            GL.ProgramUniform1(ID, Mappings[name], val);
+        }
+        public void SetUniform(string name, uint val)
+        {
+            GL.ProgramUniform1(ID, Mappings[name], val);
+        }
+        public void SetUniform(string name, ulong val)
+        {
+            GL.ProgramUniform1(ID, Mappings[name], val);
+        }
+        public void SetUniform(string name, long val)
+        {
+            GL.ProgramUniform1(ID, Mappings[name], val);
+        }
+        public void SetUniform(string name, Vector2 val)
+        {
+            GL.ProgramUniform2(ID, Mappings[name], val.X, val.Y);
+        }
+        public void SetUniform(string name, Vector2d val)
+        {
+            GL.ProgramUniform2(ID, Mappings[name], val.X, val.Y);
+        }
+        public void SetUniform(string name, Vector2h val)
+        {
+            GL.ProgramUniform2(ID, Mappings[name], val.X, val.Y);
+        }
+        public void SetUniform(string name, Vector3 val)
+        {
+            GL.ProgramUniform3(ID, Mappings[name], val.X, val.Y, val.Z);
+        }
+        public void SetUniform(string name, Vector3d val)
+        {
+            GL.ProgramUniform3(ID, Mappings[name], val.X, val.Y, val.Z);
+        }
+        public void SetUniform(string name, Vector3h val)
+        {
+            GL.ProgramUniform3(ID, Mappings[name], val.X, val.Y, val.Z);
+        }
+        public void SetUniform(string name, Vector4 val)
+        {
+            GL.ProgramUniform4(ID, Mappings[name], val.X, val.Y, val.Z, val.W);
+        }
+        public void SetUniform(string name, Vector4d val)
+        {
+            GL.ProgramUniform4(ID, Mappings[name], val.X, val.Y, val.Z, val.W);
+        }
+        public void SetUniform(string name, Vector4h val)
+        {
+            GL.ProgramUniform4(ID, Mappings[name], val.X, val.Y, val.Z, val.W);
+        }
+        public void SetUniform(string name, Quaternion val)
+        {
+            GL.ProgramUniform4(ID, Mappings[name], val.X, val.Y, val.Z, val.W);
+        }
+        public void SetUniform(string name, Quaterniond val)
+        {
+            GL.ProgramUniform4(ID, Mappings[name], val.X, val.Y, val.Z, val.W);
         }
         #endregion
 

@@ -15,7 +15,7 @@ using System.Diagnostics;
 
 //TODO use AMD Compressor for Kokoro3.Sandbox
 //TODO Finish RenderSurface implementation
-//TODO setup shader uniform system
+//TODO setup shader uniform system - implement TextureSlot management class and make it cooperate with LLDevice so the engine can figure out which slot to use to minimize binding switches
 //TODO finish multidrawindirect with buffertextures
 //TODO write test for multidrawindirect
 //TODO bring over primitive generation
@@ -36,10 +36,14 @@ namespace Kokoro3.Common
         public Action<double> Render;
 
         private Action<GameDevice> initializer;
+        System.IO.FileStream tmp = System.IO.File.Create("EngineLog.txt");
 
         public GameDevice()
         {
-            System.Diagnostics.Debug.Listeners.Add(new TextWriterTraceListener("EngineLog.txt"));
+            System.Diagnostics.Debug.Listeners.Add(new TextWriterTraceListener(tmp));
+            System.Diagnostics.Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            System.Diagnostics.Debug.WriteLine("");
+            System.Diagnostics.Debug.WriteLine("Engine Started");
             GraphicsControl = new GLControl();
         }
 
@@ -110,6 +114,10 @@ namespace Kokoro3.Common
         #endregion
         #endregion
 
+        ~GameDevice()
+        {
+            tmp.Dispose();
+        }
     }
 }
 #endif

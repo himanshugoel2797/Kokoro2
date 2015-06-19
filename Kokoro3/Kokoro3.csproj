@@ -127,6 +127,7 @@
     <Compile Include="OpenGL\Shader.cs" />
     <Compile Include="OpenGL\ShaderProgram.cs" />
     <Compile Include="OpenGL\Texture.cs" />
+    <Compile Include="OpenGL\TextureSlotManager.cs" />
     <Compile Include="OpenGL\TextureStorage.cs" />
     <Compile Include="OpenGL\UniformBuffer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

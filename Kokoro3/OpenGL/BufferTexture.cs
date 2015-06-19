@@ -9,6 +9,10 @@ namespace Kokoro3.OpenGL
 {
     public class BufferTexture : IDisposable
     {
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 #endif

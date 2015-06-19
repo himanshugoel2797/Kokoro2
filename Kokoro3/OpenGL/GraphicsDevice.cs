@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,15 +15,41 @@ namespace Kokoro3.OpenGL
     {
         static GraphicsDevice()
         {
-            //TODO Implement hardware limit enumeration
             //TODO implement compute shader APIs and MultiDrawIndirect
+
+            SystemLimits = new Dictionary<HardwareLimits, int>();
+            InitializeHWLimits();
+
+            GL.DebugMessageCallback(debugCallback, IntPtr.Zero);
 
             //Generate and attach initial VAO object since we do not need it later due to GL_ARB_vertex_attrib_binding
             GL.BindVertexArray(GL.GenVertexArray());
         }
 
+        private static void debugCallback(DebugSource src, DebugType type, int id, DebugSeverity severity, int length, IntPtr msg, IntPtr uParam)
+        {
+            System.Diagnostics.Debug.WriteLine($"[{severity.ToString().Replace("DebugSeverity", "")}][{src.ToString().Replace("DebugSource", "")}][{id}]{Marshal.PtrToStringAnsi(msg, length)}");
+        }
+
         #region Hardware Information Enumeration
-        public static Dictionary<string, int> SystemLimits;
+        public static Dictionary<HardwareLimits, int> SystemLimits;
+
+        internal static void InitializeHWLimits()
+        {
+            Action<HardwareLimits> limitCal = (h) => SystemLimits[h] = GL.GetInteger((GetPName)h);
+
+            limitCal(HardwareLimits.MajorVersion);
+            limitCal(HardwareLimits.Max3DTextureSize);
+            limitCal(HardwareLimits.MaxArrayTextureLayers);
+            limitCal(HardwareLimits.MaxColorAttachments);
+            limitCal(HardwareLimits.MaxIndices);
+            limitCal(HardwareLimits.MaxTextureSize);
+            limitCal(HardwareLimits.MaxTextureUnits);
+            limitCal(HardwareLimits.MaxVertices);
+            limitCal(HardwareLimits.MaxViewports);
+            limitCal(HardwareLimits.MaxViewportSize);
+            limitCal(HardwareLimits.MinorVersion);
+        }
         #endregion
 
         #region Vertex Buffer State Machine
@@ -51,18 +78,10 @@ namespace Kokoro3.OpenGL
         #endregion
 
         #region Texture State
-        public static int MaxTextureLocations
-        {
-            get
-            {
-                return LLDevice.slotCount;
-            }
-        }
-
         static Texture curTex;
         public static Texture BindTexture(Texture tex, int location)
         {
-            if (location > MaxTextureLocations) throw new ArgumentOutOfRangeException($"Specified location {location} is out of range");
+            if (location > SystemLimits[HardwareLimits.MaxTextureUnits]) throw new ArgumentOutOfRangeException($"Specified location {location} is out of range");
             Texture prev = curTex;
             curTex = tex;
             int prevLoc = LLDevice.SetActiveSlot(location);
