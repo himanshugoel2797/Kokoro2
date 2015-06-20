@@ -14,8 +14,6 @@ using System.Diagnostics;
 
 
 //TODO use AMD Compressor for Kokoro3.Sandbox
-//TODO Finish RenderSurface implementation
-//TODO setup shader uniform system - implement TextureSlot management class and make it cooperate with LLDevice so the engine can figure out which slot to use to minimize binding switches
 //TODO finish multidrawindirect with buffertextures
 //TODO write test for multidrawindirect
 //TODO bring over primitive generation

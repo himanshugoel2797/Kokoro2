@@ -25,17 +25,11 @@ namespace Kokoro3.Common
             Size = new Vector2(width, height);
         }
 
-        public void AttachRenderTarget(int attachment, Texture tex)
+        public void AttachRenderTarget(Engine.FrameBufferAttachments attachment, Texture tex)
         {
             if (Size.X != tex.Size.X | Size.Y != tex.Size.Y) throw new ArgumentException("The Texture must be the same size as the RenderTarget");
-            renderTarget.AttachTexture((Engine.FrameBufferAttachments)attachment, tex, 0);
-            boundTex[attachment] = tex;
-        }
-
-        public void AttachDepthBuffer()
-        {
-            Texture tmp = Texture.Load2D((int)Size.X, (int)Size.Y, 0, Engine.PixelComponentType.D32, Engine.PixelFormat.Depth, Engine.PixelType.Float);
-            renderTarget.AttachTexture(Engine.FrameBufferAttachments.DepthAttachment, tmp, 0);
+            renderTarget.AttachTexture(attachment, tex, 0);
+            boundTex[(int)attachment] = tex;
         }
 
 #endif        
