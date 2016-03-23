@@ -111,7 +111,7 @@ namespace Kokoro2.Debug
         #region GL Status
         public void PostGLStatus(GraphicsContext context)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            this.Invoke(new MethodInvoker(() =>
             {
                 glStatusList.Items[0].SubItems[1] =
                     new ListViewItem.ListViewSubItem(glStatusList.Items[0], context.Wireframe.ToString());
@@ -188,7 +188,7 @@ namespace Kokoro2.Debug
         {
             try
             {
-                this.BeginInvoke(new MethodInvoker(() =>
+                this.Invoke(new MethodInvoker(() =>
                 {
                     objProperties.Items.Clear();
 

@@ -177,7 +177,7 @@
             this.ClientSize = new System.Drawing.Size(566, 573);
             this.Controls.Add(this.viewer);
             this.Controls.Add(this.button1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LogViewer";
             this.Text = "Log Viewer";
