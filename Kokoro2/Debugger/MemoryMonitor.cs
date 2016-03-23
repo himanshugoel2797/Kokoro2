@@ -76,21 +76,21 @@ namespace Kokoro2.Debug
         double upFrames = 0, renFrames = 0;
         public void PostMSPU(double mspu)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            /*this.Invoke(new MethodInvoker(() =>
                {
                    if (upFrames % 10 == 0)
                    {
                        chart1.Series["Update"].Points.AddXY(upFrames, mspu);
                    }
                    upFrames++;
-               }));
+               }));*/
         }
 
 
         //TODO Apped performance data to a CSV file for logging purposes
         public void PostMSPR(double mspr)
         {
-            this.BeginInvoke(new MethodInvoker(() =>
+            /*this.Invoke(new MethodInvoker(() =>
             {
                 if (renFrames % 10 == 0)
                 {
@@ -104,7 +104,7 @@ namespace Kokoro2.Debug
                     chart1.Series["Render"].Points.Clear();
                     chart1.Series["Update"].Points.Clear();
                 }
-            }));
+            }));*/
         }
         #endregion
 

@@ -73,7 +73,7 @@ namespace Akane
 
         private void _init(GraphicsContext context)
         {
-            context.Camera = new Kokoro2.Engine.HighLevel.Cameras.Camera();
+            context.Camera = new Kokoro2.Engine.HighLevel.Cameras.Camera(context);
             context.View = Matrix4.Identity;
             context.DepthFunction = (x, y) => true;
             //context.DepthWrite = false;

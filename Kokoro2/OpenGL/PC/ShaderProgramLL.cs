@@ -191,6 +191,12 @@ namespace Kokoro2.OpenGL.PC
         #endregion
 
         #region Shader Variables
+        private int GetUniformLocation(int id, string name)
+        {
+            if (variables.ContainsKey(name)) return variables[name].pos;
+            else return GL.GetUniformLocation(id, name);
+        }
+
         protected void aSetShaderBool(string name, bool val)
         {
             aSetShaderFloat(name, val ? 1 : 0);
@@ -200,7 +206,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GL.GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(this.id, name),
                 type = VarType.Matrix4
             };
         }
@@ -210,7 +216,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GL.GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(this.id, name),
                 type = VarType.Matrix2
             };
         }
@@ -220,7 +226,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GL.GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(this.id, name),
                 type = VarType.Matrix3
             };
         }
@@ -230,7 +236,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GL.GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(this.id, name),
                 type = VarType.Vector4
             };
         }
@@ -240,7 +246,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GL.GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(this.id, name),
                 type = VarType.Vector3
             };
         }
@@ -250,7 +256,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GL.GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(this.id, name),
                 type = VarType.Vector2
             };
         }
@@ -260,7 +266,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GL.GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(this.id, name),
                 type = VarType.Float
             };
         }
@@ -284,7 +290,7 @@ namespace Kokoro2.OpenGL.PC
                 {
                     metadata = texUnit++,
                     obj = tex,
-                    pos = GL.GetUniformLocation(this.id, name),
+                    pos = GetUniformLocation(this.id, name),
                     type = VarType.Texture
                 };
             }
