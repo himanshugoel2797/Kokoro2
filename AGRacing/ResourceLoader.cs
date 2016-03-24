@@ -73,10 +73,10 @@ namespace AGRacing
             return new Track(TrackData[name]);
         }
 
-        public static Ship LoadShip(string name)
+        public static Ship LoadShip(string name, IShipController controller)
         {
             if (!ShipData.ContainsKey(name)) throw new ArgumentException();
-            return new Ship(ShipData[name]);
+            return new Ship(ShipData[name], controller);
         }
     }
 }

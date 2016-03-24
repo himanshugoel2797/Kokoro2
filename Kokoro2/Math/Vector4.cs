@@ -1182,6 +1182,41 @@ namespace Kokoro2.Math
 
         #endregion
 
+
+        public static Vector4 Round(Vector4 a)
+        {
+            return new Vector4((float)System.Math.Round(a.X), (float)System.Math.Round(a.Y), (float)System.Math.Round(a.Z), (float)System.Math.Round(a.W));
+        }
+
+        public void Round()
+        {
+            var tmp = Round(this);
+            X = tmp.X;
+            Y = tmp.Y;
+            Z = tmp.Z;
+            W = tmp.W;
+        }
+
+        public float this[int x]
+        {
+            get
+            {
+                switch (x)
+                {
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    case 2:
+                        return Z;
+                    case 3:
+                        return W;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
         public static implicit operator BEPUutilities.Vector4(Vector4 t)
         {
             return new BEPUutilities.Vector4(t.X, t.Y, t.Z, t.W);

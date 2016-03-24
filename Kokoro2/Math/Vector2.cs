@@ -1093,5 +1093,34 @@ namespace Kokoro2.Math
         }
 
         #endregion
+
+
+        public static Vector2 Round(Vector2 a)
+        {
+            return new Vector2((float)System.Math.Round(a.X), (float)System.Math.Round(a.Y));
+        }
+
+        public float this[int x]
+        {
+            get
+            {
+                switch(x)
+                {
+                    case 0:
+                        return X;
+                    case 1:
+                        return Y;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        public void Round()
+        {
+            var tmp = Round(this);
+            X = tmp.X;
+            Y = tmp.Y;
+        }
     }
 }

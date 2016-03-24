@@ -86,8 +86,19 @@ namespace AGRacing
         public void AddShip(int position, Ship s)
         {
             if (position >= ships.Length) throw new ArgumentException();
-            s.Position = GetPosition(position);
-            s.Direction = GetDirection(position);
+            s.Position = GetPosition(position/2);
+            s.Direction = GetDirection(position/2);
+
+            Vector3 right = Vector3.Cross(s.Direction, Vector3.UnitY);
+            right.Normalize();
+
+            if (position % 2 == 0)
+            {
+                s.Position += right * 2;
+            }else if(position % 2 == 1)
+            {
+                s.Position -= right * 2;
+            }
             ships[position] = s;
         }
 

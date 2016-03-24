@@ -9,6 +9,7 @@ using Kokoro2.Engine.HighLevel.Cameras;
 using Kokoro2.Math;
 using Kokoro2.Engine.Shaders;
 using Kokoro2.Physics;
+using AGRacing.ShipControllers;
 
 namespace AGRacing.Test.TrackLoadTest
 {
@@ -29,7 +30,7 @@ namespace AGRacing.Test.TrackLoadTest
             if (!ResourcesLoaded)
             {
                 track = ResourceLoader.LoadTrack("Test Track");
-                s1 = ResourceLoader.LoadShip("Fiel F35");
+                s1 = ResourceLoader.LoadShip("Fiel F35", new HumanController());
 
                 track.AddShip(0, s1);
 

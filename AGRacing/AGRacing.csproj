@@ -55,9 +55,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game.cs" />
+    <Compile Include="IShipController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceLoader.cs" />
     <Compile Include="Ship.cs" />
+    <Compile Include="ShipControllers\HumanController.cs" />
     <Compile Include="Test\TestGame.cs" />
     <Compile Include="Test\TrackLoadTest\Test.cs" />
     <Compile Include="Track.cs" />
