@@ -26,11 +26,16 @@ namespace Kokoro2.Game
 
         public void Initialize(GraphicsContext context)
         {
+            bool tmp = ResourceLoader.LoadComplete;
+
             manager = new SceneManager();
             manager.Register(context);
 
 #if DEBUG
             manager.Add("TestGame", new TestGame());
+#endif
+            if (!tmp) while (!ResourceLoader.LoadComplete) ;  //Wait until all the resource data is setup
+#if DEBUG
             manager.Activate("TestGame");
 #endif
         }

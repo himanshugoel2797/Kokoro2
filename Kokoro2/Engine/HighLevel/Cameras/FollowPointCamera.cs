@@ -15,20 +15,23 @@ namespace Kokoro2.Engine.HighLevel.Cameras
     public class FollowPointCamera : Camera
     {//TODO setup collisions
 
-        public float RotationMargin = 0.5f;
-        public Vector3 Distance = new Vector3(-3f, -1, 0);
-        Vector2 mousePos;
+        public Vector3 Up;
 
-        Vector3 Up = Vector3.UnitY;
+#if DEBUG
+        double moveSpeedGradient = 1;
+#endif
 
         /// <summary>
         /// Create a new First Person Camera
         /// </summary>
         /// <param name="Position">The Position of the Camera</param>
         /// <param name="Direction">The Direction the Camera initially faces</param>
-        public FollowPointCamera(GraphicsContext context) : base(context)
+        public FollowPointCamera(GraphicsContext context, Vector3 Position, Vector3 Direction) : base(context)
         {
-
+            this.Position = Position;
+            this.Direction = Direction;
+            this.Up = Vector3.UnitY;
+            View = Matrix4.LookAt(Position, Position + Direction, Up);
         }
 
         /// <summary>
@@ -38,20 +41,8 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         /// <param name="Context">The current GraphicsContext</param>
         public override void Update(double interval, GraphicsContext Context)
         {
-            Vector3 Target = Position;
-            Position -= Distance;
-
-            float rotX = RotationMargin * (float)(Mouse.NDMousePos.X - 0.5f);
-            float rotY = RotationMargin * (float)((Mouse.NDMousePos.Y) - 0.5f);
-            Target += new Vector3(0, rotY, rotX);
-
-            mousePos = Mouse.NDMousePos;
-
-            Direction = Target;
-            View = Matrix4.LookAt(Position, Target, Up);
+            View = Matrix4.LookAt(Position, Position + Direction, Up);
             base.Update(interval, Context);
-
-            Position += Distance;
         }
     }
 }

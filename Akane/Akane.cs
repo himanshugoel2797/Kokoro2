@@ -75,7 +75,7 @@ namespace Akane
         {
             context.Camera = new Kokoro2.Engine.HighLevel.Cameras.Camera(context);
             context.View = Matrix4.Identity;
-            context.DepthFunction = (x, y) => true;
+            context.DepthFunction = DepthFunc.Always;
             //context.DepthWrite = false;
             //context.View = Matrix4.LookAt(Vector3.Zero - Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
             //context.Wireframe = true;

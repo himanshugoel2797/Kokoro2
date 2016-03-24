@@ -31,8 +31,10 @@ namespace Kokoro.ContentPipeline
             List<List<float>[]> VertexWeights = new List<List<float>[]>();
             List<List<int>[]> VertexBones = new List<List<int>[]>();
             List<float[][]> SkeletonBones = new List<float[][]>();
+            List<bool> isLine = new List<bool>();
 
             //TODO Eventually we will want to parse information from another file regarding which shaders to load and the parameters and add that information here (by means of reference to another file and a material DB class?)
+
 
             for (int a = 0; a < model.MeshCount; a++)
             {
@@ -50,6 +52,8 @@ namespace Kokoro.ContentPipeline
 
                 bounds[0] = new float[] { m.Vertices[0].X, m.Vertices[0].Y, m.Vertices[0].Z };
                 bounds[1] = new float[] { m.Vertices[0].X, m.Vertices[0].Y, m.Vertices[0].Z };
+
+                isLine.Add(m.FaceCount == 0);
 
                 #region Vertices
                 float[] vertices = new float[m.VertexCount * 3];
@@ -80,7 +84,7 @@ namespace Kokoro.ContentPipeline
                     {
                         //Save the offset matrix
                         skBones =
-                            new float[][] { 
+                            new float[][] {
                                 new float[]{ m.Bones[b].OffsetMatrix.A1,m.Bones[b].OffsetMatrix.A2,m.Bones[b].OffsetMatrix.A3,m.Bones[b].OffsetMatrix.A4  },
                                 new float[]{ m.Bones[b].OffsetMatrix.B1,m.Bones[b].OffsetMatrix.B2,m.Bones[b].OffsetMatrix.B3,m.Bones[b].OffsetMatrix.B4,},
                                 new float[]{ m.Bones[b].OffsetMatrix.C1,m.Bones[b].OffsetMatrix.C2,m.Bones[b].OffsetMatrix.C3,m.Bones[b].OffsetMatrix.C4,},
@@ -127,8 +131,8 @@ namespace Kokoro.ContentPipeline
                     float[] texcoords = new float[m.VertexCount * 2];
                     for (int v = 0; v < m.VertexCount * 2; v += 2)
                     {
-                        texcoords[v] = m.TextureCoordinateChannels[0][(v - (v % 2)) / 2].X;
-                        texcoords[v + 1] = m.TextureCoordinateChannels[0][(v - (v % 2)) / 2].Y;
+                        texcoords[v] = m.TextureCoordinateChannels[0][v / 2].X;
+                        texcoords[v + 1] = m.TextureCoordinateChannels[0][v / 2].Y;
                     }
                     UV.Add(texcoords);
                 }
@@ -185,7 +189,7 @@ namespace Kokoro.ContentPipeline
             }
 
             return FinalProcess(texs.ToArray(), Vertices.ToArray(), UV.ToArray(), Normals.ToArray(),
-                Indices.ToArray(), texs.ToArray(), bounds, vweights, vbones, SkeletonBones.ToArray());
+                Indices.ToArray(), texs.ToArray(), bounds, vweights, vbones, SkeletonBones.ToArray(), isLine.ToArray());
             #endregion
         }
 
@@ -215,6 +219,9 @@ namespace Kokoro.ContentPipeline
 
             [ProtoMember(8)]
             public Skeleton[] skeleton;
+
+            [ProtoMember(9)]
+            public bool isLine;
         }
 
         [ProtoContract]
@@ -251,7 +258,7 @@ namespace Kokoro.ContentPipeline
         }
 
         private static byte[] FinalProcess(string[] tex, float[][] verts, float[][] uvs, float[][] norms,
-            uint[][] indices, string[] texPaths, float[][] boundingbox, float[][][] weights = null, int[][][] bones = null, float[][][] skeleton = null)
+            uint[][] indices, string[] texPaths, float[][] boundingbox, float[][][] weights = null, int[][][] bones = null, float[][][] skeleton = null, bool[] isLine = null)
         {
             byte[] outdata;
 
@@ -268,7 +275,8 @@ namespace Kokoro.ContentPipeline
                     indices = indices[i],
                     normals = norms[i],
                     tex = texPaths[i],
-                    uvs = uvs[i]
+                    uvs = uvs[i],
+                    isLine = isLine[i]
                 };
 
                 if (weights[i] != null && weights[i].Length > 0)

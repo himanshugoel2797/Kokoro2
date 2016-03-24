@@ -37,6 +37,10 @@ namespace Kokoro2.Engine.Prefabs
 
             [ProtoMember(8)]
             public Skeleton_m[] skeleton;
+
+
+            [ProtoMember(9)]
+            public bool isLine;
         }
 
         [ProtoContract]
@@ -97,6 +101,8 @@ namespace Kokoro2.Engine.Prefabs
                 SetUVs(UpdateMode.Static, tmp.Mesh[i].uvs, i);
                 SetVertices(UpdateMode.Static, tmp.Mesh[i].Vertices, i);
                 SetNormals(UpdateMode.Static, tmp.Mesh[i].normals, i);
+
+                if (tmp.Mesh[i].isLine) DrawMode = DrawMode.Lines;
             }
 
             Bound = new BoundingBox()
@@ -107,7 +113,26 @@ namespace Kokoro2.Engine.Prefabs
 
         }
 
-        internal static float[] GetVertices(string filename, bool useVFS = false)
+        public static int[] GetIndices(string filename, bool useVFS = false)
+        {
+            Model_m tmp = null;
+            if (useVFS)
+            {
+                tmp = Serializer.Deserialize<Model_m>(VFS.FSReader.OpenFile(filename, false));
+            }
+            else
+            {
+                tmp = Serializer.Deserialize<Model_m>(System.IO.File.OpenRead(filename));
+            }
+
+            int[] a = new int[tmp.Mesh[0].indices.Length];
+
+            for (int i = 0; i < a.Length; i++) a[i] = (int)tmp.Mesh[0].indices[i];
+
+            return a;
+        }
+
+        public static float[] GetVertices(string filename, bool useVFS = false)
         {
             Model_m tmp = null;
             if (useVFS)
@@ -119,6 +144,20 @@ namespace Kokoro2.Engine.Prefabs
                 tmp = Serializer.Deserialize<Model_m>(System.IO.File.OpenRead(filename));
             }
             return tmp.Mesh[0].Vertices;
+        }
+
+        public static float[] GetNormals(string filename, bool useVFS = false)
+        {
+            Model_m tmp = null;
+            if (useVFS)
+            {
+                tmp = Serializer.Deserialize<Model_m>(VFS.FSReader.OpenFile(filename, false));
+            }
+            else
+            {
+                tmp = Serializer.Deserialize<Model_m>(System.IO.File.OpenRead(filename));
+            }
+            return tmp.Mesh[0].normals;
         }
 
     }

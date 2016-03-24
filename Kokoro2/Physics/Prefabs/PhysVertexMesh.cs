@@ -46,6 +46,7 @@ namespace Kokoro2.Physics.Prefabs
             Model_m tmp = Serializer.Deserialize<Model_m>(VFS.FSReader.OpenFile(filename, false));
 
             //TODO Deconstruct mesh into Verlet representation
+            
         }
 
     }

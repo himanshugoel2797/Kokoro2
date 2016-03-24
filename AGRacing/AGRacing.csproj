@@ -31,8 +31,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BEPUik, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BEPUphysics.1.3.0\lib\net40\BEPUik.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BEPUphysics, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">
+      <HintPath>..\packages\BEPUphysics.1.3.0\lib\net40\BEPUphysics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BEPUutilities, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31f6a8732a21de19, processorArchitecture=MSIL">
+      <HintPath>..\packages\BEPUphysics.1.3.0\lib\net40\BEPUutilities.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,17 +56,13 @@
   <ItemGroup>
     <Compile Include="Game.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResourceLoader.cs" />
+    <Compile Include="Ship.cs" />
     <Compile Include="Test\TestGame.cs" />
     <Compile Include="Test\TrackLoadTest\Test.cs" />
+    <Compile Include="Track.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\RAW\Track_Vis\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Proc\Track_Vis\car1_0.ko">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Kokoro.Shaders\Kokoro.Shaders.csproj">
       <Project>{3cc9e16b-c337-420e-a9d2-d7203ce4abfe}</Project>
@@ -63,6 +72,47 @@
       <Project>{db0a76c9-b908-4c67-b1d0-31559c480a4a}</Project>
       <Name>Kokoro2</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Proc\Data\Ships.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Proc\Tex\car1_0_roughness.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Proc\Tex\car1_0_spec.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Proc\Tex\car1_0_tex.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Proc\Tex\track_tex.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Proc\Data\Tracks.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Resources\Proc\Car_Vis\car1_0.ko">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Proc\Track_Path\track_0_col.ko">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Proc\Track_Path\track_0_path.ko">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Proc\Track_Vis\track_0.ko">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\RAW\Car_Vis\car1_0.mtl" />
+    <None Include="Resources\RAW\Car_Vis\car1_0.obj" />
+    <None Include="Resources\RAW\Track_Path\track_0_col.obj" />
+    <None Include="Resources\RAW\Track_Path\track_0_path.obj" />
+    <None Include="Resources\RAW\Track_Vis\track_0.mtl" />
+    <None Include="Resources\RAW\Track_Vis\track_0.obj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

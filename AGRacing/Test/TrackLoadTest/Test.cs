@@ -8,6 +8,7 @@ using Kokoro2.Engine;
 using Kokoro2.Engine.HighLevel.Cameras;
 using Kokoro2.Math;
 using Kokoro2.Engine.Shaders;
+using Kokoro2.Physics;
 
 namespace AGRacing.Test.TrackLoadTest
 {
@@ -19,21 +20,26 @@ namespace AGRacing.Test.TrackLoadTest
             set;
         }
 
-        Kokoro2.Engine.Prefabs.VertexMesh track;
+        Ship s1;
+        Track track;
 
         private bool ResourcesLoaded = false;
         public void LoadResources(GraphicsContext context)
         {
-            if(!ResourcesLoaded)
+            if (!ResourcesLoaded)
             {
-                track = new Kokoro2.Engine.Prefabs.VertexMesh("Resources/Proc/Track_Vis/car1_0.ko", false, false);
+                track = ResourceLoader.LoadTrack("Test Track");
+                s1 = ResourceLoader.LoadShip("Fiel F35");
 
-                for(int i = 0; i < track.Materials.Length; i++)
-                    track.Materials[i].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default"));
+                track.AddShip(0, s1);
 
+                context.DepthWrite = true;
+                context.FaceCulling = CullMode.Back;
+                context.DepthFunction = DepthFunc.LEqual;
                 context.ZFar = 1000;
-                context.ZNear = 0.01f;
-                context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
+                context.ZNear = 0.1f;
+                context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
+                //context.Wireframe = true;
 
                 ResourcesLoaded = true;
             }
@@ -44,8 +50,27 @@ namespace AGRacing.Test.TrackLoadTest
             if (ResourcesLoaded)
             {
                 context.Clear(0, 0.5f, 1.0f, 0);
-                context.DepthWrite = true;
-                context.Wireframe = true;
+
+
+                //Vector3 dir = track.GetDirection(cnt);
+                //Vector3 pos = (1.0f - cnt3) * track.GetPosition(cnt) + (cnt3) * track.GetPosition(cnt + 1);
+                //cnt3 += 0.1f;
+
+                //Matrix4 rot = new Matrix4(new Vector4(dir, 0), new Vector4(Vector3.UnitY, 0), new Vector4(Vector3.Normalize(Vector3.Cross(dir, Vector3.UnitY)), 0), Vector4.UnitW);
+                //car.World = Matrix4.CreateRotationY(-1.57f) * rot * Matrix4.CreateTranslation(pos);
+
+                //if (cnt3 >= 1.0f)
+                //{
+                //    cnt += 2;
+                //    cnt3 = 0;
+                //}
+
+                var tmpCam = context.Camera as FollowPointCamera;
+                tmpCam.Position = s1.Position - s1.Direction * 4 + Vector3.UnitY * 1.5f;
+
+                tmpCam.Direction = -tmpCam.Position + s1.Position;
+                tmpCam.Up = Vector3.UnitY;
+                context.Camera = tmpCam;
 
                 track.Draw(context);
 
@@ -53,10 +78,13 @@ namespace AGRacing.Test.TrackLoadTest
             }
         }
 
+        int cnt = 0;
+        float cnt3 = 0;
         public void Update(double interval, GraphicsContext context)
         {
             if (ResourcesLoaded)
             {
+                track.Update(interval, context);
                 context.Camera.Update(interval, context);
             }
         }

@@ -37,6 +37,12 @@
     <EmbeddedResource Include="Default\vertex.glsl" />
     <EmbeddedResource Include="FrameBuffer\fragment.glsl" />
     <EmbeddedResource Include="FrameBuffer\vertex.glsl" />
+    <EmbeddedResource Include="BlurHorizontal\fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BlurVertical\fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="Fur\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

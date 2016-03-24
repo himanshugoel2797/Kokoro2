@@ -1,0 +1,15 @@
+# Blender MTL File: 'car1_0.blend'
+# Material Count: 1
+
+newmtl car0_main
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.400000 0.400000 0.400000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd car1_0_tex.png
+map_Ks car1_0_spec.png
+map_Ns car1_0_roughness.png

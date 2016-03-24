@@ -21,6 +21,10 @@ namespace Kokoro2.Engine
         UByte332, UInt1010102, UInt248, UInt8888, UShort4444, UShort5551, Float, HalfFloat
     }
 
+    public enum DepthFunc
+    {
+        Always, Equal, GEqual, LEqual, Never, NotEqual
+    }
 
     /// <summary>
     /// Describes how often the object will be updated

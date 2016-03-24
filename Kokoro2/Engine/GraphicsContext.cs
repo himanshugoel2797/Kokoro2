@@ -136,7 +136,7 @@ namespace Kokoro2.Engine
         /// <summary>
         /// Get/Set the Depth Function
         /// </summary>
-        public Func<float, float, bool> DepthFunction
+        public DepthFunc DepthFunction
         {
             get
             {

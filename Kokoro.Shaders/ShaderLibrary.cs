@@ -24,7 +24,9 @@ namespace Kokoro2.Shaders
                 "LoD/fragment.glsl",
                 "LoD/vertex.glsl",
                 "LoD/tessEval.glsl",
-                "LoD/tessControl.glsl"
+                "LoD/tessControl.glsl",
+                "BlurHorizontal/fragment.glsl",
+                "BlurVertical/fragment.glsl"
             };
         }
 

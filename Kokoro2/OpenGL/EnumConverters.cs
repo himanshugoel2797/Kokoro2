@@ -21,6 +21,30 @@ namespace Kokoro2.OpenGL
             return PixelFormat.Rgba;    //This will never be called, it avoids compiler errors
         }
 
+        public static DepthFunction EDepthFunc(Engine.DepthFunc d)
+        {
+            if (d == Engine.DepthFunc.Always) return DepthFunction.Always;
+            else if (d == Engine.DepthFunc.Equal) return DepthFunction.Equal;
+            else if (d == Engine.DepthFunc.GEqual) return DepthFunction.Gequal;
+            else if (d == Engine.DepthFunc.LEqual) return DepthFunction.Lequal;
+            else if (d == Engine.DepthFunc.Never) return DepthFunction.Never;
+            else if (d == Engine.DepthFunc.NotEqual) return DepthFunction.Notequal;
+
+            return DepthFunction.Lequal;
+        }
+
+        public static Engine.DepthFunc ODepthFunction(DepthFunction d)
+        {
+            if (d == DepthFunction.Always) return Engine.DepthFunc.Always;
+            else if (d == DepthFunction.Equal) return Engine.DepthFunc.Equal;
+            else if (d == DepthFunction.Gequal) return Engine.DepthFunc.GEqual;
+            else if (d == DepthFunction.Lequal) return Engine.DepthFunc.LEqual;
+            else if (d == DepthFunction.Never) return Engine.DepthFunc.Never;
+            else if (d == DepthFunction.Notequal) return Engine.DepthFunc.NotEqual;
+
+            return Engine.DepthFunc.LEqual;
+        }
+
         public static PixelInternalFormat EPixelComponentType(Engine.PixelComponentType pct)
         {
             if (pct == Engine.PixelComponentType.D24S8) return PixelInternalFormat.Depth24Stencil8;

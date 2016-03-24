@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BEPUphysics.Entities.Prefabs;
 using Kokoro2.Math;
+using BEPUphysics.BroadPhaseEntries;
 
 namespace Kokoro2.Physics
 {
@@ -50,5 +51,6 @@ namespace Kokoro2.Physics
 
             return new BEPUBody<ConvexHull>(new ConvexHull(vertices));
         }
+        
     }
 }
