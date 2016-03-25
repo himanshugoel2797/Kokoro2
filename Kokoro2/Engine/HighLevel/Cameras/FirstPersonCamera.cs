@@ -19,8 +19,8 @@ namespace Kokoro2.Engine.HighLevel.Cameras
 
         float leftrightRot = MathHelper.PiOver2;
         float updownRot = -MathHelper.Pi / 10.0f;
-        public float rotationSpeed = 0.002f;
-        public float moveSpeed = 0.05f;
+        public float rotationSpeed = 0.2f;
+        public float moveSpeed = 0.5f;
         Vector2 mousePos;
         Vector3 cameraRotatedUpVector;
 
@@ -63,7 +63,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         /// <param name="Context">The current GraphicsContext</param>
         public override void Update(double interval, GraphicsContext Context)
         {
-            interval /= 100;
+            //interval /= 100;
 
             if (Mouse.ButtonsDown.Left)
             {

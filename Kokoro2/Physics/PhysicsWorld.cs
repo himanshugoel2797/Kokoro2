@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using BEPUphysics;
 using Kokoro2.Math;
 using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.Settings;
+using BEPUutilities.Threading;
 
 namespace Kokoro2.Physics
 {
@@ -27,7 +29,10 @@ namespace Kokoro2.Physics
 
         public PhysicsWorld()
         {
-            world = new Space();
+            var p = new ParallelLooper();
+            for(int i = 1; i < Environment.ProcessorCount - 2; i++) p.AddThread();
+
+            world = new Space(p);
         }
 
         public bool RayCast(Vector3 o, Vector3 d, out float distance, out Vector3 normal)
@@ -56,6 +61,7 @@ namespace Kokoro2.Physics
         public void Update(double interval)
         {
             world.Update();
+            CollisionDetectionSettings.AllowedPenetration = 0.0001f;
         }
 
         public void AddEntity<T>(BEPUBody<T> b) where T : BEPUphysics.Entities.Entity

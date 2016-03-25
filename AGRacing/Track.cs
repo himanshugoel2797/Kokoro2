@@ -21,6 +21,9 @@ namespace AGRacing
         PhysicsWorld phys;
         Ship[] ships;
 
+#if DEBUG
+        VertexMesh collisionVis;
+#endif
 
         public string Name { get; private set; }
 
@@ -30,6 +33,15 @@ namespace AGRacing
             if (parts.Length != 3) throw new ArgumentException();
             Name = parts[1];
             trackModel = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false);
+
+#if DEBUG
+            collisionVis = new VertexMesh("Resources/Proc/Track_Path/" + parts[0] + "_col.ko", false);
+            for (int i = 0; i < collisionVis.Materials.Length; i++)
+            {
+                collisionVis.Materials[i].AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2]);
+                collisionVis.Materials[i].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default"));
+            }
+#endif
 
             for (int i = 0; i < trackModel.Materials.Length; i++)
             {
@@ -49,10 +61,12 @@ namespace AGRacing
             }
 
             ships = new Ship[8];
-
+            
             phys = new PhysicsWorld();
             collisionMesh = new StaticMesh(v.ToArray(), indices);
+            collisionMesh.ImproveBoundaryBehavior = true;
             phys.AddEntity(collisionMesh);
+            phys.Gravity = new Vector3(0, -0.25f, 0);
         }
 
         #region Ideal Race Line Controls 
@@ -81,13 +95,13 @@ namespace AGRacing
             if (b % 2 == 1) b++;
             return Vector3.Normalize(GetPosition(b + 1) - GetPosition(b));
         }
-        #endregion
+#endregion
 
         public void AddShip(int position, Ship s)
         {
             if (position >= ships.Length) throw new ArgumentException();
-            s.Position = GetPosition(position/2);
-            s.Direction = GetDirection(position/2);
+            s.Position = GetPosition((position) / 2 + 19) + Vector3.UnitY;
+            s.Direction = GetDirection((position) / 2 + 19);
 
             Vector3 right = Vector3.Cross(s.Direction, Vector3.UnitY);
             right.Normalize();
@@ -95,11 +109,16 @@ namespace AGRacing
             if (position % 2 == 0)
             {
                 s.Position += right * 2;
-            }else if(position % 2 == 1)
+            }
+            else if (position % 2 == 1)
             {
                 s.Position -= right * 2;
             }
             ships[position] = s;
+
+            var t = s.GetPhysicsEntity();
+            t.Position = s.Position;
+            phys.AddEntity(t);
         }
 
         public void Dispose()
@@ -111,6 +130,11 @@ namespace AGRacing
         {
             trackModel.Draw(context);
 
+#if DEBUG
+            context.Wireframe = true;
+            collisionVis.Draw(context);
+            context.Wireframe = false;
+#endif
             for (int i = 0; i < ships.Length; i++)
             {
                 if (ships[i] != null) ships[i].Draw(context);
@@ -127,7 +151,7 @@ namespace AGRacing
 
         public void Update(double interval, GraphicsContext context)
         {
-            phys.Update(interval);
+            phys.Update(interval/1000d);
 
             for (int i = 0; i < ships.Length; i++)
             {

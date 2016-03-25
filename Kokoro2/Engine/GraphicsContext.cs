@@ -151,7 +151,9 @@ namespace Kokoro2.Engine
         /// <summary>
         /// Set the Projection Matrix
         /// </summary>
-        public Matrix4 Projection { get
+        public Matrix4 Projection
+        {
+            get
             {
                 return Camera.Projection;
             }
@@ -159,7 +161,7 @@ namespace Kokoro2.Engine
             {
                 Camera.Projection = value;
             }
-            }
+        }
 
         /// <summary>
         /// Set the View Matrix
@@ -395,21 +397,21 @@ namespace Kokoro2.Engine
                             Mouse.Update();
 
                             //Call update handler
-                            Update((tpu == 0) ? GetNormTicks(su) : tpu, this);
+                            double interval = su.ElapsedMilliseconds;
+                            su.Reset();
+                            su.Start();
+                            Update(interval, this);
                         }
                     }
 
-                    if (tpu != 0 && tpu > GetNormTicks(su))
+                    if (tpu != 0 && tpu > su.ElapsedMilliseconds)
                     {
                         try
                         {
-                            Thread.Sleep(TimeSpan.FromTicks((long)tpu - (long)GetNormTicks(su)));
+                            Thread.Sleep(TimeSpan.FromMilliseconds((long)tpu - (long)su.ElapsedMilliseconds));
                         }
                         catch (Exception) { }
                     }
-                    Kokoro2.Debug.ObjectAllocTracker.PostUPS(GetNormTicks(su));
-                    su.Reset();
-                    su.Start();
                 }
             });
 
@@ -442,13 +444,13 @@ namespace Kokoro2.Engine
                     ResourceManager = null;
 
                     Window_RenderFrame(0);
-                    Render(tpf, this);
+                    Render(s.ElapsedMilliseconds, this);
                 }
-
-                Kokoro2.Debug.ObjectAllocTracker.PostFPS(GetNormTicks(s));
-                ViewportControl.Invalidate();
                 s.Reset();
                 s.Start();
+
+                //Kokoro2.Debug.ObjectAllocTracker.PostFPS(GetNormTicks(s));
+                ViewportControl.Invalidate();
             };
             #endregion
 

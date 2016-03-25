@@ -10,6 +10,7 @@ using Kokoro2.Math;
 using Kokoro2.Engine.Shaders;
 using Kokoro2.Physics;
 using AGRacing.ShipControllers;
+using System.Diagnostics;
 
 namespace AGRacing.Test.TrackLoadTest
 {
@@ -39,7 +40,8 @@ namespace AGRacing.Test.TrackLoadTest
                 context.DepthFunction = DepthFunc.LEqual;
                 context.ZFar = 1000;
                 context.ZNear = 0.1f;
-                context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
+                context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
+                //context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
                 //context.Wireframe = true;
 
                 ResourcesLoaded = true;
@@ -67,11 +69,15 @@ namespace AGRacing.Test.TrackLoadTest
                 //}
 
                 var tmpCam = context.Camera as FollowPointCamera;
-                tmpCam.Position = s1.Position - s1.Direction * 4 + Vector3.UnitY * 1.5f;
 
-                tmpCam.Direction = -tmpCam.Position + s1.Position;
-                tmpCam.Up = Vector3.UnitY;
-                context.Camera = tmpCam;
+                if (tmpCam != null)
+                {
+                    tmpCam.Position = s1.Position - s1.Direction * 4 + Vector3.UnitY * 1.5f;
+
+                    tmpCam.Direction = -(tmpCam.Position - s1.Position);
+                    tmpCam.Up = Vector3.UnitY;
+                    context.Camera = tmpCam;
+                }
 
                 track.Draw(context);
 
@@ -85,6 +91,7 @@ namespace AGRacing.Test.TrackLoadTest
         {
             if (ResourcesLoaded)
             {
+                //Console.WriteLine(interval);
                 track.Update(interval, context);
                 context.Camera.Update(interval, context);
             }

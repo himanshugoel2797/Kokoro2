@@ -19,7 +19,7 @@ namespace Kokoro2.Game
         public Game(GraphicsContext context)
         {
             context.Initialize += Initialize;
-            context.Start(160000, 160000);
+            context.Start(16, 16);
         }
 
         public SceneManager manager;

@@ -1,1 +1,1 @@
-﻿car1_0,Fiel F35,car1_0_,Scale=0.2,RotY=-1.57,FrontDir=0:0:1
+﻿car1_0,Fiel F35,car1_0_,Scale=0.25,RotY=-1.57,FrontDir=0:0:1

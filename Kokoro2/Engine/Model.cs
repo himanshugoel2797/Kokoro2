@@ -200,20 +200,20 @@ namespace Kokoro2.Engine
             if (staticBuffer != null) staticBuffer.Dispose();
             staticBufferOffset = new long[numBufs];
             staticBufferLength = new long[numBufs]; /*How much should we allocate?*/  //Current limit = 10 Million Elements
-            staticBufferLength[0] = 10000000;
-            staticBufferLength[1] = 30000000;
-            staticBufferLength[2] = 30000000;
-            staticBufferLength[3] = 20000000;
+            staticBufferLength[0] = 1000000;
+            staticBufferLength[1] = 3000000;
+            staticBufferLength[2] = 3000000;
+            staticBufferLength[3] = 2000000;
             staticBuffer = new VertexArrayLL(4, staticBufferLength[0], UpdateMode.Dynamic, new BufferUse[] { BufferUse.Index, BufferUse.Array, BufferUse.Array, BufferUse.Array }, new int[] { 1, 3, 3, 2 });
 
 
             if (dynamicBuffer != null) dynamicBuffer.Dispose();
             dynamicBufferOffset = new long[numBufs];
             dynamicBufferLength = new long[numBufs]; /*How much should we allocate?*/ //Current limit = 1 Million Elements
-            dynamicBufferLength[0] = 1000000;
-            dynamicBufferLength[1] = 3000000;
-            dynamicBufferLength[2] = 3000000;
-            dynamicBufferLength[3] = 2000000;
+            dynamicBufferLength[0] = 100000;
+            dynamicBufferLength[1] = 300000;
+            dynamicBufferLength[2] = 300000;
+            dynamicBufferLength[3] = 200000;
             dynamicBuffer = new VertexArrayLL(4, dynamicBufferLength[0], UpdateMode.Dynamic, new BufferUse[] { BufferUse.Index, BufferUse.Array, BufferUse.Array, BufferUse.Array }, new int[] { 1, 3, 3, 2 });
         }
 
