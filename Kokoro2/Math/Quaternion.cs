@@ -724,15 +724,5 @@ namespace Kokoro2.Math
         }
 
         #endregion
-
-        public static implicit operator BEPUutilities.Quaternion(Quaternion a)
-        {
-            return new BEPUutilities.Quaternion(a.X, a.Y, a.Z, a.W);
-        }
-
-        public static implicit operator Quaternion(BEPUutilities.Quaternion a)
-        {
-            return new Quaternion(a.X, a.Y, a.Z, a.W);
-        }
     }
 }

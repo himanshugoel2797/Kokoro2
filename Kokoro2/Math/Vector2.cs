@@ -1114,6 +1114,20 @@ namespace Kokoro2.Math
                         throw new ArgumentOutOfRangeException();
                 }
             }
+            set
+            {
+                switch (x)
+                {
+                    case 0:
+                        X = value;
+                        break;
+                    case 1:
+                        Y = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
         }
 
         public void Round()

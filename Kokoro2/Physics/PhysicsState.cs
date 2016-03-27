@@ -13,10 +13,6 @@ namespace Kokoro2.Physics
     public struct PhysicsState
     {
         /// <summary>
-        /// The collision body against which intersection testing is performed
-        /// </summary>
-        public ICollisionBody CollisionBody;
-        /// <summary>
         /// The Mass (in kg) of the body
         /// </summary>
         public float Mass;
@@ -27,7 +23,7 @@ namespace Kokoro2.Physics
         /// <summary>
         /// The acceleration due to gravity this body experiences
         /// </summary>
-        public Vector3 Gravity;
+        public Vector3? Gravity;
 
         /// <summary>
         /// The Position of this object
@@ -38,5 +34,25 @@ namespace Kokoro2.Physics
         /// The velocity at which this object is currently moving
         /// </summary>
         public Vector3 Velocity;
+
+        /// <summary>
+        /// The momentum of this object
+        /// </summary>
+        public Vector3 Momentum;
+
+        /// <summary>
+        /// The orientation of this object
+        /// </summary>
+        public Quaternion Orientation;
+
+        /// <summary>
+        /// The angular velocity of this object
+        /// </summary>
+        public Quaternion AngularVelocity;
+
+        /// <summary>
+        /// The angular momentum of this object
+        /// </summary>
+        public Quaternion AngularMomentum;
     }
 }

@@ -1452,16 +1452,23 @@ namespace Kokoro2.Math
                         throw new ArgumentOutOfRangeException();
                 }
             }
-        }
-
-        public static implicit operator BEPUutilities.Vector3(Vector3 t)
-        {
-            return new BEPUutilities.Vector3(t.X, t.Y, t.Z);
-        }
-
-        public static implicit operator Vector3(BEPUutilities.Vector3 t)
-        {
-            return new Vector3(t.X, t.Y, t.Z);
+            set
+            {
+                switch (x)
+                {
+                    case 0:
+                        X = value;
+                        break;
+                    case 1:
+                        Y = value;
+                        break;
+                    case 2:
+                        Z = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProtoBuf;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,13 +11,12 @@ namespace Kokoro2.Math
 
     /// Represents an octree spatial partioning system.
     /// 
-
+    
     public class Octree<T>
     {
         private const int ChildNum = 8;
         private int depth = 0;
         private Vector3 center = Vector3.Zero;
-        private float length = 0f;
         private BoundingBox bounds = default(BoundingBox);
         private List<T> objects = new List<T>();
         private Octree<T>[] children = null;
