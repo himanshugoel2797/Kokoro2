@@ -30,7 +30,7 @@ namespace AGRacing.Test.TrackLoadTest
         {
             if (!ResourcesLoaded)
             {
-                track = ResourceLoader.LoadTrack("Test Track");
+                track = ResourceLoader.LoadTrack("Test Track2");
                 s1 = ResourceLoader.LoadShip("Fiel F35", new HumanController());
 
                 track.AddShip(0, s1);
@@ -40,8 +40,8 @@ namespace AGRacing.Test.TrackLoadTest
                 context.DepthFunction = DepthFunc.LEqual;
                 context.ZFar = 1000;
                 context.ZNear = 0.1f;
-                context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
-                //context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
+                //context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
+                context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
                 //context.Wireframe = true;
 
                 ResourcesLoaded = true;
@@ -68,16 +68,6 @@ namespace AGRacing.Test.TrackLoadTest
                 //    cnt3 = 0;
                 //}
 
-                var tmpCam = context.Camera as FollowPointCamera;
-
-                if (tmpCam != null)
-                {
-                    tmpCam.Position = s1.Position - s1.Direction * 4 + Vector3.UnitY * 1.5f;
-
-                    tmpCam.Direction = -(tmpCam.Position - s1.Position);
-                    tmpCam.Up = Vector3.UnitY;
-                    context.Camera = tmpCam;
-                }
 
                 track.Draw(context);
 
@@ -93,6 +83,23 @@ namespace AGRacing.Test.TrackLoadTest
             {
                 //Console.WriteLine(interval);
                 track.Update(interval, context);
+                var tmpCam = context.Camera as FollowPointCamera;
+
+                if (tmpCam != null)
+                {
+                    int index = s1.findNearestTrackPoint(track);
+
+                    tmpCam.Position = s1.Position - (s1.MovementDirection + s1.PhysicalFront)/2 * 5;
+
+                    //if (s1.isGrounded)
+                    {
+                        tmpCam.Position += Vector3.UnitY * 1.5f;
+                    }
+
+                    tmpCam.Direction = -(tmpCam.Position - s1.Position);
+                    tmpCam.Up = Vector3.UnitY;
+                    context.Camera = tmpCam;
+                }
                 context.Camera.Update(interval, context);
             }
         }

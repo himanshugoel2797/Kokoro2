@@ -15,14 +15,14 @@ namespace AGRacing
 {
     class Track : IDisposable
     {
-        StaticMesh collisionMesh;
-        VertexMesh trackModel;
+        MobileMesh collisionMesh;
+        Model trackModel;
         float[] trackPath;
         PhysicsWorld phys;
         Ship[] ships;
 
 #if DEBUG
-        VertexMesh collisionVis;
+        Model collisionVis;
 #endif
 
         public string Name { get; private set; }
@@ -35,7 +35,9 @@ namespace AGRacing
             trackModel = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false);
 
 #if DEBUG
-            collisionVis = new VertexMesh("Resources/Proc/Track_Path/" + parts[0] + "_col.ko", false);
+            //collisionVis = new Kokoro2.Engine.Prefabs.Box(100, 100, 100);
+            //collisionVis.World = Matrix4.CreateTranslation(225, -55, -50);
+            collisionVis = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false);
             for (int i = 0; i < collisionVis.Materials.Length; i++)
             {
                 collisionVis.Materials[i].AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2]);
@@ -54,19 +56,26 @@ namespace AGRacing
             float[] verts = VertexMesh.GetVertices("Resources/Proc/Track_Path/" + parts[0] + "_col.ko", false);
             int[] indices = VertexMesh.GetIndices("Resources/Proc/Track_Path/" + parts[0] + "_col.ko", false);
 
+            float sc = 1;
+
             List<BEPUutilities.Vector3> v = new List<BEPUutilities.Vector3>();
             for (int i = 0; i < verts.Length; i += 3)
             {
-                v.Add(new BEPUutilities.Vector3(verts[i], verts[i + 1], verts[i + 2]));
+                v.Add(new BEPUutilities.Vector3(verts[i] * sc, verts[i + 1] * sc, verts[i + 2] * sc));
             }
 
             ships = new Ship[8];
-            
+
             phys = new PhysicsWorld();
-            collisionMesh = new StaticMesh(v.ToArray(), indices);
-            collisionMesh.ImproveBoundaryBehavior = true;
+            collisionMesh = new MobileMesh(v.ToArray(), indices, BEPUutilities.AffineTransform.Identity, BEPUphysics.CollisionShapes.MobileMeshSolidity.Clockwise);
+            //collisionMesh.ImproveBoundaryBehavior = true;
             phys.AddEntity(collisionMesh);
-            phys.Gravity = new Vector3(0, -0.25f, 0);
+            collisionMesh.CollisionInformation.Tag = collisionMesh.Tag;
+            phys.Gravity = new Vector3(0, -30f, 0);
+
+            //BEPUphysics.Entities.Prefabs.Box b = new BEPUphysics.Entities.Prefabs.Box(-Vector3.UnitY * 55 + -Vector3.UnitZ * 50 + Vector3.UnitX * 225, 100, 100, 100);
+            //phys.AddEntity(b);
+
         }
 
         #region Ideal Race Line Controls 
@@ -78,6 +87,11 @@ namespace AGRacing
 
             b *= 3;
             return new Vector3(trackPath[b + 0], trackPath[b + 1], trackPath[b + 2]);
+        }
+
+        public int GetPointCount()
+        {
+            return trackPath.Length / 3;
         }
 
         public Vector3 GetStartPosition()
@@ -95,15 +109,15 @@ namespace AGRacing
             if (b % 2 == 1) b++;
             return Vector3.Normalize(GetPosition(b + 1) - GetPosition(b));
         }
-#endregion
+        #endregion
 
         public void AddShip(int position, Ship s)
         {
             if (position >= ships.Length) throw new ArgumentException();
-            s.Position = GetPosition((position) / 2 + 19) + Vector3.UnitY;
-            s.Direction = GetDirection((position) / 2 + 19);
+            s.Position = GetPosition((position) / 2) + Vector3.UnitY * 25;
+            s.PhysicalFront = GetDirection((position) / 2);
 
-            Vector3 right = Vector3.Cross(s.Direction, Vector3.UnitY);
+            Vector3 right = Vector3.Cross(s.PhysicalFront, Vector3.UnitY);
             right.Normalize();
 
             if (position % 2 == 0)
@@ -119,6 +133,7 @@ namespace AGRacing
             var t = s.GetPhysicsEntity();
             t.Position = s.Position;
             phys.AddEntity(t);
+            t.CollisionInformation.Tag = t.Tag;
         }
 
         public void Dispose()
@@ -143,15 +158,30 @@ namespace AGRacing
 
         public bool RayCast(Vector3 origin, Vector3 direction, out float distance, out Vector3 normal)
         {
-            BroadPhaseEntry e;
-            bool res = phys.RayCast(origin, direction, out distance, out normal, out e);
+            BroadPhaseEntry[] e;
+            float[] dists;
+            Vector3[] norms;
 
-            return res && (e == collisionMesh);
+            bool res = phys.RayCast(origin, direction, out dists, out norms, out e);
+
+            distance = 0;
+            normal = -direction;
+
+            for (int i = 0; i < e.Length; i++)
+            {
+                if ((int)e[i].Tag == (int)collisionMesh.Tag)
+                {
+                    distance = dists[i];
+                    normal = norms[i];
+                    return (int)e[i].Tag == (int)collisionMesh.Tag;
+                }
+            }
+            return false;
         }
 
         public void Update(double interval, GraphicsContext context)
         {
-            phys.Update(interval/1000d);
+            phys.Update(interval / 1000d);
 
             for (int i = 0; i < ships.Length; i++)
             {

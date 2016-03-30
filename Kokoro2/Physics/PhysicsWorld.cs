@@ -14,6 +14,7 @@ namespace Kokoro2.Physics
     public class PhysicsWorld
     {
         Space world;
+        int tagCnt = 1;
 
         public Vector3 Gravity
         {
@@ -30,9 +31,10 @@ namespace Kokoro2.Physics
         public PhysicsWorld()
         {
             var p = new ParallelLooper();
-            for(int i = 1; i < Environment.ProcessorCount - 2; i++) p.AddThread();
+            for (int i = 1; i < Environment.ProcessorCount - 2; i++) p.AddThread();
 
             world = new Space(p);
+            //CollisionResponseSettings.MaximumPenetrationRecoverySpeed = 2;
         }
 
         public bool RayCast(Vector3 o, Vector3 d, out float distance, out Vector3 normal)
@@ -46,14 +48,20 @@ namespace Kokoro2.Physics
             return intersection;
         }
 
-        public bool RayCast(Vector3 o, Vector3 d, out float distance, out Vector3 normal, out BroadPhaseEntry target)
+        public bool RayCast(Vector3 o, Vector3 d, out float[] distance, out Vector3[] normal, out BroadPhaseEntry[] target)
         {
-            RayCastResult res;
-            bool intersection = world.RayCast(new BEPUutilities.Ray(o, d), out res);
+            List<RayCastResult> res = new List<RayCastResult>();
+            bool intersection = world.RayCast(new BEPUutilities.Ray(o, d), 1000f, res);
 
-            normal = res.HitData.Normal;
-            distance = res.HitData.T;
-            target = res.HitObject;
+            normal = new Vector3[res.Count];
+            distance = new float[res.Count];
+            target = new BroadPhaseEntry[res.Count];
+            for (int i = 0; i < res.Count; i++)
+            {
+                normal[i] = res[i].HitData.Normal;
+                distance[i] = res[i].HitData.T;
+                target[i] = res[i].HitObject;
+            }
 
             return intersection;
         }
@@ -61,16 +69,17 @@ namespace Kokoro2.Physics
         public void Update(double interval)
         {
             world.Update();
-            CollisionDetectionSettings.AllowedPenetration = 0.0001f;
         }
 
         public void AddEntity<T>(BEPUBody<T> b) where T : BEPUphysics.Entities.Entity
         {
+            b.body.Tag = tagCnt++;
             world.Add(b.body);
         }
 
         public void AddEntity(ISpaceObject m)
         {
+            m.Tag = tagCnt++;
             world.Add(m);
         }
 

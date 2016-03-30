@@ -1210,7 +1210,7 @@ namespace Kokoro2.Math
                 Row3 == other.Row3;
         }
 
-        public static explicit operator float[](Matrix4 mat)
+        public static explicit operator float[] (Matrix4 mat)
         {
             return new float[]{
                 mat.M11, mat.M12, mat.M13, mat.M14,
@@ -1220,6 +1220,12 @@ namespace Kokoro2.Math
             };
         }
         #endregion
+
+        public static Matrix4 CreateFromQuaternion(Quaternion a)
+        {
+            var av = a.ToAxisAngle();
+            return CreateFromAxisAngle(av.Xyz, av.W);
+        }
 
         public static implicit operator BEPUutilities.Matrix(Matrix4 mat)
         {

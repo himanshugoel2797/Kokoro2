@@ -106,7 +106,16 @@
     <None Include="Resources\Proc\Track_Path\track_0_path.ko">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\Proc\Track_Path\track_1_col.ko">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Proc\Track_Path\track_1_path.ko">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Proc\Track_Vis\track_0.ko">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Proc\Track_Vis\track_1.ko">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Resources\RAW\Car_Vis\car1_0.mtl" />
