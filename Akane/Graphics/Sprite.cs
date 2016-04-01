@@ -128,7 +128,7 @@ namespace Akane.Graphics
                             case "TextureAtlas":
                                 string tmpImg = doc["imagePath"];
                                 if (!Path.IsPathRooted(tmpImg)) tmpImg = Path.Combine(Path.GetDirectoryName(spritePath), tmpImg);
-                                spriteImg = new Texture(tmpImg);
+                                spriteImg = new Texture(tmpImg, true);
                                 break;
                             case "sprite":
                                 Frames[doc["n"]] = new FrameData()

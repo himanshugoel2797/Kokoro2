@@ -37,7 +37,7 @@ namespace Kokoro2.Engine
         private static readonly object locker = new object();
         protected int id;
         private string file;
-        bool loaded = false;
+        bool loaded = false, srgba;
 
         private static Dictionary<string, int> loadedImages = new Dictionary<string, int>();
 
@@ -90,7 +90,7 @@ namespace Kokoro2.Engine
                 loaded = true;  //There's nothing to load
             }
         }
-        public Texture(string filename, bool delayedLoad = false)
+        public Texture(string filename, bool srgba, bool delayedLoad = false)
         {
             //TODO make this write to a texture array where the ID returned is the layer, additionally maintain a GPU buffer with the normalized sizes and offsets of the textures in their respective layers
             lock (locker)
@@ -105,12 +105,13 @@ namespace Kokoro2.Engine
                     //If requested, don't load the texture yet
                     if (!delayedLoad)
                     {
-                        id = base.Create(filename);
+                        id = base.Create(filename, srgba);
                         loadedImages[filename] = id;
                         loaded = true;
                     }
                     else
                     {
+                        this.srgba = srgba;
                         this.file = filename;
                         loaded = false;
                     }
@@ -127,12 +128,12 @@ namespace Kokoro2.Engine
                 ObjectAllocTracker.NewCreated(this, id, " Duplicate");
             }
         }
-        public Texture(Image img)
+        public Texture(Image img, bool srgba)
         {
             lock (locker)
             {
                 loaded = true;
-                this.id = base.Create(img);
+                this.id = base.Create(img, srgba);
                 ObjectAllocTracker.NewCreated(this, id, "IMAGE" + id);
             }
         }
@@ -155,7 +156,7 @@ namespace Kokoro2.Engine
             {
                 lock (locker)
                 {
-                    id = base.Create(file);
+                    id = base.Create(file, srgba);
                     loadedImages[file] = id;
                     loaded = true;
                 }

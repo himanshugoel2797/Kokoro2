@@ -59,6 +59,7 @@ namespace Kokoro2.OpenGL.PC
         {
             //TODO Implement Resize handler
             SetViewport(new Math.Vector4(0, 0, Window.ClientSize.Width, Window.ClientSize.Height));
+            (this as Engine.GraphicsContext)?.WindowResized?.Invoke(this as Engine.GraphicsContext);
             InitializeMSAA(0);
         }
 

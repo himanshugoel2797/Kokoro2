@@ -388,6 +388,9 @@ namespace Kokoro2.Engine
         /// The Resource Manager handler - Use for Async resource loading
         /// </summary>
         public Action<GraphicsContext> ResourceManager { get; set; }
+
+        public Action<GraphicsContext> WindowResized { get; set; }
+
         /// <summary>
         /// Start the game loop
         /// </summary>

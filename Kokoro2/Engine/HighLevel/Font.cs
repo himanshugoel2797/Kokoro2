@@ -92,7 +92,7 @@ namespace Kokoro2.Engine.HighLevel
         {
             if (!fontCache.ContainsKey(text))
             {
-                box.Materials[0].AlbedoMap = new Texture(DrawText(text, fnt, Color.FromArgb((int)(ForeColor.W * 255), (int)(ForeColor.X * 255), (int)(ForeColor.Y * 255), (int)(ForeColor.Z * 255)), Color.Transparent));
+                box.Materials[0].AlbedoMap = new Texture(DrawText(text, fnt, Color.FromArgb((int)(ForeColor.W * 255), (int)(ForeColor.X * 255), (int)(ForeColor.Y * 255), (int)(ForeColor.Z * 255)), Color.Transparent), false);
             }
             else
             {

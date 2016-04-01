@@ -65,8 +65,8 @@ namespace AGRacing
             this.controller = controller;
             Mesh = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false);
 
-            Mesh.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2] + "tex.png");
-            Mesh.Materials[0].GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[2] + "roughness.png");
+            Mesh.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2] + "tex.png", true);
+            Mesh.Materials[0].GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[2] + "roughness.png", false);
             Mesh.PushShader(new ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
 
             if (parts.Length > 3)

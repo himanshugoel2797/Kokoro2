@@ -49,12 +49,12 @@ namespace AGRacing
             //collisionVis.World = Matrix4.CreateTranslation(225, -55, -50);
             collisionVis = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false);
 
-            collisionVis.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2]);
+            collisionVis.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true);
             collisionVis.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default")));
 
 #endif
 
-            trackModel.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2]);
+            trackModel.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true);
             trackModel.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
 
             trackPath = VertexMesh.GetVertices("Resources/Proc/Track_Path/" + parts[0] + "_path.ko", false);
@@ -81,8 +81,8 @@ namespace AGRacing
 
             //BEPUphysics.Entities.Prefabs.Box b = new BEPUphysics.Entities.Prefabs.Box(-Vector3.UnitY * 55 + -Vector3.UnitZ * 50 + Vector3.UnitX * 225, 100, 100, 100);
             //phys.AddEntity(b);
-            sun = new DirectionalLight(context, -Vector3.UnitY * 1f + Vector3.UnitX * 0f);
-            sun.ShadowResolution = 8192;
+            sun = new DirectionalLight(context, -Vector3.UnitY * 0.75f + Vector3.UnitX * 0.25f);
+            sun.ShadowResolution = 2048;
             sun.CastShadows = true;
             sun.InitializeShadowBuffer(context);
             sun.ShadowBoxSize = new BoundingBox(trackModel.Bound.Min, trackModel.Bound.Max);
@@ -90,6 +90,13 @@ namespace AGRacing
             //sun.ShadowBoxSize = new BoundingBox(new Vector3(-50, -50, -5), new Vector3(50, 50, 200));
 
             //blur = new TextureBlurFilter((int)context.WindowSize.X, (int)context.WindowSize.Y, PixelComponentType.RGBA8, context);
+            context.WindowResized += (con) =>
+            {
+                lights = new LightPass((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
+                lights.AddLight(sun);
+                gbuf = new GBuffer((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
+            };
+
             lights = new LightPass((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
             lights.AddLight(sun);
 

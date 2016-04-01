@@ -185,7 +185,7 @@ namespace Akane.World
                     MinMaxTileset.Add(new Vector2(t.FirstGid, CalculateFinalGID(t.FirstGid, (int)t.Image.Width, (int)t.Image.Height, t.TileWidth, t.TileHeight)));
 
                     manager.context.Clear(0, 0, 0, 0);
-                    quad.Materials[0].AlbedoMap = new Texture(t.Image.Source);
+                    quad.Materials[0].AlbedoMap = new Texture(t.Image.Source, true);
                     quad.Materials[0].Shader["TransparentColor"] = new Vector3(t.Image.Trans.R / 255f, t.Image.Trans.G / 255f, t.Image.Trans.B / 255f);
 
                     quad.Draw(manager.context);
@@ -201,7 +201,7 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
 
                     if (t.Properties.ContainsKey("HeightMap"))
                     {
-                        HeightMaps.Add(new Texture(t.Properties["HeightMap"]));
+                        HeightMaps.Add(new Texture(t.Properties["HeightMap"], false));
                     }
                     else
                     {

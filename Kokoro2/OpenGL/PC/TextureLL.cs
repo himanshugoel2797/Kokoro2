@@ -74,7 +74,7 @@ namespace Kokoro2.OpenGL.PC
             return id;
         }
 
-        protected int Create(Image img)
+        protected int Create(Image img, bool srgb)
         {
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
@@ -87,9 +87,11 @@ namespace Kokoro2.OpenGL.PC
 
             BitmapData bmp_data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            GL.TexStorage2D(TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, bmp_data.Width, bmp_data.Height);
+            /*GL.TexStorage2D(TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, bmp_data.Width, bmp_data.Height);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, bmp_data.Width, bmp_data.Height, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            */
+            GL.TexImage2D(TextureTarget.Texture2D, 0, srgb ? PixelInternalFormat.Srgb8Alpha8 : PixelInternalFormat.Rgba8, width, height, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
 
             bmp.UnlockBits(bmp_data);
             bmp.Dispose();
@@ -107,10 +109,10 @@ namespace Kokoro2.OpenGL.PC
             return id;
         }
 
-        protected int Create(string filename)
+        protected int Create(string filename, bool srgb)
         {
             Bitmap bmp = new Bitmap(filename);
-            int id = Create(bmp);
+            int id = Create(bmp, srgb);
             bmp.Dispose();
             return id;
         }

@@ -116,6 +116,7 @@ namespace Kokoro2.OpenGL.PC
             public int pos;
             public object obj;
             public VarType type;
+            public bool dirty;
         }
         //Using a dictionary with the name as the key helps prevent unnecessary entries in the variables list, old entries get overwritten automatically
         private Dictionary<string, shaderVars> variables;
@@ -129,6 +130,16 @@ namespace Kokoro2.OpenGL.PC
 
             for (int i = 0; i < variables.Count; i++)
             {
+                if (!variables[i].dirty) continue;
+                else variables[i] = new shaderVars()
+                {
+                    metadata = variables[i].metadata,
+                    obj = variables[i].obj,
+                    pos = variables[i].pos,
+                    type = variables[i].type,
+                    dirty = false
+                };
+
                 switch (variables[i].type)
                 {
                     case VarType.Float:
@@ -218,7 +229,8 @@ namespace Kokoro2.OpenGL.PC
             {
                 obj = val,
                 pos = GetUniformLocation(this.id, name),
-                type = VarType.Matrix4
+                type = VarType.Matrix4,
+                dirty = true
             };
         }
 
@@ -228,7 +240,8 @@ namespace Kokoro2.OpenGL.PC
             {
                 obj = val,
                 pos = GetUniformLocation(this.id, name),
-                type = VarType.Matrix2
+                type = VarType.Matrix2,
+                dirty = true
             };
         }
 
@@ -238,7 +251,8 @@ namespace Kokoro2.OpenGL.PC
             {
                 obj = val,
                 pos = GetUniformLocation(this.id, name),
-                type = VarType.Matrix3
+                type = VarType.Matrix3,
+                dirty = true
             };
         }
 
@@ -248,7 +262,8 @@ namespace Kokoro2.OpenGL.PC
             {
                 obj = val,
                 pos = GetUniformLocation(this.id, name),
-                type = VarType.Vector4
+                type = VarType.Vector4,
+                dirty = true
             };
         }
 
@@ -258,7 +273,8 @@ namespace Kokoro2.OpenGL.PC
             {
                 obj = val,
                 pos = GetUniformLocation(this.id, name),
-                type = VarType.Vector3
+                type = VarType.Vector3,
+                dirty = true
             };
         }
 
@@ -268,17 +284,21 @@ namespace Kokoro2.OpenGL.PC
             {
                 obj = val,
                 pos = GetUniformLocation(this.id, name),
-                type = VarType.Vector2
+                type = VarType.Vector2,
+                dirty = true
             };
         }
 
         protected void aSetShaderFloat(string name, float val)
         {
+            if (variables.ContainsKey(name) && (float)variables[name].obj == val) return;
+
             variables[name] = new shaderVars()
             {
                 obj = val,
                 pos = GetUniformLocation(this.id, name),
-                type = VarType.Float
+                type = VarType.Float,
+                dirty = true
             };
         }
 
@@ -292,7 +312,8 @@ namespace Kokoro2.OpenGL.PC
                     metadata = variables[name].metadata,
                     obj = tex,
                     pos = variables[name].pos,
-                    type = VarType.Texture
+                    type = VarType.Texture,
+                    dirty = true
                 };
             }
             else
@@ -302,7 +323,8 @@ namespace Kokoro2.OpenGL.PC
                     metadata = texUnit++,
                     obj = tex,
                     pos = GetUniformLocation(this.id, name),
-                    type = VarType.Texture
+                    type = VarType.Texture,
+                    dirty = true
                 };
             }
         }
@@ -316,7 +338,8 @@ namespace Kokoro2.OpenGL.PC
                     metadata = variables[name].metadata,
                     obj = tex,
                     pos = variables[name].pos,
-                    type = VarType.CubeMap
+                    type = VarType.CubeMap,
+                    dirty = true
                 };
             }
             else
@@ -326,7 +349,8 @@ namespace Kokoro2.OpenGL.PC
                     metadata = texUnit++,
                     obj = tex,
                     pos = GetUniformLocation(this.id, name),
-                    type = VarType.CubeMap
+                    type = VarType.CubeMap,
+                    dirty = true
                 };
             }
         }

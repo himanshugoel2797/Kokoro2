@@ -42,7 +42,7 @@ namespace AGRacing.Test.TrackLoadTest
                 context.DepthClamp = true;
                 context.ZFar = 1000;
                 context.ZNear = 0.1f;
-                //context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
+                context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
                 context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
                 //context.Wireframe = true;
 
