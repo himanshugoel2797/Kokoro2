@@ -1,6 +1,8 @@
 ﻿using BEPUphysics.BroadPhaseEntries;
 using BEPUphysics.Entities.Prefabs;
 using Kokoro2.Engine;
+using Kokoro2.Engine.HighLevel.Lights;
+using Kokoro2.Engine.HighLevel.Rendering;
 using Kokoro2.Engine.Prefabs;
 using Kokoro2.Engine.Shaders;
 using Kokoro2.Math;
@@ -15,11 +17,19 @@ namespace AGRacing
 {
     class Track : IDisposable
     {
+
+        public bool Reverse { get; set; }
+
         MobileMesh collisionMesh;
         Model trackModel;
         float[] trackPath;
         PhysicsWorld phys;
         Ship[] ships;
+
+        GBuffer gbuf;
+        FullScreenQuad fsq;
+        DirectionalLight sun;
+        LightPass lights;
 
 #if DEBUG
         Model collisionVis;
@@ -27,7 +37,7 @@ namespace AGRacing
 
         public string Name { get; private set; }
 
-        public Track(string infoLine)
+        public Track(string infoLine, GraphicsContext context)
         {
             string[] parts = infoLine.Split(',');
             if (parts.Length != 3) throw new ArgumentException();
@@ -38,18 +48,14 @@ namespace AGRacing
             //collisionVis = new Kokoro2.Engine.Prefabs.Box(100, 100, 100);
             //collisionVis.World = Matrix4.CreateTranslation(225, -55, -50);
             collisionVis = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false);
-            for (int i = 0; i < collisionVis.Materials.Length; i++)
-            {
-                collisionVis.Materials[i].AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2]);
-                collisionVis.Materials[i].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default"));
-            }
+
+            collisionVis.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2]);
+            collisionVis.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default")));
+
 #endif
 
-            for (int i = 0; i < trackModel.Materials.Length; i++)
-            {
-                trackModel.Materials[i].AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2]);
-                trackModel.Materials[i].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default"));
-            }
+            trackModel.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2]);
+            trackModel.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
 
             trackPath = VertexMesh.GetVertices("Resources/Proc/Track_Path/" + parts[0] + "_path.ko", false);
 
@@ -75,7 +81,21 @@ namespace AGRacing
 
             //BEPUphysics.Entities.Prefabs.Box b = new BEPUphysics.Entities.Prefabs.Box(-Vector3.UnitY * 55 + -Vector3.UnitZ * 50 + Vector3.UnitX * 225, 100, 100, 100);
             //phys.AddEntity(b);
+            sun = new DirectionalLight(context, -Vector3.UnitY * 1f + Vector3.UnitX * 0f);
+            sun.ShadowResolution = 8192;
+            sun.CastShadows = true;
+            sun.InitializeShadowBuffer(context);
+            sun.ShadowBoxSize = new BoundingBox(trackModel.Bound.Min, trackModel.Bound.Max);
+            //sun.ShadowBoxLocation = new Vector3(0, 0, 0);
+            //sun.ShadowBoxSize = new BoundingBox(new Vector3(-50, -50, -5), new Vector3(50, 50, 200));
 
+            //blur = new TextureBlurFilter((int)context.WindowSize.X, (int)context.WindowSize.Y, PixelComponentType.RGBA8, context);
+            lights = new LightPass((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
+            lights.AddLight(sun);
+
+            gbuf = new GBuffer((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
+            fsq = new FullScreenQuad();
+            fsq.Shader = new ShaderProgram(VertexShader.Load("FrameBuffer"), FragmentShader.Load("FrameBuffer"));
         }
 
         #region Ideal Race Line Controls 
@@ -84,6 +104,8 @@ namespace AGRacing
             if (b < 0) b = trackPath.Length / 3 - b;
             if (b % 2 == 1) b++;
             b = b % (trackPath.Length / 3);
+
+            if (Reverse) b = (trackPath.Length / 3 - 1) - b;
 
             b *= 3;
             return new Vector3(trackPath[b + 0], trackPath[b + 1], trackPath[b + 2]);
@@ -134,6 +156,11 @@ namespace AGRacing
             t.Position = s.Position;
             phys.AddEntity(t);
             t.CollisionInformation.Tag = t.Tag;
+
+            Vector3 min, max;
+            s.GetBounds(out min, out max);
+            //sun.ShadowBoxSize = new BoundingBox(min, max);
+
         }
 
         public void Dispose()
@@ -141,19 +168,64 @@ namespace AGRacing
             ((IDisposable)trackModel).Dispose();
         }
 
+        bool sceneShaddowMapPass = false;
         public void Draw(GraphicsContext context)
         {
-            trackModel.Draw(context);
 
-#if DEBUG
-            context.Wireframe = true;
-            collisionVis.Draw(context);
-            context.Wireframe = false;
-#endif
+            if (!sceneShaddowMapPass)
+            {
+                sceneShaddowMapPass = true;
+                context.FaceCulling = CullMode.Off;
+                sun.SetupShadowPass(context);
+                //context.Wireframe = true;
+                trackModel.PushShader(sun.ShadowShader);
+                trackModel.Draw(context);
+                trackModel.PopShader();
+                sun.EndShadowPass(context);
+                context.FaceCulling = CullMode.Back;
+            }
+            /*
+            //context.Wireframe = false;
             for (int i = 0; i < ships.Length; i++)
             {
-                if (ships[i] != null) ships[i].Draw(context);
+                if (ships[i] != null)
+                {
+                    ships[i].PushShader(sun.ShadowShader);
+                    ships[i].Draw(context);
+                    ships[i].PopShader();
+                }
+            }*/
+
+            gbuf.Bind(context);
+            context.Clear(0, 0, 0, 0);
+            trackModel.Shader["ShadowMap"] = sun.GetShadowMap();
+            trackModel.Shader["sWVP"] = sun.ShadowSpace;
+            trackModel.Shader["ReflectiveNormMap"] = sun.GetNormals();
+            trackModel.Shader["ReflectivePosMap"] = sun.GetPositions();
+            trackModel.Draw(context);
+
+            for (int i = 0; i < ships.Length; i++)
+            {
+                if (ships[i] != null)
+                {
+                    ships[i].Shader["ShadowMap"] = sun.GetShadowMap();
+                    ships[i].Shader["sWVP"] = sun.ShadowSpace;
+                    ships[i].Shader["ReflectiveNormMap"] = sun.GetNormals();
+                    ships[i].Shader["ReflectivePosMap"] = sun.GetPositions();
+                    ships[i].Draw(context);
+                }
             }
+            gbuf.UnBind(context);
+
+            lights.ApplyLights(gbuf, context);
+
+            //fsq.AlbedoMap = blur.ApplyBlur(gbuf["Shadow"], context);
+            //fsq.Draw(context);
+#if DEBUG
+            context.Wireframe = true;
+            //collisionVis.Draw(context);
+            context.Wireframe = false;
+#endif
         }
 
         public bool RayCast(Vector3 origin, Vector3 direction, out float distance, out Vector3 normal)
@@ -166,6 +238,8 @@ namespace AGRacing
 
             distance = 0;
             normal = -direction;
+
+            //Console.WriteLine(sun.ShadowBoxLocation);
 
             for (int i = 0; i < e.Length; i++)
             {
@@ -181,6 +255,7 @@ namespace AGRacing
 
         public void Update(double interval, GraphicsContext context)
         {
+            sun.ShadowBoxLocation = context.Camera.Position;
             phys.Update(interval / 1000d);
 
             for (int i = 0; i < ships.Length; i++)

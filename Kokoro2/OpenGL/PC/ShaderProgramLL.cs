@@ -59,15 +59,21 @@ namespace Kokoro2.OpenGL.PC
 
             //Build the shader name
             string name = "";
+            int stageCount = 0;
             for (int i = 0; i < 5; i++)
             {
-                if (shaderStages[i] != null) name += shaderStages[i].GetID().ToString() + ",";
+                if (shaderStages[i] != null)
+                {
+                    stageCount++;
+                    name += shaderStages[i].GetID().ToString() + ",";
+                }
                 else name += "-1,";
             }
 
 
             if (!programDB.ContainsKey(name))
             {
+                if (stageCount < 2) return;
                 if (!programDB.ContainsKey(shaderName)) //Backup current program
                 {
                     programDB.Add(name, id);     //If the programDB doesn't contain the key, add the program
@@ -102,7 +108,7 @@ namespace Kokoro2.OpenGL.PC
         #region Shader Handler
         private enum VarType
         {
-            Matrix4, Matrix3, Matrix2, Vector4, Vector3, Vector2, Float, Texture
+            Matrix4, Matrix3, Matrix2, Vector4, Vector3, Vector2, Float, Texture, CubeMap
         }
         private struct shaderVars
         {
@@ -156,6 +162,10 @@ namespace Kokoro2.OpenGL.PC
                         Vector4 tmpC = (Vector4)variables[i].obj;
                         GL.ProgramUniform4(id, variables[i].pos, 1, new float[] { tmpC.X, tmpC.Y, tmpC.Z, tmpC.W });
                         break;
+                    case VarType.CubeMap:
+                        (variables[i].obj as CubeMapTexture).Bind(variables[i].metadata);
+                        GL.ProgramUniform1(id, variables[i].pos, variables[i].metadata);
+                        break;
                 }
             }
 
@@ -196,6 +206,7 @@ namespace Kokoro2.OpenGL.PC
             if (variables.ContainsKey(name)) return variables[name].pos;
             else return GL.GetUniformLocation(id, name);
         }
+
 
         protected void aSetShaderBool(string name, bool val)
         {
@@ -292,6 +303,30 @@ namespace Kokoro2.OpenGL.PC
                     obj = tex,
                     pos = GetUniformLocation(this.id, name),
                     type = VarType.Texture
+                };
+            }
+        }
+
+        protected void aSetCubeMapTexture(string name, CubeMapTexture tex)
+        {
+            if (variables.ContainsKey(name))
+            {
+                variables[name] = new shaderVars()
+                {
+                    metadata = variables[name].metadata,
+                    obj = tex,
+                    pos = variables[name].pos,
+                    type = VarType.CubeMap
+                };
+            }
+            else
+            {
+                variables[name] = new shaderVars()
+                {
+                    metadata = texUnit++,
+                    obj = tex,
+                    pos = GetUniformLocation(this.id, name),
+                    type = VarType.CubeMap
                 };
             }
         }

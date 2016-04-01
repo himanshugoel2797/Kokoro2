@@ -31,6 +31,13 @@ namespace Kokoro2.OpenGL.PC
             }
         }
 
+        protected int Create(int src, int layer, Engine.PixelComponentType pfI)
+        {
+            int id = GL.GenTexture();
+            GL.TextureView(id, TextureTarget.Texture2D, src, EnumConverters.EPixelComponentType(pfI), 0, 0, layer, 1);
+            return id;
+        }
+
         protected int Create(int width, int height, Kokoro2.Engine.PixelComponentType pfI, Kokoro2.Engine.PixelFormat pf, Kokoro2.Engine.PixelType type, bool multisample = false, int sampleCount = 1)
         {
             this.width = width;
@@ -42,12 +49,18 @@ namespace Kokoro2.OpenGL.PC
 
             if (!multisample)
             {
-                GL.TexImage2D(TextureTarget.Texture2D, 0, EnumConverters.EPixelComponentType(pfI), width, height, 0,
-                    EnumConverters.EPixelFormat(pf), EnumConverters.EPixelType(type), (IntPtr)0);
+                //if (pfI != Engine.PixelComponentType.D32S8 && pfI != Engine.PixelComponentType.D32 && pfI != Engine.PixelComponentType.D24S8)
+                //{
+                //    GL.TexStorage2D(TextureTarget2d.Texture2D, 1, (SizedInternalFormat)EnumConverters.EPixelComponentType(pfI), width, height);
+                //    GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, EnumConverters.EPixelFormat(pf), EnumConverters.EPixelType(type), (IntPtr)0);
+                //}else
+                {
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, EnumConverters.EPixelComponentType(pfI), width, height, 0, EnumConverters.EPixelFormat(pf), EnumConverters.EPixelType(type), (IntPtr)0);
+                }
             }
             else
             {
-                GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, sampleCount, EnumConverters.EPixelComponentType(pfI), width, height, false);
+                GL.TexStorage2DMultisample(TextureTargetMultisample2d.Texture2DMultisample, sampleCount, (SizedInternalFormat)EnumConverters.EPixelComponentType(pfI), width, height, false);
             }
 
             // We haven't uploaded mipmaps, so disable mipmapping (otherwise the texture will not appear).
@@ -74,41 +87,9 @@ namespace Kokoro2.OpenGL.PC
 
             BitmapData bmp_data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmp_data.Width, bmp_data.Height, 0,
-                OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
-
-            bmp.UnlockBits(bmp_data);
-            bmp.Dispose();
-
-            // We haven't uploaded mipmaps, so disable mipmapping (otherwise the texture will not appear).
-            // On newer video cards, we can use GL.GenerateMipmaps() or GL.Ext.GenerateMipmaps() to create
-            // mipmaps automatically. In that case, use TextureMinFilter.LinearMipmapLinear to enable them.
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,  (int)TextureWrapMode.Repeat);
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            return id;
-        }
-
-        protected int Create(string filename)
-        {
-
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, id);
-
-            Bitmap bmp = new Bitmap(filename);
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-            this.width = bmp.Width;
-            this.height = bmp.Height;
-
-            BitmapData bmp_data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmp_data.Width, bmp_data.Height, 0,
-                OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
+            GL.TexStorage2D(TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, bmp_data.Width, bmp_data.Height);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, bmp_data.Width, bmp_data.Height, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             bmp.UnlockBits(bmp_data);
             bmp.Dispose();
@@ -123,6 +104,14 @@ namespace Kokoro2.OpenGL.PC
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
+            return id;
+        }
+
+        protected int Create(string filename)
+        {
+            Bitmap bmp = new Bitmap(filename);
+            int id = Create(bmp);
+            bmp.Dispose();
             return id;
         }
 
@@ -141,6 +130,11 @@ namespace Kokoro2.OpenGL.PC
         protected void Delete(int id)
         {
             GL.DeleteTexture(id);
+        }
+
+        protected void SetCompare(bool a)
+        {
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)(a ? TextureCompareMode.CompareRefToTexture : TextureCompareMode.None));
         }
 
         protected void BindToFBuffer(Engine.FrameBufferAttachments texUnit, int id)
@@ -170,15 +164,16 @@ namespace Kokoro2.OpenGL.PC
             GL.FramebufferTexture(FramebufferTarget.Framebuffer, attach, 0, 0);
         }
 
-        protected void SetWrapX(bool mode)
+        protected void SetWrapX(bool mode, int id)
         {
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToBorder));
-
+            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
         }
 
-        protected void SetWrapY(bool mode)
+        protected void SetWrapY(bool mode, int id)
         {
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToBorder));
+            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
         }
     }
 }

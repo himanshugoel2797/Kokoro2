@@ -2,7 +2,7 @@
 
 // Interpolated values from the vertex shaders
 in vec2 UV;
-in vec2 logBufDat;
+
 
 // Ouput data
 layout(location = 0) out vec4 color;

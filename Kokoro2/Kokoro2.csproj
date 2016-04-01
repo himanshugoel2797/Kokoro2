@@ -137,6 +137,7 @@
       <DependentUpon>MemoryMonitor.cs</DependentUpon>
     </Compile>
     <Compile Include="Debugger\ObjectAllocTracker.cs" />
+    <Compile Include="Engine\CubeMapTexture.cs" />
     <Compile Include="Engine\FrameBuffer.cs" />
     <Compile Include="Engine\FrameBufferTexture.cs" />
     <Compile Include="Engine\GraphicsContext.cs" />
@@ -146,13 +147,14 @@
     <Compile Include="Engine\HighLevel\CharacterControllers\CharacterControllerBase.cs" />
     <Compile Include="Engine\HighLevel\CharacterControllers\ThirdPersonController.cs" />
     <Compile Include="Engine\HighLevel\Font.cs" />
+    <Compile Include="Engine\HighLevel\Lights\BasicLight.cs" />
+    <Compile Include="Engine\HighLevel\Lights\DirectionalLight.cs" />
+    <Compile Include="Engine\HighLevel\Lights\PointLight.cs" />
     <Compile Include="Engine\HighLevel\Rendering\GBuffer.cs" />
     <Compile Include="Engine\HighLevel\Rendering\Grass.cs" />
-    <Compile Include="Engine\HighLevel\Rendering\LightingEngine.cs" />
     <Compile Include="Engine\HighLevel\Rendering\LightPass.cs" />
-    <Compile Include="Engine\HighLevel\Rendering\LightSource.cs" />
-    <Compile Include="Engine\HighLevel\Rendering\LitMaterial.cs" />
     <Compile Include="Engine\HighLevel\Rendering\RayCaster.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\TextureBlurFilter.cs" />
     <Compile Include="Engine\HighLevel\Rendering\Voxelizer.cs" />
     <Compile Include="Engine\HighLevel\Voxel\VoxelCollection.cs" />
     <Compile Include="Engine\HighLevel\Voxel\VoxelChunk.cs" />
@@ -179,7 +181,6 @@
     <Compile Include="Engine\SceneGraph\ITransitionEvaluator.cs" />
     <Compile Include="Engine\SceneGraph\ObjectBatch.cs" />
     <Compile Include="Engine\SceneGraph\SceneManager.cs" />
-    <Compile Include="Engine\SceneGraph\ObjectManager.cs" />
     <Compile Include="Engine\Shaders\ComputeShader.cs" />
     <Compile Include="Engine\Shaders\FragmentShader.cs" />
     <Compile Include="Engine\Shaders\GeometryShader.cs" />
@@ -188,6 +189,8 @@
     <Compile Include="Math\ContainmentType.cs" />
     <Compile Include="Math\Plane.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
+    <Compile Include="Math\Vector2I.cs" />
+    <Compile Include="OpenGL\PC\CubeMapTextureLL.cs" />
     <Compile Include="Physics\BEPUBody.cs" />
     <Compile Include="Physics\PhysicsWorld.cs" />
     <Compile Include="Engine\Shaders\Shader.cs" />

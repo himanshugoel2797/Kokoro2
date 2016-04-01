@@ -30,19 +30,26 @@ namespace AGRacing.Test.TrackLoadTest
         {
             if (!ResourcesLoaded)
             {
-                track = ResourceLoader.LoadTrack("Test Track2");
+                track = ResourceLoader.LoadTrack("Test Track2", context);
                 s1 = ResourceLoader.LoadShip("Fiel F35", new HumanController());
 
+                track.Reverse = true;
                 track.AddShip(0, s1);
 
                 context.DepthWrite = true;
                 context.FaceCulling = CullMode.Back;
                 context.DepthFunction = DepthFunc.LEqual;
+                context.DepthClamp = true;
                 context.ZFar = 1000;
                 context.ZNear = 0.1f;
                 //context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
                 context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
                 //context.Wireframe = true;
+
+                if(context.Camera as FirstPersonCamera != null)
+                {
+                    context.Camera.Position = track.GetPosition(0);
+                }
 
                 ResourcesLoaded = true;
             }
@@ -53,21 +60,6 @@ namespace AGRacing.Test.TrackLoadTest
             if (ResourcesLoaded)
             {
                 context.Clear(0, 0.5f, 1.0f, 0);
-
-
-                //Vector3 dir = track.GetDirection(cnt);
-                //Vector3 pos = (1.0f - cnt3) * track.GetPosition(cnt) + (cnt3) * track.GetPosition(cnt + 1);
-                //cnt3 += 0.1f;
-
-                //Matrix4 rot = new Matrix4(new Vector4(dir, 0), new Vector4(Vector3.UnitY, 0), new Vector4(Vector3.Normalize(Vector3.Cross(dir, Vector3.UnitY)), 0), Vector4.UnitW);
-                //car.World = Matrix4.CreateRotationY(-1.57f) * rot * Matrix4.CreateTranslation(pos);
-
-                //if (cnt3 >= 1.0f)
-                //{
-                //    cnt += 2;
-                //    cnt3 = 0;
-                //}
-
 
                 track.Draw(context);
 
@@ -81,7 +73,6 @@ namespace AGRacing.Test.TrackLoadTest
         {
             if (ResourcesLoaded)
             {
-                //Console.WriteLine(interval);
                 track.Update(interval, context);
                 var tmpCam = context.Camera as FollowPointCamera;
 
@@ -89,15 +80,21 @@ namespace AGRacing.Test.TrackLoadTest
                 {
                     int index = s1.findNearestTrackPoint(track);
 
-                    tmpCam.Position = s1.Position - (s1.MovementDirection + s1.PhysicalFront)/2 * 5;
+                    float camDist = 50 - (float)Math.Min(50, Math.Pow(Vector3.Dot(s1.PhysicalFront, s1.Velocity) / (Vector3.Dot(s1.PhysicalFront, s1.MovementDirection) * 100), 4));
+                    float turningFactor = (1 - Vector3.Dot(s1.MovementDirection, s1.PhysicalFront));
 
-                    //if (s1.isGrounded)
-                    {
-                        tmpCam.Position += Vector3.UnitY * 1.5f;
-                    }
+                    camDist /= 10;
+                    camDist -= turningFactor * 2;
+                    if (camDist > 5) camDist = 5;
+                    if (camDist < 2) camDist = 2;
+                    camDist *= 1.5f;
 
-                    tmpCam.Direction = -(tmpCam.Position - s1.Position);
-                    tmpCam.Up = Vector3.UnitY;
+                    tmpCam.Position = s1.Position - (s1.MovementDirection + s1.PhysicalFront) / 2 * camDist;
+                    tmpCam.Position += Vector3.UnitY * 1.5f;
+                    tmpCam.Direction = -(tmpCam.Position - s1.Position) + s1.PhysicalFront * 5;
+                    tmpCam.Up = s1.prevUp;
+                    tmpCam.Position += Vector3.UnitY * 1.0f;
+
                     context.Camera = tmpCam;
                 }
                 context.Camera.Update(interval, context);

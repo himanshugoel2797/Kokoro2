@@ -133,6 +133,18 @@ namespace Kokoro2.Engine
             }
         }
 
+        public bool DepthClamp
+        {
+            get
+            {
+                return base.GetDepthClamp();
+            }
+            set
+            {
+                base.SetDepthClamp(value);
+            }
+        }
+
         /// <summary>
         /// Get/Set the Depth Function
         /// </summary>

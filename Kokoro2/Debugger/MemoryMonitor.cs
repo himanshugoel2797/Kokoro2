@@ -111,7 +111,7 @@ namespace Kokoro2.Debug
         #region GL Status
         public void PostGLStatus(GraphicsContext context)
         {
-            this.Invoke(new MethodInvoker(() =>
+            this.BeginInvoke(new MethodInvoker(() =>
             {
                 glStatusList.Items[0].SubItems[1] =
                     new ListViewItem.ListViewSubItem(glStatusList.Items[0], context.Wireframe.ToString());
@@ -140,7 +140,8 @@ namespace Kokoro2.Debug
                    ;
                 glStatusList.Items[9].SubItems[1] =
                     new ListViewItem.ListViewSubItem(glStatusList.Items[9], context.Viewport.ToString());
-            }));
+            }
+            ));
         }
         #endregion
 
@@ -188,7 +189,7 @@ namespace Kokoro2.Debug
         {
             try
             {
-                this.Invoke(new MethodInvoker(() =>
+                this.BeginInvoke(new MethodInvoker(() =>
                 {
                     objProperties.Items.Clear();
 
@@ -196,8 +197,8 @@ namespace Kokoro2.Debug
                     {
                         objProperties.Items.Add(
 
-                            new ListViewItem(new string[] { 
-                            t.Name, 
+                            new ListViewItem(new string[] {
+                            t.Name,
                             sizes[t].ToString(),
                             totalCounts[t].ToString(),
                             objects[t].ToString(),
@@ -207,7 +208,8 @@ namespace Kokoro2.Debug
                             );
 
                     }
-                }));
+                }
+                ));
             }
             catch (ObjectDisposedException) { }
             catch (InvalidOperationException) { }
@@ -220,7 +222,6 @@ namespace Kokoro2.Debug
                 curFrameObjectsAlloc[key] = 0;
                 curFrameObjectsDeAlloc[key] = 0;
             }
-            UpdateList();
         }
         #endregion
 

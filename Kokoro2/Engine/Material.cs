@@ -14,8 +14,8 @@ namespace Kokoro2.Engine
     {
         public string Name { get; set; }
         public Texture AlbedoMap { get; set; }
-        public Texture DerivativeAOCavityMicrosurfaceMap { get; set; }  //Derivative map in R, AO in G, cavity in B, microsurface in A
-        public Texture ReflectivityMap { get; set; }
+        public Texture SpecularMap { get; set; }
+        public Texture GlossinessMap { get; set; }
         public ShaderProgram Shader { get; set; }
 
         public virtual void Apply(GraphicsContext context, Model m)
@@ -27,10 +27,12 @@ namespace Kokoro2.Engine
             Shader["ZFar"] = context.ZFar;
             Shader["EyePos"] = context.Camera.Position;
             Shader["EyeDir"] = context.Camera.Direction;
+            Shader["Fcoef"] = 2.0f / (float)System.Math.Log(context.ZFar + 1.0, 2);
 
             if (AlbedoMap != null) Shader["AlbedoMap"] = AlbedoMap;
-            if (DerivativeAOCavityMicrosurfaceMap != null) Shader["DerivativeAOCavityMicrosurfaceMap"] = DerivativeAOCavityMicrosurfaceMap;
-            if (ReflectivityMap != null) Shader["ReflectivityMap"] = ReflectivityMap;
+            if (GlossinessMap != null) Shader["GlossinessMap"] = GlossinessMap;
+            if (SpecularMap != null) Shader["SpecularMap"] = SpecularMap;
+            else if (AlbedoMap != null) Shader["SpecularMap"] = AlbedoMap;
 
             Shader.Apply(context);
         }

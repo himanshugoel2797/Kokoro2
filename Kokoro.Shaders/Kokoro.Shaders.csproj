@@ -43,6 +43,10 @@
     <EmbeddedResource Include="BlurVertical\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Shadowed\fragment.glsl" />
+    <EmbeddedResource Include="Shadowed\vertex.glsl" />
+    <EmbeddedResource Include="LightShadowBloom\fragment.glsl" />
+    <EmbeddedResource Include="LightShadowBloom\vertex.glsl" />
     <None Include="Fur\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -56,6 +60,8 @@
     <EmbeddedResource Include="LoD\tessEval.glsl" />
     <EmbeddedResource Include="LoD\fragment.glsl" />
     <EmbeddedResource Include="LoD\vertex.glsl" />
+    <EmbeddedResource Include="ShadowMap\fragment.glsl" />
+    <EmbeddedResource Include="ShadowMap\vertex.glsl" />
     <None Include="Radiosity PassB\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -88,6 +94,8 @@
     <None Include="HemisphereSampler\vertex.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <EmbeddedResource Include="DirectionalLight\fragment.glsl" />
+    <EmbeddedResource Include="DirectionalLight\vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ShaderLibrary.cs" />

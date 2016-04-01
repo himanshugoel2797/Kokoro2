@@ -82,7 +82,7 @@ namespace Kokoro2.Engine
 
             id = base.Generate();
 
-            Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
+            //Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
             Add("DepthBuffer", new FrameBufferTexture(width, height, PixelFormat.Depth, PixelComponentType.D32, PixelType.Float), FrameBufferAttachments.DepthAttachment, context); //Attach the depth buffer to the framebuffer
 
             base.CheckError();
@@ -134,7 +134,8 @@ namespace Kokoro2.Engine
             }
             set
             {
-                fbufTextures[key] = value;
+                if (fbufTextures.ContainsKey(key)) fbufTextures[key] = value;
+                else throw new InvalidOperationException("Call 'Add' to register a new framebuffer texture");
             }
         }
 

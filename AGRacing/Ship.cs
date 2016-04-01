@@ -31,13 +31,26 @@ namespace AGRacing
         public Vector3 PhysicalFront = -Vector3.UnitZ;
         public Vector3 PhysicalRight;
         public Vector3 MovementDirection;
+        public Vector3 Velocity
+        {
+            get
+            {
+                return collisionMesh.LinearVelocity;
+            }
+        }
         public float Mass = 100f;
 
-        private float Scale;
+        public float Scale;
         private Vector3 Rotations = Vector3.Zero;
         private Quaternion Orientation;
         private IShipController controller;
         private BEPUphysics.Entities.Entity collisionMesh;
+
+        public ShaderProgram Shader
+        {
+            get { return Mesh.Shader; }
+            set { Mesh.Shader = value; }
+        }
 
 #if DEBUG
         private Model colVis;
@@ -52,11 +65,9 @@ namespace AGRacing
             this.controller = controller;
             Mesh = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false);
 
-            for (int i = 0; i < Mesh.Materials.Length; i++)
-            {
-                Mesh.Materials[i].AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2] + "tex.png");
-                Mesh.Materials[i].Shader = new ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default"));
-            }
+            Mesh.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2] + "tex.png");
+            Mesh.Materials[0].GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[2] + "roughness.png");
+            Mesh.PushShader(new ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
 
             if (parts.Length > 3)
             {
@@ -107,9 +118,25 @@ namespace AGRacing
 
 #if DEBUG
             colVis = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false);
-            colVis.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default"));
-            colVis.Materials[0].AlbedoMap = Mesh.Materials[0].AlbedoMap;
+            colVis.PushShader(new ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
+            colVis.AlbedoMap = Mesh.Materials[0].AlbedoMap;
 #endif
+        }
+
+        public void PushShader(ShaderProgram s)
+        {
+            Mesh.PushShader(s);
+#if DEBUG
+            colVis.PushShader(s);
+#endif
+        }
+
+        public ShaderProgram PopShader()
+        {
+#if DEBUG
+            colVis.PopShader();
+#endif
+            return Mesh.PopShader();
         }
 
         private void CollisionMesh_PositionUpdated(BEPUphysics.Entities.Entity obj)
@@ -179,7 +206,7 @@ namespace AGRacing
 
 #if DEBUG
             context.Wireframe = true;
-            colVis.Draw(context);
+            //colVis.Draw(context);
             context.Wireframe = false;
 #endif
         }
@@ -341,9 +368,29 @@ namespace AGRacing
             return index;
         }
 
-        Vector3 prevUp = Vector3.UnitY;
+        float c = 0;
+        public Vector3 prevUp = Vector3.UnitY;
         public void Update(double interval, GraphicsContext context, Track t)
         {
+            Vector3 r = Vector3.Cross(RealFront, Vector3.UnitY);
+            r.Normalize();
+            int index = findNearestTrackPoint(t);
+            Vector3 tPos = t.GetPosition(index);
+            Vector3 dir = t.GetDirection(index);
+            Vector3 N = Vector3.Cross(dir, PhysicalRight);
+            N.Normalize();
+
+            float angle = Vector3.Dot(N, Vector3.UnitY);
+            angle = (float)Math.Acos(angle);
+
+            if (angle > Math.PI / 2.0f)
+            {
+                dir = -dir;
+                N = Vector3.Cross(dir, PhysicalRight);
+                N.Normalize();
+                angle = Vector3.Dot(N, Vector3.UnitY);
+                angle = (float)Math.Acos(angle);
+            }
 
             isGrounded = false;
             controller.Update(this, t);
@@ -352,12 +399,18 @@ namespace AGRacing
                                                                              0, 0, 0,
                                                                             0, 0, 0);
 
+            float tilt = Vector3.Dot(MovementDirection, PhysicalFront);
+            tilt = (float)Math.Acos(tilt);
+            if (Vector3.Dot(MovementDirection, PhysicalRight) > 0) tilt = -tilt;
+
+            tilt *= 0.75f;
+
             CalcAG(ShipRayLocations.BackLeftBottom, t);
             CalcAG(ShipRayLocations.BackRightBottom, t);
             CalcAG(ShipRayLocations.FrontLeftBottom, t);
             CalcAG(ShipRayLocations.FrontRightBottom, t);
-            Mesh.World = Matrix4.Scale(Scale) * Matrix4.CreateFromQuaternion(Orientation) * Matrix4.CreateTranslation(Position);
-
+            Mesh.World = Matrix4.Scale(Scale) * Matrix4.CreateFromQuaternion(Orientation) * Matrix4.CreateFromAxisAngle(PhysicalRight, -0.2f + 0.05f * (float)Math.Sin(c) + angle) * Matrix4.CreateFromAxisAngle(PhysicalFront, tilt) * Matrix4.CreateTranslation(Position);
+            c += 0.05f;
 
             /*
             float distblB = 0, distbrB = 0, distfrB = 0, distflB = 0, distflS = 0, distfrS = 0, distblS = 0, distbrS = 0, dist = 0;
@@ -384,20 +437,12 @@ namespace AGRacing
             normblS.Normalize();
             normbrS.Normalize();*/
 
-            Vector3 worldRight = Vector3.Cross(PhysicalFront, Vector3.UnitY);
-            worldRight.Normalize();
 
-            Vector3 r = Vector3.Cross(RealFront, Vector3.UnitY);
-            r.Normalize();
-
-            int index = findNearestTrackPoint(t);
-            Vector3 tPos = t.GetPosition(index);
 
             float distB, distL, distR, distF;
             Vector3 nB, nL, nR, nF;
 
 
-            Vector3 dir = t.GetDirection(index);
 
 
             /*t.RayCast(tPos, -Vector3.UnitY, out distB, out nB);
@@ -412,8 +457,6 @@ namespace AGRacing
             (distB - distF)
             );*/
 
-            Vector3 N = Vector3.Cross(dir, worldRight);
-            N.Normalize();
 
 
 
@@ -427,9 +470,9 @@ namespace AGRacing
             Vector3 flat_v = collisionMesh.LinearVelocity;
             flat_v = new Vector3(flat_v.X, 0, flat_v.Z);
 
-            float slip = Vector3.Dot(worldRight, flat_v);
+            float slip = Vector3.Dot(PhysicalRight, flat_v);
 
-            Vector3 anti_slip = -slip * worldRight * 2;
+            Vector3 anti_slip = -slip * PhysicalRight * 2;
             BEPUutilities.Vector3 b_anti_slip = anti_slip;
             collisionMesh.ApplyLinearImpulse(ref b_anti_slip);
 

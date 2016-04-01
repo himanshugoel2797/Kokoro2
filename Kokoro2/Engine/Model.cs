@@ -185,6 +185,33 @@ namespace Kokoro2.Engine
         protected bool IsDataReady = true;
         protected object syncObject = new object();
 
+        private Stack<ShaderProgram> shaderStack;
+        public ShaderProgram Shader
+        {
+            get
+            {
+                if (shaderStack.Count > 0) return shaderStack.Peek();
+                else throw new InvalidOperationException();
+            }
+            set
+            {
+                for (int i = 0; i < Materials.Length; i++)
+                {
+                    Materials[i].Shader = value;
+                }
+            }
+        }
+        public Texture AlbedoMap
+        {
+            set
+            {
+                for (int i = 0; i < Materials.Length; i++)
+                {
+                    Materials[i].AlbedoMap = value;
+                }
+            }
+        }
+
         static Model()
         {
             int numBufs = 4;
@@ -227,6 +254,7 @@ namespace Kokoro2.Engine
         {
             Materials = new Material[] { new Material() };
             DrawMode = Engine.DrawMode.Triangles;
+            shaderStack = new Stack<ShaderProgram>();
 #if DEBUG
             Kokoro2.Debug.ObjectAllocTracker.NewCreated(this, 0, "Model");
 #endif
@@ -237,6 +265,20 @@ namespace Kokoro2.Engine
             Kokoro2.Debug.ObjectAllocTracker.ObjectDestroyed(this, 0, "Model");
         }
 #endif
+
+        public void PushShader(ShaderProgram s)
+        {
+            shaderStack.Push(s);
+            Shader = s;
+        }
+
+        public ShaderProgram PopShader()
+        {
+            ShaderProgram s = null;
+            if (shaderStack.Count > 0) s = shaderStack.Pop();
+            if (shaderStack.Count > 0) Shader = shaderStack.Peek();
+            return s;
+        }
 
         //Use this to build a list of all the commands to send to the appropriate multidraw indirect buffers
         public void Draw(GraphicsContext context)

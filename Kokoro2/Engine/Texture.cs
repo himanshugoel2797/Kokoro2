@@ -57,11 +57,19 @@ namespace Kokoro2.Engine
             }
         }
 
+        public bool Compare
+        {
+            set
+            {
+                SetCompare(value);
+            }
+        }
+
         public bool WrapX
         {
             set
             {
-                SetWrapX(value);
+                SetWrapX(value, id);
             }
         }
 
@@ -69,7 +77,7 @@ namespace Kokoro2.Engine
         {
             set
             {
-                SetWrapY(value);
+                SetWrapY(value, id);
             }
         }
 

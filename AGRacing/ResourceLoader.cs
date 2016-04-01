@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kokoro2.Engine;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace AGRacing
                 string[] lns = File.ReadAllLines("Resources/Proc/Data/Tracks.txt");
                 TrackNames = new string[lns.Length];
 
-                for(int i = 0; i < lns.Length; i++)
+                for (int i = 0; i < lns.Length; i++)
                 {
                     var tmp = lns[i].Split(',');
                     if (tmp.Length != 3)
@@ -52,7 +53,7 @@ namespace AGRacing
                 lns = File.ReadAllLines("Resources/Proc/Data/Ships.txt");
                 ShipNames = new string[lns.Length];
 
-                for(int i = 0; i < lns.Length; i++)
+                for (int i = 0; i < lns.Length; i++)
                 {
                     var tmp = lns[i].Split(',');
                     if (tmp.Length < 3)
@@ -67,10 +68,10 @@ namespace AGRacing
             t.Start();
         }
 
-        public static Track LoadTrack(string name)
+        public static Track LoadTrack(string name, GraphicsContext c)
         {
             if (!TrackData.ContainsKey(name)) throw new ArgumentException();
-            return new Track(TrackData[name]);
+            return new Track(TrackData[name], c);
         }
 
         public static Ship LoadShip(string name, IShipController controller)

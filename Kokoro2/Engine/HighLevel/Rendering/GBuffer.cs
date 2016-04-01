@@ -25,13 +25,14 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             buffer = new FrameBuffer(width, height, PixelComponentType.RGBA16f, context);
 
             //Create the GBuffer texture targets
-            buffer.Add("RGBA0", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
-            buffer.Add("Depth0", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.UInt1010102), FrameBufferAttachments.ColorAttachment1, context);
-            buffer.Add("Normal0", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment2, context);
-            buffer.Add("Material0", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment3, context);
+            buffer.Add("Shadow", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
+            buffer.Add("WorldPos", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.UInt1010102), FrameBufferAttachments.ColorAttachment1, context);
+            buffer.Add("Normal", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment2, context);
+            buffer.Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float), FrameBufferAttachments.ColorAttachment3, context);
+            buffer.Add("Specular", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment4, context);
 
             //TODO setup the new GBufferShader
-            GBufferShader = new ShaderProgram(VertexShader.Load("GBuffer"), FragmentShader.Load("GBuffer"));
+            GBufferShader = new ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed"));
         }
 
         public void Add(string name, FrameBufferTexture tex, FrameBufferAttachments attachment, GraphicsContext context)
@@ -64,6 +65,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment0);
             buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment1);
             buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment2);
+            buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment3);
+            buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment4);
         }
 
         public void UnBind(GraphicsContext context)

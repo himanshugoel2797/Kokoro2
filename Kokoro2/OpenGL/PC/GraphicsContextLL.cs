@@ -262,6 +262,20 @@ namespace Kokoro2.OpenGL.PC
         }
         #endregion
 
+        #region Depth Clamp
+        bool clamp = false;
+        protected void SetDepthClamp(bool v)
+        {
+            clamp = v;
+            if (v) GL.Enable(EnableCap.DepthClamp);
+            else GL.Disable(EnableCap.DepthClamp);
+        }
+        protected bool GetDepthClamp()
+        {
+            return clamp;
+        }
+        #endregion
+
         #region ZNear and ZFar
         float ZNear, ZFar;
         protected void SetZNear(float val)

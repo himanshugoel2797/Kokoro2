@@ -20,7 +20,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         float leftrightRot = MathHelper.PiOver2;
         float updownRot = -MathHelper.Pi / 10.0f;
         public float rotationSpeed = 0.2f;
-        public float moveSpeed = 0.5f;
+        public float moveSpeed = 50f;
         Vector2 mousePos;
         Vector3 cameraRotatedUpVector;
 
