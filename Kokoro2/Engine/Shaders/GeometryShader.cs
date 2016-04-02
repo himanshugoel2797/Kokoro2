@@ -9,11 +9,11 @@ namespace Kokoro2.Engine.Shaders
 {
     public class GeometryShader : Shader
     {
-        public GeometryShader(string fshader) : base(fshader, ShaderTypes.Geometry) { }
+        public GeometryShader(string fshader, GraphicsContext c) : base(fshader, ShaderTypes.Geometry, c) { }
 
-        public static GeometryShader Load(string dir)
+        public static GeometryShader Load(string dir, GraphicsContext c)
         {
-            return new GeometryShader(Shader.GetFile(dir + "/geometry.glsl"));
+            return new GeometryShader(Shader.GetFile(dir + "/geometry.glsl"), c);
         }
     }
 }

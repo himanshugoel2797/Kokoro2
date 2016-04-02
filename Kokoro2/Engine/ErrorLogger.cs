@@ -11,7 +11,7 @@ using System.Threading;
 #endif
 #endif
 
-namespace Kokoro2.Debug
+namespace Kokoro2.Engine
 {
     /// <summary>
     /// Message Type
@@ -39,7 +39,7 @@ namespace Kokoro2.Debug
         /// Start logging
         /// </summary>
         /// <param name="showLoggerWindow">Show Logger Window?</param>
-        public static void StartLogger(bool showLoggerWindow)
+        public static void StartLogger()
         {
 #if DEBUG
             deb.EnableDebug();
@@ -49,9 +49,7 @@ namespace Kokoro2.Debug
 
         private static void Callback(string message, DebugType debType, Severity severity)
         {
-#if DEBUG
-            if(!message.Contains("End Render Frame"))DebuggerManager.logger.NewMessage(message, debType, severity);
-#endif
+
         }
 
         /// <summary>
@@ -61,13 +59,11 @@ namespace Kokoro2.Debug
         /// <param name="message">Any related message</param>
         /// <param name="type">The message type</param>
         /// <param name="severity">The message severity</param>
-        public static void AddMessage(int id, string message, DebugType type, Severity severity)
+        public static void AddMessage(ulong id, string message, DebugType type, Severity severity)
         {
 #if DEBUG
-            while (DebuggerManager.logger.Pause) { }    //Block until resume
-            deb.InsertDebugMessage(id, message, type, severity);
+            deb.InsertDebugMessage(0, id + "," + message, type, severity);
 #endif
         }
-
     }
 }

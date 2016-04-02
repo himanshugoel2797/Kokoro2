@@ -18,7 +18,7 @@ namespace Kokoro2.IDE
         [STAThread]
         static void Main()
         {
-            context = new GraphicsContext(new Vector2(10, 10), false);
+            context = new GraphicsContext(new Vector2(10, 10));
             context.ViewportControl.Dock = System.Windows.Forms.DockStyle.Fill;
 
             Form1 form = new Form1(context);

@@ -28,11 +28,11 @@ namespace Kokoro2.Game
         {
             bool tmp = ResourceLoader.LoadComplete;
 
-            manager = new SceneManager();
+            manager = new SceneManager(context);
             manager.Register(context);
 
 #if DEBUG
-            manager.Add("TestGame", new TestGame());
+            manager.Add("TestGame", new TestGame(context));
 #endif
             if (!tmp) while (!ResourceLoader.LoadComplete) ;  //Wait until all the resource data is setup
 #if DEBUG

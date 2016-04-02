@@ -43,17 +43,17 @@ namespace AGRacing
             if (parts.Length != 4) throw new ArgumentException();
             Name = parts[1];
             trackModel = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false);
-            trackModel.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true);
-            trackModel.Materials[0].GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[3], false);
-            trackModel.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
+            trackModel.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true, context);
+            trackModel.Materials[0].GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[3], false, context);
+            trackModel.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context)));
 
 #if DEBUG
             //collisionVis = new Kokoro2.Engine.Prefabs.Box(100, 100, 100);
             //collisionVis.World = Matrix4.CreateTranslation(225, -55, -50);
             collisionVis = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false);
 
-            collisionVis.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true);
-            collisionVis.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default")));
+            collisionVis.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true, context);
+            collisionVis.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(context, VertexShader.Load("Default", context), FragmentShader.Load("Default", context)));
 
 #endif
 
@@ -103,7 +103,7 @@ namespace AGRacing
 
             gbuf = new GBuffer((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
             fsq = new FullScreenQuad();
-            fsq.Shader = new ShaderProgram(VertexShader.Load("FrameBuffer"), FragmentShader.Load("FrameBuffer"));
+            fsq.Shader = new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("FrameBuffer", context));
         }
 
         #region Ideal Race Line Controls 

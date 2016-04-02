@@ -56,7 +56,7 @@ namespace AGRacing
         private Model colVis;
 #endif
 
-        public Ship(string infoString, IShipController controller)
+        public Ship(string infoString, IShipController controller, GraphicsContext c)
         {
             string[] parts = infoString.Split(',');
             if (parts.Length < 3) throw new ArgumentException();
@@ -65,9 +65,9 @@ namespace AGRacing
             this.controller = controller;
             Mesh = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false);
 
-            Mesh.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2] + "tex.png", true);
-            Mesh.Materials[0].GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[2] + "roughness.png", false);
-            Mesh.PushShader(new ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
+            Mesh.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2] + "tex.png", true, c);
+            Mesh.Materials[0].GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[2] + "roughness.png", false, c);
+            Mesh.PushShader(new ShaderProgram(c, VertexShader.Load("Shadowed", c), FragmentShader.Load("Shadowed", c)));
 
             if (parts.Length > 3)
             {
@@ -118,7 +118,7 @@ namespace AGRacing
 
 #if DEBUG
             colVis = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false);
-            colVis.PushShader(new ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
+            colVis.PushShader(new ShaderProgram(c, VertexShader.Load("Shadowed", c), FragmentShader.Load("Shadowed", c)));
             colVis.AlbedoMap = Mesh.Materials[0].AlbedoMap;
 #endif
         }
@@ -310,7 +310,6 @@ namespace AGRacing
             toRet = Vector3.TransformVector(toRet, Matrix4.CreateFromQuaternion(Orientation));
 
             return -Vector3.UnitY;
-            return toRet;
         }
 
         public void ApplyImpulse(Vector3 loc, Vector3 amnt)
@@ -412,61 +411,6 @@ namespace AGRacing
             Mesh.World = Matrix4.Scale(Scale) * Matrix4.CreateFromQuaternion(Orientation) * Matrix4.CreateFromAxisAngle(PhysicalRight, -0.2f + 0.05f * (float)Math.Sin(c) + angle) * Matrix4.CreateFromAxisAngle(PhysicalFront, tilt) * Matrix4.CreateTranslation(Position);
             c += 0.05f;
 
-            /*
-            float distblB = 0, distbrB = 0, distfrB = 0, distflB = 0, distflS = 0, distfrS = 0, distblS = 0, distbrS = 0, dist = 0;
-            Vector3 normblB = Vector3.Zero, normbrB = Vector3.Zero, normflB = Vector3.Zero, normfrB = Vector3.Zero, normflS = Vector3.Zero, normfrS = Vector3.Zero, normblS = Vector3.Zero, normbrS = Vector3.Zero, norm = Vector3.Zero;
-
-            bool blBottom = t.RayCast(GetRayLocation(ShipRayLocations.BackLeftBottom), GetRayDirection(ShipRayLocations.BackLeftBottom), out distblB, out normblB);
-            bool brBottom = t.RayCast(GetRayLocation(ShipRayLocations.BackRightBottom), GetRayDirection(ShipRayLocations.BackRightBottom), out distbrB, out normbrB);
-            bool flBottom = t.RayCast(GetRayLocation(ShipRayLocations.FrontLeftBottom), GetRayDirection(ShipRayLocations.FrontLeftBottom), out distflB, out normflB);
-            bool frBottom = t.RayCast(GetRayLocation(ShipRayLocations.FrontRightBottom), GetRayDirection(ShipRayLocations.FrontRightBottom), out distfrB, out normfrB);
-            bool frSide = t.RayCast(GetRayLocation(ShipRayLocations.FrontRightSide), GetRayDirection(ShipRayLocations.FrontRightSide), out distfrS, out normfrS);
-            bool flSide = t.RayCast(GetRayLocation(ShipRayLocations.FrontLeftSide), GetRayDirection(ShipRayLocations.FrontLeftSide), out distflS, out normflS);
-            bool brSide = t.RayCast(GetRayLocation(ShipRayLocations.BackRightSide), GetRayDirection(ShipRayLocations.BackRightSide), out distbrS, out normbrS);
-            bool blSide = t.RayCast(GetRayLocation(ShipRayLocations.BackLeftSide), GetRayDirection(ShipRayLocations.BackLeftSide), out distblS, out normblS);
-
-            float force = 60;
-            float height = 2f;
-
-            normblB.Normalize();
-            normbrB.Normalize();
-            normflB.Normalize();
-            normfrB.Normalize();
-            normflS.Normalize();
-            normfrS.Normalize();
-            normblS.Normalize();
-            normbrS.Normalize();*/
-
-
-
-            float distB, distL, distR, distF;
-            Vector3 nB, nL, nR, nF;
-
-
-
-
-            /*t.RayCast(tPos, -Vector3.UnitY, out distB, out nB);
-            t.RayCast(tPos + PhysicalFront, -Vector3.UnitY, out distF, out nF);
-            t.RayCast(tPos + worldRight, -Vector3.UnitY, out distR, out nR);
-            t.RayCast(tPos - worldRight, -Vector3.UnitY, out distL, out nL);
-
-
-            Vector3 N = new Vector3(
-            (distL - distR)
-            , 2.0f,
-            (distB - distF)
-            );*/
-
-
-
-
-            //float angle = 1.0f - Vector3.Dot(prevUp, N);
-            //angle = (float)Math.Round(angle, 4);
-            //collisionMesh.Orientation *= (BEPUutilities.Quaternion)Quaternion.FromAxisAngle(r, angle);
-
-
-
-
             Vector3 flat_v = collisionMesh.LinearVelocity;
             flat_v = new Vector3(flat_v.X, 0, flat_v.Z);
 
@@ -475,51 +419,6 @@ namespace AGRacing
             Vector3 anti_slip = -slip * PhysicalRight * 2;
             BEPUutilities.Vector3 b_anti_slip = anti_slip;
             collisionMesh.ApplyLinearImpulse(ref b_anti_slip);
-
-            //netAngle += 0.0001f;
-            //Console.WriteLine(N+ " Angle:" + angle);
-
-            //angle = netAngle;
-
-            //prevUp = N;
-
-            /*
-            float rot = Vector3.Dot(Vector3.UnitY, N);
-            rot = (float)Math.Round(rot, 2);
-            //collisionMesh.Orientation *= (BEPUutilities.Quaternion)Quaternion.FromAxisAngle(Vector3.UnitY, rot);
-            */
-
-
-            /*
-            if (frSide && distfrS < 0.2)
-            {
-                BEPUutilities.Vector3 impulse = normfrS * 100;
-                collisionMesh.ApplyLinearImpulse(ref impulse);
-            }
-
-            if (flSide && distflS < 0.2)
-            {
-                BEPUutilities.Vector3 impulse = normflS * 100;
-                collisionMesh.ApplyLinearImpulse(ref impulse);
-            }*/
-
-            /*if (t.RayCast(Position, -Vector3.UnitY, out dist, out norm))
-            {
-                BEPUutilities.Vector3 impulse = norm * 8;
-                if (dist < 1)
-                {
-                    collisionMesh.ApplyLinearImpulse(ref impulse);
-                }
-                else if (dist > 1.001f)
-                {
-                    impulse *= -1;
-                    collisionMesh.ApplyLinearImpulse(ref impulse);
-                }
-            }
-            else {
-                collisionMesh.LinearMomentum *= (BEPUutilities.Vector3)(Vector3.One - Vector3.UnitY);
-                collisionMesh.LinearVelocity *= (BEPUutilities.Vector3)(Vector3.One - Vector3.UnitY);
-            }*/
         }
     }
 }

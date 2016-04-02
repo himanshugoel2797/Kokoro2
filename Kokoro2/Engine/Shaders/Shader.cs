@@ -24,10 +24,10 @@ namespace Kokoro2.Engine.Shaders
     /// </summary>
     public class Shader : ShaderLL
     {
-        private static Dictionary<byte[], int> shaderDB = new Dictionary<byte[], int>();
+        private static Dictionary<byte[], ulong> shaderDB = new Dictionary<byte[], ulong>();
         private static FNV1a fnv = new FNV1a();
 
-        protected Shader(string shader, ShaderTypes type)
+        protected Shader(string shader, ShaderTypes type, GraphicsContext c) : base(c)
         {
             base.shaderType = type;
             if (type != ShaderTypes.TessellationComb)
@@ -39,13 +39,13 @@ namespace Kokoro2.Engine.Shaders
                     base.aCreate(base.shaderType, shader);
                     base.CheckForErrors(shader, base.shaderType);
 
-                    shaderDB.Add(hash, base.id);
+                    shaderDB.Add(hash, ID);
+                    Kokoro2.Engine.ObjectAllocTracker.NewCreated(this);
                 }
                 else
                 {
-                    base.id = shaderDB[hash];
+                    ID = shaderDB[hash];
                 }
-                Kokoro2.Debug.ObjectAllocTracker.NewCreated(this, id, type.ToString() + " Shader");
             }
         }
 
@@ -84,18 +84,13 @@ namespace Kokoro2.Engine.Shaders
 #if DEBUG
         ~Shader()
         {
-            Kokoro2.Debug.ObjectAllocTracker.ObjectDestroyed(this, id, base.shaderType.ToString() + " Shader");
+            Kokoro2.Engine.ObjectAllocTracker.ObjectDestroyed(this);
         }
 #endif
 
         internal ShaderTypes GetShaderType()
         {
             return pGetShaderType();
-        }
-
-        internal int GetID()
-        {
-            return pGetID();
         }
     }
 }

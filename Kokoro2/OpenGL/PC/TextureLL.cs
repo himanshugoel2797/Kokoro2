@@ -12,10 +12,20 @@ using System.Drawing.Imaging;
 
 namespace Kokoro2.OpenGL.PC
 {
-    public class TextureLL
+    public class TextureLL : Engine.IEngineObject
     {
         protected int width;
         protected int height;
+
+        public ulong ID
+        {
+            get; set;
+        }
+
+        public Engine.GraphicsContext ParentContext
+        {
+            get; set;
+        }
 
         protected void SetFilterMode(Engine.TextureFilter filter)
         {
@@ -31,14 +41,14 @@ namespace Kokoro2.OpenGL.PC
             }
         }
 
-        protected int Create(int src, int layer, Engine.PixelComponentType pfI)
+        protected void Create(int src, int layer, Engine.PixelComponentType pfI)
         {
             int id = GL.GenTexture();
             GL.TextureView(id, TextureTarget.Texture2D, src, EnumConverters.EPixelComponentType(pfI), 0, 0, layer, 1);
-            return id;
+            ID = ParentContext.EngineObjects.RegisterObject(id);
         }
 
-        protected int Create(int width, int height, Kokoro2.Engine.PixelComponentType pfI, Kokoro2.Engine.PixelFormat pf, Kokoro2.Engine.PixelType type, bool multisample = false, int sampleCount = 1)
+        protected void Create(int width, int height, Kokoro2.Engine.PixelComponentType pfI, Kokoro2.Engine.PixelFormat pf, Kokoro2.Engine.PixelType type, bool multisample = false, int sampleCount = 1)
         {
             this.width = width;
             this.height = height;
@@ -71,10 +81,10 @@ namespace Kokoro2.OpenGL.PC
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
-            return id;
+            ID = ParentContext.EngineObjects.RegisterObject(id);
         }
 
-        protected int Create(Image img, bool srgb)
+        protected void Create(Image img, bool srgb)
         {
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
@@ -106,21 +116,20 @@ namespace Kokoro2.OpenGL.PC
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             GL.BindTexture(TextureTarget.Texture2D, 0);
-            return id;
+            ID = ParentContext.EngineObjects.RegisterObject(id);
         }
 
-        protected int Create(string filename, bool srgb)
+        protected void Create(string filename, bool srgb)
         {
             Bitmap bmp = new Bitmap(filename);
-            int id = Create(bmp, srgb);
+            Create(bmp, srgb);
             bmp.Dispose();
-            return id;
         }
 
-        protected void BindTexture(int texUnit, int id)
+        protected void BindTexture(int texUnit)
         {
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.BindTexture(TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
         }
 
         protected static void UnBindTexture(int texUnit)
@@ -129,9 +138,14 @@ namespace Kokoro2.OpenGL.PC
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        protected void Delete(int id)
+        protected void Delete()
         {
-            GL.DeleteTexture(id);
+            if (ID != 0)
+            {
+                GL.DeleteTexture(ParentContext.EngineObjects[ID, this.GetType()]);
+                ParentContext.EngineObjects.UnregisterObject(ID);
+                ID = 0;
+            }
         }
 
         protected void SetCompare(bool a)
@@ -139,15 +153,15 @@ namespace Kokoro2.OpenGL.PC
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)(a ? TextureCompareMode.CompareRefToTexture : TextureCompareMode.None));
         }
 
-        protected void BindToFBuffer(Engine.FrameBufferAttachments texUnit, int id)
+        protected void BindToFBuffer(Engine.FrameBufferAttachments texUnit)
         {
             FramebufferAttachment attach = EnumConverters.EFrameBufferAttachment(texUnit);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attach, TextureTarget.Texture2D, id, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attach, TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()], 0);
         }
 
-        protected Bitmap FetchTextureData(int id)
+        protected Bitmap FetchTextureData()
         {
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.BindTexture(TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
             int width, height;
             GL.GetTexLevelParameter(TextureTarget.Texture2D, 0, GetTextureParameter.TextureWidth, out width);
             GL.GetTexLevelParameter(TextureTarget.Texture2D, 0, GetTextureParameter.TextureHeight, out height);
@@ -166,17 +180,53 @@ namespace Kokoro2.OpenGL.PC
             GL.FramebufferTexture(FramebufferTarget.Framebuffer, attach, 0, 0);
         }
 
-        protected void SetWrapX(bool mode, int id)
+        protected void SetWrapX(bool mode)
         {
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.BindTexture(TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
         }
 
-        protected void SetWrapY(bool mode, int id)
+        protected void SetWrapY(bool mode)
         {
-            GL.BindTexture(TextureTarget.Texture2D, id);
+            GL.BindTexture(TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                }
+
+                Delete();
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        ~TextureLL()
+        {
+            //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(false);
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
 

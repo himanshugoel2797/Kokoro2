@@ -256,13 +256,13 @@ namespace Kokoro2.Engine
             DrawMode = Engine.DrawMode.Triangles;
             shaderStack = new Stack<ShaderProgram>();
 #if DEBUG
-            Kokoro2.Debug.ObjectAllocTracker.NewCreated(this, 0, "Model");
+            Kokoro2.Engine.ObjectAllocTracker.NewCreated(this);
 #endif
         }
 #if DEBUG
         ~Model()
         {
-            Kokoro2.Debug.ObjectAllocTracker.ObjectDestroyed(this, 0, "Model");
+            Kokoro2.Engine.ObjectAllocTracker.ObjectDestroyed(this);
         }
 #endif
 

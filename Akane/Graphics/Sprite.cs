@@ -36,12 +36,12 @@ namespace Akane.Graphics
         Model spriteQuad;
         FrameBuffer buffer;
 
-        public Sprite(string animations)
+        public Sprite(string animations, AkaneManager a)
         {
             Visible = true;
-            LoadAnimations(animations);
+            LoadAnimations(animations, a);
 
-            spriteShader = new ShaderProgram(new VertexShader(Akane.Shaders.ShaderLibrary.LoadFile("Shaders/Sprite")), new FragmentShader(Akane.Shaders.ShaderLibrary.LoadFile("Shaders/Sprite")));
+            spriteShader = new ShaderProgram(a.context, new VertexShader(Akane.Shaders.ShaderLibrary.LoadFile("Shaders/Sprite"), a.context), new FragmentShader(Akane.Shaders.ShaderLibrary.LoadFile("Shaders/Sprite"), a.context));
             //spriteQuad = new Quad(0, 0, 10, 10);
             spriteQuad = new FullScreenQuad();
             Scale = new Vector2(1, 1);
@@ -87,7 +87,7 @@ namespace Akane.Graphics
             //buffer.UnBind();
         }
 
-        private void LoadAnimations(string animationPath)
+        private void LoadAnimations(string animationPath, AkaneManager a)
         {
             string curName = "";
             List<string> tmpList = new List<string>();
@@ -99,7 +99,7 @@ namespace Akane.Graphics
                         switch (doc.Name)
                         {
                             case "Animations":
-                                LoadSpriteSheet(Path.Combine(Path.GetDirectoryName(animationPath), doc["src"]));
+                                LoadSpriteSheet(Path.Combine(Path.GetDirectoryName(animationPath), doc["src"]), a);
                                 break;
                             case "Animation":
                                 Animations[doc["Name"]] = null;
@@ -116,7 +116,7 @@ namespace Akane.Graphics
             Animations[curName] = tmpList.ToArray();
         }
 
-        private void LoadSpriteSheet(string spritePath)
+        private void LoadSpriteSheet(string spritePath, AkaneManager a)
         {
             Frames = new Dictionary<string, FrameData>();
             using (XmlReader doc = XmlReader.Create(spritePath))
@@ -128,7 +128,7 @@ namespace Akane.Graphics
                             case "TextureAtlas":
                                 string tmpImg = doc["imagePath"];
                                 if (!Path.IsPathRooted(tmpImg)) tmpImg = Path.Combine(Path.GetDirectoryName(spritePath), tmpImg);
-                                spriteImg = new Texture(tmpImg, true);
+                                spriteImg = new Texture(tmpImg, true, a.context);
                                 break;
                             case "sprite":
                                 Frames[doc["n"]] = new FrameData()

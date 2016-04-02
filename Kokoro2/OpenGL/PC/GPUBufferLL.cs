@@ -12,10 +12,9 @@ using Kokoro2.Engine.SceneGraph;
 
 namespace Kokoro2.OpenGL.PC
 {
-    public class GPUBufferLL : IDisposable
+    public class GPUBufferLL : IEngineObject
     {
 #if GL44
-        private int staticID = -1;
         private IntPtr mappedPtr = IntPtr.Zero;
         private UpdateMode updateMode;
         private BufferTarget target;
@@ -25,8 +24,11 @@ namespace Kokoro2.OpenGL.PC
 
         //TODO Setup a mapping system for the offsets so that the buffers can be defragmented if they start to run low on memory without needing elaborate tricks to update all the models
 
-        public GPUBufferLL(UpdateMode mode, BufferUse use, long memSize)
+        public GPUBufferLL(UpdateMode mode, BufferUse use, long memSize, GraphicsContext c)
         {
+            ParentContext = c;
+            ParentContext.Disposing += Dispose;
+
             updateMode = mode;
             target = EnumConverters.EBufferTarget(use);
             this.memSize = (int)memSize;
@@ -38,7 +40,9 @@ namespace Kokoro2.OpenGL.PC
 #endif
 
             syncObj = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);  //Initialize the first sync object
-            staticID = GL.GenBuffer();      //Generate the buffer
+            int staticID = GL.GenBuffer();      //Generate the buffer
+
+            ID = ParentContext.EngineObjects.RegisterObject(staticID);
 
             if (updateMode == UpdateMode.Dynamic)
             {
@@ -52,12 +56,12 @@ namespace Kokoro2.OpenGL.PC
 
         public void Bind()
         {
-            GL.BindBuffer(target, staticID);
+            Bind(target);
         }
 
         public void Bind(BufferTarget target)
         {
-            GL.BindBuffer(target, staticID);
+            GL.BindBuffer(target, ParentContext.EngineObjects[ID, this.GetType()]);
         }
 
         public void UnBind()
@@ -67,12 +71,12 @@ namespace Kokoro2.OpenGL.PC
 
         public void BindForTransformFeedback(int bindingIndex)
         {
-            GL.BindBufferBase(BufferRangeTarget.TransformFeedbackBuffer, bindingIndex, this.staticID);
+            GL.BindBufferBase(BufferRangeTarget.TransformFeedbackBuffer, bindingIndex, ParentContext.EngineObjects[ID, this.GetType()]);
         }
 
         public void UnBindForTranformFeedback(int index)
         {
-            GL.BindBufferBase(BufferRangeTarget.TransformFeedbackBuffer, index, this.staticID);
+            GL.BindBufferBase(BufferRangeTarget.TransformFeedbackBuffer, index, ParentContext.EngineObjects[ID, this.GetType()]);
         }
 
         public void FreeAll()
@@ -175,7 +179,7 @@ namespace Kokoro2.OpenGL.PC
             else if (updateMode == UpdateMode.Static)
             {
                 #region Buffer Data
-                GL.BindBuffer(target, staticID);
+                GL.BindBuffer(target, ParentContext.EngineObjects[ID, this.GetType()]);
                 if (offset == 0) GL.BufferData(target, (IntPtr)((length == -1) ? data.Length : length), data, BufferUsageHint.StaticDraw);
                 else GL.BufferSubData(target, (IntPtr)(offset), (IntPtr)((length == -1) ? data.Length : length), data);
                 GL.BindBuffer(target, 0);
@@ -204,7 +208,7 @@ namespace Kokoro2.OpenGL.PC
             else if (updateMode == UpdateMode.Static)
             {
                 #region Buffer Data
-                GL.BindBuffer(target, staticID);
+                GL.BindBuffer(target, ParentContext.EngineObjects[ID, this.GetType()]);
                 if (offset == 0) GL.BufferData(target, (IntPtr)((length == -1) ? Marshal.SizeOf(data) : length), getBytes(data), BufferUsageHint.StaticDraw);
                 else GL.BufferSubData(target, (IntPtr)(offset), (IntPtr)((length == -1) ? Marshal.SizeOf(data) : length), getBytes(data));
                 GL.BindBuffer(target, 0);
@@ -245,32 +249,74 @@ namespace Kokoro2.OpenGL.PC
 
 #endif
 
-        public void Dispose()
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        public ulong ID
         {
-#if DEBUG
-            disposed = true;
-#endif
-            Kokoro2.Debug.ErrorLogger.AddMessage(staticID, "GPUBuffer marked for deletion", Kokoro2.Debug.DebugType.Marker, Kokoro2.Debug.Severity.Notification);
-            Kokoro2.Debug.ObjectAllocTracker.ObjectDestroyed(this, staticID, "GPUBuffer Destroyed");
-            if (updateMode == UpdateMode.Dynamic)
+            get
             {
-                GL.BindBuffer(BufferTarget.ArrayBuffer, staticID);
-                GL.UnmapBuffer(BufferTarget.ArrayBuffer);
+                throw new NotImplementedException();
             }
-            GL.DeleteBuffer(staticID);
+
+            set
+            {
+                throw new NotImplementedException();
+            }
         }
 
-#if DEBUG
-        bool disposed = false;
-        ~GPUBufferLL()
+        public GraphicsContext ParentContext
         {
-            if (!disposed)
+            get
             {
-                Kokoro2.Debug.ErrorLogger.AddMessage(staticID, "GPUBuffer was automatically marked for deletion, Will cause memory leak", Kokoro2.Debug.DebugType.Performance, Kokoro2.Debug.Severity.High);
-                Dispose();
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
             }
         }
-#endif
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+
+                    Kokoro2.Engine.ObjectAllocTracker.ObjectDestroyed(this);
+                    if (updateMode == UpdateMode.Dynamic)
+                    {
+                        //GL.BindBuffer(BufferTarget.ArrayBuffer, staticID);
+                        //GL.UnmapBuffer(BufferTarget.ArrayBuffer);
+                        GL.DeleteBuffer(ParentContext.EngineObjects[ID, this.GetType()]);
+                    }
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        ~GPUBufferLL()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(false);
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }
 #endif

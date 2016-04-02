@@ -69,14 +69,13 @@ namespace Kokoro2.OpenGL.PC
         protected void Window_RenderFrame(double interval)
         {
             ErrorCode err = GL.GetError();
-            if (err != ErrorCode.NoError) Kokoro2.Debug.ErrorLogger.AddMessage(0, err.ToString(), Kokoro2.Debug.DebugType.Error, Kokoro2.Debug.Severity.High);
+            if (err != ErrorCode.NoError) Kokoro2.Engine.ErrorLogger.AddMessage(0, err.ToString(), Kokoro2.Engine.DebugType.Error, Kokoro2.Engine.Severity.High);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 #if DEBUG
             if (curRequestTexture != 0) Debug.DLbmp(curRequestTexture);
             curRequestTexture = 0;
-            Kokoro2.Debug.ErrorLogger.AddMessage(0, "End Render Frame", Kokoro2.Debug.DebugType.Other, Kokoro2.Debug.Severity.Notification);
-            Kokoro2.Debug.ObjectAllocTracker.MarkGameLoop(interval, (this as Engine.GraphicsContext));
+            Kokoro2.Engine.ErrorLogger.AddMessage(0, "End Render Frame", Kokoro2.Engine.DebugType.Other, Kokoro2.Engine.Severity.Notification);
 
 #endif
         }

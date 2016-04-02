@@ -5,22 +5,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using OpenTK.Graphics.OpenGL4;
 
 namespace Kokoro2.OpenGL.PC
 {
-    public class FrameBufferLL
+    public class FrameBufferLL : Engine.IEngineObject
     {
-        protected int Generate()
+        public ulong ID
         {
-            return GL.GenFramebuffer();
+            get;
+            set;
         }
 
-        protected void Bind(int id)
+        public Engine.GraphicsContext ParentContext
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, id);
-            GL.Enable(EnableCap.Blend);
+            get;
+            set;
+        }
+
+        protected void Generate()
+        {
+            ID = ParentContext.EngineObjects.RegisterObject(GL.GenFramebuffer());
+        }
+
+        protected void Bind()
+        {
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, ParentContext.EngineObjects[ID, this.GetType()]);
+        }
+
+        protected void Unbind()
+        {
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
         protected void DrawBuffers(Kokoro2.Engine.FrameBufferAttachments[] attachments)
@@ -48,15 +63,53 @@ namespace Kokoro2.OpenGL.PC
             GL.BlendFunc(index, EnumConverters.EBlendFuncSRC(func.Src), EnumConverters.EBlendFuncDST(func.Dst));
         }
 
-        protected void Delete(int id)
+        protected void Delete()
         {
-            GL.DeleteFramebuffer(id);
+            GL.DeleteFramebuffer(ParentContext.EngineObjects[ID, this.GetType()]);
+            ParentContext.EngineObjects.UnregisterObject(ID);
+            ID = 0;
         }
 
         protected void CheckError()
         {
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete) throw new Exception(GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer).ToString());
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                }
+
+                Delete();
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        ~FrameBufferLL()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(false);
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
 
     }
 }

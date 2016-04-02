@@ -21,7 +21,7 @@ namespace Kokoro2.Game
 
         public void Initialize(GraphicsContext context)
         {
-            manager = new SceneManager();
+            manager = new SceneManager(context);
             manager.Register(context);
             manager.Add("SphereRenderTest", new SphereRenderTest());
             manager.Activate("SphereRenderTest");

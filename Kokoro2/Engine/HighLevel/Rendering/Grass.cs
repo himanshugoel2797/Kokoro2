@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Kokoro2.Math;
 using Kokoro2.Engine;
-using Kokoro2.Debug;
 using Kokoro2.Engine.SceneGraph;
 using Kokoro2.Engine.Prefabs;
 using Kokoro2.Engine.Shaders;

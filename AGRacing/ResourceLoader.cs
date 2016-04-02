@@ -74,10 +74,10 @@ namespace AGRacing
             return new Track(TrackData[name], c);
         }
 
-        public static Ship LoadShip(string name, IShipController controller)
+        public static Ship LoadShip(string name, IShipController controller, GraphicsContext c)
         {
             if (!ShipData.ContainsKey(name)) throw new ArgumentException();
-            return new Ship(ShipData[name], controller);
+            return new Ship(ShipData[name], controller, c);
         }
     }
 }

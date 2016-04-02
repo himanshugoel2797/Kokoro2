@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Kokoro2.Debug;
+
 using Kokoro2.Math;
 
 #if PC
@@ -35,11 +35,10 @@ namespace Kokoro2.Engine
     public class Texture : TextureLL, IDisposable
     {
         private static readonly object locker = new object();
-        protected int id;
         private string file;
-        bool loaded = false, srgba;
+        bool srgba;
 
-        private static Dictionary<string, int> loadedImages = new Dictionary<string, int>();
+        private static Dictionary<string, ulong> loadedImages = new Dictionary<string, ulong>();
 
         public Vector2 Size
         {
@@ -69,7 +68,7 @@ namespace Kokoro2.Engine
         {
             set
             {
-                SetWrapX(value, id);
+                SetWrapX(value);
             }
         }
 
@@ -77,91 +76,70 @@ namespace Kokoro2.Engine
         {
             set
             {
-                SetWrapY(value, id);
+                SetWrapY(value);
             }
         }
 
-        public Texture(int width, int height, PixelFormat pf, PixelComponentType pct, PixelType pixelType)
+        public Texture(int width, int height, PixelFormat pf, PixelComponentType pct, PixelType pixelType, GraphicsContext c)
         {
+            ParentContext = c;
             lock (locker)
             {
-                id = base.Create(width, height, pct, pf, pixelType);
-                ObjectAllocTracker.NewCreated(this, id, " { " + pf.ToString() + ", " + pct.ToString() + ", " + pixelType.ToString() + "}");
-                loaded = true;  //There's nothing to load
+                base.Create(width, height, pct, pf, pixelType);
+                ObjectAllocTracker.NewCreated(this, " { " + pf.ToString() + ", " + pct.ToString() + ", " + pixelType.ToString() + "}");
             }
         }
-        public Texture(string filename, bool srgba, bool delayedLoad = false)
+        public Texture(string filename, bool srgba, GraphicsContext c)
         {
+            ParentContext = c;
             //TODO make this write to a texture array where the ID returned is the layer, additionally maintain a GPU buffer with the normalized sizes and offsets of the textures in their respective layers
             lock (locker)
             {
                 if (loadedImages.ContainsKey(filename))
                 {
-                    this.id = loadedImages[filename];
-                    loaded = true;
+                    ID = loadedImages[filename];
                 }
                 else
                 {
-                    //If requested, don't load the texture yet
-                    if (!delayedLoad)
-                    {
-                        id = base.Create(filename, srgba);
-                        loadedImages[filename] = id;
-                        loaded = true;
-                    }
-                    else
-                    {
-                        this.srgba = srgba;
-                        this.file = filename;
-                        loaded = false;
-                    }
-                    ObjectAllocTracker.NewCreated(this, id, " " + filename);
+                    base.Create(filename, srgba);
+                    loadedImages[filename] = ID;
+                    ObjectAllocTracker.NewCreated(this, filename);
                 }
             }
         }
-        public Texture(int id)
+
+        public Texture(ulong id)
         {
             lock (locker)
             {
-                loaded = true;
-                this.id = id;
-                ObjectAllocTracker.NewCreated(this, id, " Duplicate");
+                this.ID = id;
+                ObjectAllocTracker.NewCreated(this, " Duplicate");
             }
         }
         public Texture(Image img, bool srgba)
         {
             lock (locker)
             {
-                loaded = true;
-                this.id = base.Create(img, srgba);
-                ObjectAllocTracker.NewCreated(this, id, "IMAGE" + id);
+                base.Create(img, srgba);
+                ObjectAllocTracker.NewCreated(this, "IMAGE" + ID);
             }
         }
 #if DEBUG
         ~Texture()
         {
-            ObjectAllocTracker.ObjectDestroyed(this, id);
+            ObjectAllocTracker.ObjectDestroyed(this);
         }
 #endif
 
         public Bitmap ToBMP()
         {
-            return base.FetchTextureData(id);
+            return base.FetchTextureData();
         }
 
         public virtual void Bind(int texUnit)
         {
             //load the texture if it wasn't loaded before
-            if (!loaded)
-            {
-                lock (locker)
-                {
-                    id = base.Create(file, srgba);
-                    loadedImages[file] = id;
-                    loaded = true;
-                }
-            }
-            base.BindTexture(texUnit, id);
+            base.BindTexture(texUnit);
         }
 
         public static void UnBind(int texUnit)
@@ -169,9 +147,9 @@ namespace Kokoro2.Engine
             UnBindTexture(texUnit);
         }
 
-        public void Dispose()
+        public new void Dispose()
         {
-            base.Delete(id);
+            base.Dispose();
         }
 
     }

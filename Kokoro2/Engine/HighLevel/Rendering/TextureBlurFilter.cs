@@ -15,28 +15,25 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             get; set;
         } = 0.005f;
 
-        private static FullScreenQuad fsq;
-        private static ShaderProgram horizontal, vertical;
+        private FullScreenQuad fsq;
+        private ShaderProgram horizontal, vertical;
 
         private FrameBuffer tmpBuffer;
         private FrameBuffer resultBuffer;
 
-        static TextureBlurFilter()
-        {
-            fsq = new FullScreenQuad();
-            horizontal = new ShaderProgram(VertexShader.Load("FrameBuffer"), FragmentShader.Load("BlurHorizontal"));
-            vertical = new ShaderProgram(VertexShader.Load("FrameBuffer"), FragmentShader.Load("BlurVertical"));
-        }
-
         public TextureBlurFilter(int width, int height, PixelComponentType pct, GraphicsContext context)
         {
+            fsq = new FullScreenQuad();
+            horizontal = new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("BlurHorizontal", context));
+            vertical = new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("BlurVertical", context));
+
             tmpBuffer = new FrameBuffer(width, height, PixelComponentType.D32, context);
-            tmpBuffer.Add("Hblurred", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
+            tmpBuffer.Add("Hblurred", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
             tmpBuffer["Hblurred"].WrapX = false;
             tmpBuffer["Hblurred"].WrapY = false;
 
             resultBuffer = new FrameBuffer(width, height, PixelComponentType.D32, context);
-            resultBuffer.Add("Vblurred", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
+            resultBuffer.Add("Vblurred", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
             resultBuffer["Vblurred"].WrapX = false;
             resultBuffer["Vblurred"].WrapY = false;
         }

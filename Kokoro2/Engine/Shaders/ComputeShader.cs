@@ -11,11 +11,11 @@ namespace Kokoro2.Engine.Shaders
 
     public class ComputeShader : Shader
     {
-        public ComputeShader(string fshader) : base(fshader, ShaderTypes.Compute) { }
+        public ComputeShader(string fshader, GraphicsContext c) : base(fshader, ShaderTypes.Compute, c) { }
 
-        public static ComputeShader Load(string dir)
+        public static ComputeShader Load(string dir, GraphicsContext c)
         {
-            return new ComputeShader(Shader.GetFile(dir + "/compute.glsl"));
+            return new ComputeShader(Shader.GetFile(dir + "/compute.glsl"), c);
         }
     }
 }

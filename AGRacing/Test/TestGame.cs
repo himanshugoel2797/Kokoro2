@@ -12,9 +12,9 @@ namespace AGRacing.Test
     {
         SceneManager man;
 
-        public TestGame()
+        public TestGame(GraphicsContext c)
         {
-            man = new SceneManager();
+            man = new SceneManager(c);
             man.Add("TrackLoadTest", new TrackLoadTest.Test());
             man.Activate("TrackLoadTest");
         }

@@ -62,7 +62,6 @@ namespace Kokoro2.Engine
         private Dictionary<string, FrameBufferTexture> fbufTextures;
         private Dictionary<string, int> fbufAttachmentsIDs;
         private Dictionary<string, FrameBufferAttachments> attachments;
-        private int id;
 
         /// <summary>
         /// Create a new instance of a FrameBuffer Object and add a Depth Buffer and Color RenderTarget
@@ -73,6 +72,9 @@ namespace Kokoro2.Engine
         /// <param name="context">The current GraphicsContext</param>
         public FrameBuffer(int width, int height, PixelComponentType pct, GraphicsContext context)
         {
+            ParentContext = context;
+            ParentContext.Disposing += Dispose;
+
             RenderTargets = new List<string>();
             fbufTextures = new Dictionary<string, FrameBufferTexture>();
             fbufAttachmentsIDs = new Dictionary<string, int>();
@@ -80,14 +82,14 @@ namespace Kokoro2.Engine
 
             Size = new Vector2(width, height);
 
-            id = base.Generate();
+            base.Generate();
 
             //Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
-            Add("DepthBuffer", new FrameBufferTexture(width, height, PixelFormat.Depth, PixelComponentType.D32, PixelType.Float), FrameBufferAttachments.DepthAttachment, context); //Attach the depth buffer to the framebuffer
+            Add("DepthBuffer", new FrameBufferTexture(width, height, PixelFormat.Depth, PixelComponentType.D32, PixelType.Float, context), FrameBufferAttachments.DepthAttachment, context); //Attach the depth buffer to the framebuffer
 
             base.CheckError();
 
-            Kokoro2.Debug.ObjectAllocTracker.NewCreated(this, id, "Framebuffer");
+            Kokoro2.Engine.ObjectAllocTracker.NewCreated(this, "Framebuffer");
         }
 
         /// <summary>
@@ -99,9 +101,10 @@ namespace Kokoro2.Engine
         /// <param name="context">The current GraphicsContext</param>
         public void Add(string id, FrameBufferTexture fbufTex, FrameBufferAttachments attachment, GraphicsContext context)
         {
-
+            if (context.ID != ParentContext.ID) throw new ContextSharingViolationException();
             if (fbufTex.Size != this.Size) throw new Exception("The dimensions of the FrameBufferTexture must be the same as the dimensions of the FrameBuffer");
-            base.Bind(this.id);
+
+            base.Bind();
 
             RenderTargets.Add(id);
 
@@ -118,7 +121,7 @@ namespace Kokoro2.Engine
             base.DrawBuffers(attachments.Values.ToArray());
             base.CheckError();
 
-            base.Bind(0);
+            base.Unbind();
         }
 
         /// <summary>
@@ -156,23 +159,21 @@ namespace Kokoro2.Engine
         /// <param name="context">The current GraphicsContext</param>
         public void Bind(GraphicsContext context)
         {
-            if (id != -1)
-            {
+            if (context.ID != ParentContext.ID) throw new ContextSharingViolationException();
 
-                base.Bind(id);
-                base.DrawBuffers(attachments.Values.ToArray());
-                currentFBUF = this;
-                context.Viewport = new Vector4(0, 0, Size.X, Size.Y);
-            }
+            base.Bind();
+            base.DrawBuffers(attachments.Values.ToArray());
+            currentFBUF = this;
+            context.Viewport = new Vector4(0, 0, Size.X, Size.Y);
         }
 
         /// <summary>
         /// Delete the FrameBuffer Object
         /// </summary>
         /// <remarks>This does not delete the bound RenderTargets</remarks>
-        public void Dispose()
+        public new void Dispose()
         {
-            base.Delete(id);
+            base.Dispose();
         }
 
         private static FrameBuffer currentFBUF;
@@ -190,14 +191,16 @@ namespace Kokoro2.Engine
         /// </summary>
         public void UnBind(GraphicsContext context)
         {
-            base.Bind(0);
+            if (context.ID != ParentContext.ID) throw new ContextSharingViolationException();
+
+            base.Unbind();
             context.Viewport = new Vector4(0, 0, context.WindowSize.X, context.WindowSize.Y);
         }
 
 #if DEBUG
         ~FrameBuffer()
         {
-            Kokoro2.Debug.ObjectAllocTracker.ObjectDestroyed(this, id, "FrameBuffer");
+            Kokoro2.Engine.ObjectAllocTracker.ObjectDestroyed(this);
         }
 #endif
 

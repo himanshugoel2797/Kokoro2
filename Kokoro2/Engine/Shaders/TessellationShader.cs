@@ -18,27 +18,27 @@ namespace Kokoro2.Engine.Shaders
             base.aSetPatchSize(num);
         }
 
-        public TessellationShader(string controlShader, string evalShader) : base("", ShaderTypes.TessellationComb)
+        public TessellationShader(string controlShader, string evalShader, GraphicsContext c) : base("", ShaderTypes.TessellationComb, c)
         {
-            eval = new TessellationEvalShader(evalShader);
-            control = new TessellationControlShader(controlShader);
+            eval = new TessellationEvalShader(evalShader, c);
+            control = new TessellationControlShader(controlShader, c);
             SetPatchSize(3);
         }
 
-        public static TessellationShader Load(string controlShaderName, string evalShaderName)
+        public static TessellationShader Load(string controlShaderName, string evalShaderName, GraphicsContext c)
         {
-            return new TessellationShader(Shader.GetFile(controlShaderName + "/tessControl.glsl"), Shader.GetFile(evalShaderName + "/tessEval.glsl"));
+            return new TessellationShader(Shader.GetFile(controlShaderName + "/tessControl.glsl"), Shader.GetFile(evalShaderName + "/tessEval.glsl"), c);
         }
     }
 
     class TessellationControlShader : Shader
     {
-        public TessellationControlShader(string fshader) : base(fshader, ShaderTypes.TessellationControl) { }
+        public TessellationControlShader(string fshader, GraphicsContext c) : base(fshader, ShaderTypes.TessellationControl, c) { }
 
     }
 
     class TessellationEvalShader : Shader
     {
-        public TessellationEvalShader(string fshader) : base(fshader, ShaderTypes.TessellationEval) { }
+        public TessellationEvalShader(string fshader, GraphicsContext c) : base(fshader, ShaderTypes.TessellationEval, c) { }
     }
 }

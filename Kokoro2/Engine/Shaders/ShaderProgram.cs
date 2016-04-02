@@ -17,7 +17,7 @@ namespace Kokoro2.Engine.Shaders
     /// <summary>
     /// A Program consisting of shader stages
     /// </summary>
-    public class ShaderProgram : ShaderProgramLL, IDisposable
+    public class ShaderProgram : ShaderProgramLL
     {
         /// <summary>
         /// Called before the application of the shader program
@@ -28,14 +28,14 @@ namespace Kokoro2.Engine.Shaders
         /// Create a new instance of a ShaderProgram using the platform specific language
         /// </summary>
         /// <param name="shaders">The shaders</param>
-        public ShaderProgram(params Shader[] shaders) : base(shaders) { }
+        public ShaderProgram(GraphicsContext c, params Shader[] shaders) : base(c, shaders) { }
 
         /// <summary>
         /// Create a new instance of a ShaderProgram using the platform specific language
         /// </summary>
         /// <param name="shaders">The shaders</param>
         /// <param name="transformVars">The transform feedback attributes</param>
-        public ShaderProgram(string[] transformVars, params Shader[] shaders) : base(shaders, transformVars) { }
+        public ShaderProgram(GraphicsContext c, string[] transformVars, params Shader[] shaders) : base(c, shaders, transformVars) { }
 
 
         /// <summary>

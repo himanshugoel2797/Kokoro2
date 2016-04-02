@@ -16,10 +16,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
     {//TODO setup collisions
 
         public Vector3 Up;
-
-#if DEBUG
-        double moveSpeedGradient = 1;
-#endif
+        
 
         /// <summary>
         /// Create a new First Person Camera

@@ -28,7 +28,7 @@ namespace Kokoro2.IDE
 
             #region Scene Initialization
             context = c;
-            iSceneManager = new SceneManager();
+            iSceneManager = new SceneManager(c);
 
             uiManager = new EditorUIManager();
             iSceneManager.Add(nameof(uiManager), uiManager);
@@ -42,7 +42,6 @@ namespace Kokoro2.IDE
         private void Form1_Load(object sender, EventArgs e)
         {
             iSceneManager.Register(context);
-            context.SetDevOverride(true);
             context.Start(16, 16);
             frameUpdater.Start();
             //context.Pause();

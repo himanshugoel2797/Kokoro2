@@ -34,14 +34,14 @@ namespace AGRacing.Test.TrackLoadTest
             if (!ResourcesLoaded)
             {
                 track = ResourceLoader.LoadTrack("Test Track2", context);
-                s1 = ResourceLoader.LoadShip("Fiel F35", new HumanController());
+                s1 = ResourceLoader.LoadShip("Fiel F35", new HumanController(), context);
 
                 track.Reverse = true;
                 track.AddShip(0, s1);
 
                 sp = new Sphere(10, 10);
-                sp.Shader = new ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default"));
-                sp.AlbedoMap = new Texture("Resources/Proc/Tex/track_tex.png", false);
+                sp.Shader = new ShaderProgram(context, VertexShader.Load("Default", context), FragmentShader.Load("Default", context));
+                sp.AlbedoMap = new Texture("Resources/Proc/Tex/track_tex.png", false, context);
                 sp.World = Matrix4.CreateTranslation(Vector3.UnitY * -0.75f + Vector3.UnitX * -0.25f);
 
                 context.DepthWrite = true;
@@ -54,7 +54,7 @@ namespace AGRacing.Test.TrackLoadTest
                 context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
                 //context.Wireframe = true;
 
-                if(context.Camera as FirstPersonCamera != null)
+                if (context.Camera as FirstPersonCamera != null)
                 {
                     context.Camera.Position = track.GetPosition(0);
                 }
@@ -68,7 +68,7 @@ namespace AGRacing.Test.TrackLoadTest
             if (ResourcesLoaded)
             {
                 context.Clear(0, 0.5f, 1.0f, 0);
-                
+
                 track.Draw(context);
                 /*context.DepthFunction = DepthFunc.Always;
                 sp.World = Matrix4.CreateTranslation(Vector3.UnitY * -75f + Vector3.UnitX * -25f);
@@ -80,9 +80,7 @@ namespace AGRacing.Test.TrackLoadTest
                 context.SwapBuffers();
             }
         }
-
-        int cnt = 0;
-        float cnt3 = 0;
+        
         public void Update(double interval, GraphicsContext context)
         {
             if (ResourcesLoaded)

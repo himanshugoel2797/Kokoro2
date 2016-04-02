@@ -14,7 +14,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
     /// </summary>
     public class FirstPersonCamera : Camera
     {//TODO setup collisions
-        
+
         public Vector3 Up;
 
         float leftrightRot = MathHelper.PiOver2;
@@ -117,12 +117,12 @@ namespace Kokoro2.Engine.HighLevel.Cameras
             if (Keyboard.IsKeyPressed(Key.Home))
             {
                 moveSpeed += (float)moveSpeedGradient / 1000f;
-                Debug.ErrorLogger.AddMessage(0, "[INPUT] moveSpeed = " + moveSpeed, Debug.DebugType.Marker, Debug.Severity.Notification);
+                ErrorLogger.AddMessage(0, "[INPUT] moveSpeed = " + moveSpeed, DebugType.Marker, Severity.Notification);
             }
             else if (Keyboard.IsKeyPressed(Key.End))
             {
                 moveSpeed -= (float)moveSpeedGradient / 1000f;
-                Debug.ErrorLogger.AddMessage(0, "[INPUT] moveSpeed = " + moveSpeed, Debug.DebugType.Marker, Debug.Severity.Notification);
+                ErrorLogger.AddMessage(0, "[INPUT] moveSpeed = " + moveSpeed, DebugType.Marker, Severity.Notification);
             }
 #endif
             //View = UpdateViewMatrix();

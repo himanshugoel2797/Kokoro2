@@ -12,18 +12,23 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kokoro2.OpenGL.PC
 {
-    public class ShaderLL : IDisposable
+    public class ShaderLL : IEngineObject
     {
-        public ShaderLL()
+        public ShaderLL(GraphicsContext c)
         {
-
+            ParentContext = c;
         }
 
         protected Engine.Shaders.ShaderTypes shaderType;
-        protected int id;
-        protected int pGetID()
+
+        public ulong ID
         {
-            return id;
+            get; set;
+        }
+
+        public GraphicsContext ParentContext
+        {
+            get; set;
         }
 
         protected Engine.Shaders.ShaderTypes pGetShaderType()
@@ -38,7 +43,9 @@ namespace Kokoro2.OpenGL.PC
 
         protected int aCreate(Engine.Shaders.ShaderTypes type, string file)
         {
-            id = GL.CreateShader(EnumConverters.EShaderTypes(type));
+            ID = ParentContext.EngineObjects.RegisterObject(GL.CreateShader(EnumConverters.EShaderTypes(type)));
+
+            int id = ParentContext.EngineObjects[ID, this.GetType()];
             GL.ShaderSource(id, file);
             GL.CompileShader(id);
             return id;
@@ -47,20 +54,22 @@ namespace Kokoro2.OpenGL.PC
         protected void CheckForErrors(string fshader, Engine.Shaders.ShaderTypes type)
         {
             int result = 0;
-            GL.GetShader(id, ShaderParameter.CompileStatus, out result);
+            GL.GetShader(ParentContext.EngineObjects[ID, this.GetType()], ShaderParameter.CompileStatus, out result);
             if (result != 1)
             {
-                Kokoro2.Debug.ErrorLogger.AddMessage(id, "RESULT: " + result + "\n" + GL.GetShaderInfoLog(id), Kokoro2.Debug.DebugType.Error, Kokoro2.Debug.Severity.High);
-                Kokoro2.Debug.ErrorLogger.AddMessage(id, fshader, Kokoro2.Debug.DebugType.Other, Kokoro2.Debug.Severity.High);
-#if DEBUG
-                Kokoro2.Debug.DebuggerManager.logger.Pause = true;
-#endif
+                Kokoro2.Engine.ErrorLogger.AddMessage(ID, "RESULT: " + result + "\n" + GL.GetShaderInfoLog(ParentContext.EngineObjects[ID, this.GetType()]), Kokoro2.Engine.DebugType.Error, Kokoro2.Engine.Severity.High);
+                Kokoro2.Engine.ErrorLogger.AddMessage(ID, fshader, Kokoro2.Engine.DebugType.Other, Kokoro2.Engine.Severity.High);
             }
         }
 
         public void Dispose()
         {
-            GL.DeleteShader(id);
+            if (ID != 0)
+            {
+                GL.DeleteShader(ParentContext.EngineObjects[ID, this.GetType()]);
+                ParentContext.EngineObjects.UnregisterObject(ID);
+                ID = 0;
+            }
         }
 
     }

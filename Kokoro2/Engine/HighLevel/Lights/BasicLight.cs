@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Kokoro2.Engine.HighLevel.Lights
 {
-    public abstract class BasicLight
+    public abstract class BasicLight : IEngineObject
     {
         public bool CastShadows { get; set; }
         public int ShadowResolution { get; set; }
@@ -20,7 +20,7 @@ namespace Kokoro2.Engine.HighLevel.Lights
         public Matrix4 ShadowSpace { get; protected set; }
 
         private FrameBuffer shadowBuffer;
-        private static ShaderProgram shadowShader;
+        private ShaderProgram shadowShader;
 
         public ShaderProgram ShadowShader
         {
@@ -30,13 +30,19 @@ namespace Kokoro2.Engine.HighLevel.Lights
             }
         }
 
-        static BasicLight()
+        public ulong ID
         {
-            shadowShader = new ShaderProgram(VertexShader.Load("ShadowMap"), FragmentShader.Load("ShadowMap"));
+            get; set;
+        }
+
+        public GraphicsContext ParentContext
+        {
+            get; set;
         }
 
         protected BasicLight(GraphicsContext context)
         {
+            shadowShader = new ShaderProgram(context, VertexShader.Load("ShadowMap", context), FragmentShader.Load("ShadowMap", context));
             AmbientColor = new Vector4(0.2f, 0.2f, 0.3f, 0.4f);
             LightColor = Vector4.One;
             ShadowResolution = 4096;
@@ -49,8 +55,8 @@ namespace Kokoro2.Engine.HighLevel.Lights
             {
                 if (shadowBuffer != null) shadowBuffer.Dispose();
                 shadowBuffer = new FrameBuffer(ShadowResolution, ShadowResolution, PixelComponentType.D32, context);
-                shadowBuffer.Add("Normals", new FrameBufferTexture(ShadowResolution, ShadowResolution, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
-                shadowBuffer.Add("Positions", new FrameBufferTexture(ShadowResolution, ShadowResolution, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment1, context);
+                shadowBuffer.Add("Normals", new FrameBufferTexture(ShadowResolution, ShadowResolution, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+                shadowBuffer.Add("Positions", new FrameBufferTexture(ShadowResolution, ShadowResolution, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
                 shadowBuffer["DepthBuffer"].FilterMode = TextureFilter.Linear;
                 shadowBuffer["DepthBuffer"].Compare = true;
                 shadowBuffer["DepthBuffer"].WrapX = false;
@@ -96,5 +102,40 @@ namespace Kokoro2.Engine.HighLevel.Lights
         {
             return shadowBuffer["Positions"];
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~BasicLight() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

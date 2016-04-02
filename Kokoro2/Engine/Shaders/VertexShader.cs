@@ -9,11 +9,11 @@ namespace Kokoro2.Engine.Shaders
 {
     public class VertexShader : Shader
     {
-        public VertexShader(string fshader) : base(fshader, ShaderTypes.Vertex){ }
+        public VertexShader(string fshader, GraphicsContext c) : base(fshader, ShaderTypes.Vertex, c) { }
 
-        public static VertexShader Load(string dir)
+        public static VertexShader Load(string dir, GraphicsContext c)
         {
-            return new VertexShader(Shader.GetFile(dir + "/vertex.glsl"));
+            return new VertexShader(Shader.GetFile(dir + "/vertex.glsl"), c);
         }
     }
 }

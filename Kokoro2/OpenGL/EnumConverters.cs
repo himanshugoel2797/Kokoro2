@@ -112,17 +112,17 @@ namespace Kokoro2.OpenGL
             return (BlendingFactorSrc)Enum.Parse(typeof(BlendingFactorSrc), factor.ToString());
         }
 
-        public static Kokoro2.Debug.DebugType ODebugType(DebugType debType)
+        public static Kokoro2.Engine.DebugType ODebugType(DebugType debType)
         {
-            if (debType == DebugType.DebugTypeDeprecatedBehavior) return Debug.DebugType.Compatibility;
-            else if (debType == DebugType.DebugTypeError) return Debug.DebugType.Error;
-            else if (debType == DebugType.DebugTypeMarker) return Debug.DebugType.Marker;
-            else if (debType == DebugType.DebugTypeOther) return Debug.DebugType.Other;
-            else if (debType == DebugType.DebugTypePerformance) return Debug.DebugType.Performance;
-            else if (debType == DebugType.DebugTypePortability) return Debug.DebugType.Compatibility;
-            else if (debType == DebugType.DebugTypeUndefinedBehavior) return Debug.DebugType.Compatibility;
+            if (debType == DebugType.DebugTypeDeprecatedBehavior) return Engine.DebugType.Compatibility;
+            else if (debType == DebugType.DebugTypeError) return Engine.DebugType.Error;
+            else if (debType == DebugType.DebugTypeMarker) return Engine.DebugType.Marker;
+            else if (debType == DebugType.DebugTypeOther) return Engine.DebugType.Other;
+            else if (debType == DebugType.DebugTypePerformance) return Engine.DebugType.Performance;
+            else if (debType == DebugType.DebugTypePortability) return Engine.DebugType.Compatibility;
+            else if (debType == DebugType.DebugTypeUndefinedBehavior) return Engine.DebugType.Compatibility;
 
-            return Debug.DebugType.Other;
+            return Engine.DebugType.Other;
         }
 
         public static Kokoro2.Engine.Input.Key OKey(OpenTK.Input.Key k)

@@ -9,7 +9,7 @@ namespace Kokoro2.Engine.SceneGraph
     /// <summary>
     /// Manages Scene and SceneManager objects
     /// </summary>
-    public class SceneManager : IScene
+    public class SceneManager : IScene, IEngineObject
     {
         private Dictionary<string, IScene> scenes;
         private IScene curScene;
@@ -29,9 +29,13 @@ namespace Kokoro2.Engine.SceneGraph
         /// <summary>
         /// Create a new instance of a SceneManager
         /// </summary>
-        public SceneManager()
+        public SceneManager(GraphicsContext c)
         {
-            Debug.ObjectAllocTracker.NewCreated(this, -1, "SceneManager");
+            ParentContext = c;
+            ID = c.EngineObjects.RegisterObject(-1);
+            c.Disposing += Dispose;
+
+            ObjectAllocTracker.NewCreated(this);
 
             scenes = new Dictionary<string, IScene>();
         }
@@ -108,5 +112,53 @@ namespace Kokoro2.Engine.SceneGraph
             set;
         }
 
+        public ulong ID
+        {
+            get;
+            set;
+        }
+
+        public GraphicsContext ParentContext
+        {
+            get;
+            set;
+        }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                }
+
+                ParentContext.EngineObjects.UnregisterObject(ID);
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        ~SceneManager()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(false);
+        }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

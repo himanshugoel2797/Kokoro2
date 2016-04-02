@@ -45,7 +45,7 @@ namespace Akane.World
                     tileMapPhaseA.Dispose();
                 }
                 tileMapPhaseA = new FrameBuffer((int)((value.X + 2) * TileSize.X), (int)((value.Y + 2) * TileSize.Y), PixelComponentType.RGBA8, manager.context);
-                tileMapPhaseA.Add("HeightMap", new FrameBufferTexture((int)((value.X + 2) * TileSize.X), (int)((value.Y + 2) * TileSize.Y), PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment1, manager.context);
+                tileMapPhaseA.Add("HeightMap", new FrameBufferTexture((int)((value.X + 2) * TileSize.X), (int)((value.Y + 2) * TileSize.Y), PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, manager.context), FrameBufferAttachments.ColorAttachment1, manager.context);
             }
         }
         public Vector2 ViewportOffset;
@@ -77,7 +77,7 @@ namespace Akane.World
             //Each pixel is one tile
             FrameBuffer renderTarget = new FrameBuffer(map.Width, map.Height, PixelComponentType.RGBA16f, akane.context);
             Model tileRenderer = new FullScreenQuad();
-            tileRenderer.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(new VertexShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer")), new FragmentShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer")));
+            tileRenderer.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, new VertexShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context), new FragmentShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context));
 
             Matrix4 TileLayersOrthoMatrix = Matrix4.CreateOrthographicOffCenter(0, map.Width, -map.Height, 0, -1.0f, 1.0f);
             akane.context.Projection = TileLayersOrthoMatrix;
@@ -109,7 +109,7 @@ namespace Akane.World
                 MaxGID_onLayer.Add(maxGid);
                 MinGID_onLayer.Add(minGid);
                 TileLayers.Add(renderTarget["Color"]);
-                if (i < map.Layers.Count - 1) renderTarget.Add("Color", new FrameBufferTexture(map.Width, map.Height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float), FrameBufferAttachments.ColorAttachment0, akane.context);    //Add a new texture to the framebuffer
+                if (i < map.Layers.Count - 1) renderTarget.Add("Color", new FrameBufferTexture(map.Width, map.Height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, manager.context), FrameBufferAttachments.ColorAttachment0, akane.context);    //Add a new texture to the framebuffer
             }
 
             //Restore the backed up matrix
@@ -118,8 +118,8 @@ namespace Akane.World
             #endregion
 
             quad = new FullScreenQuad();
-            quad.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Shaders/LayerDrawer"), FragmentShader.Load("Shaders/LayerDrawer"));
-            DefaultShader = new ShaderProgram(VertexShader.Load("Shaders/FrameBuffer"), FragmentShader.Load("Shaders/FrameBuffer"));
+            quad.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, VertexShader.Load("Shaders/LayerDrawer", manager.context), FragmentShader.Load("Shaders/LayerDrawer", manager.context));
+            DefaultShader = new ShaderProgram(manager.context, VertexShader.Load("Shaders/FrameBuffer", manager.context), FragmentShader.Load("Shaders/FrameBuffer", manager.context));
 
             LoadResources(akane);
         }
@@ -172,7 +172,7 @@ namespace Akane.World
         {
             FrameBuffer tileSetTmpBuffer = new FrameBuffer((int)map.Tilesets[0].Image.Width, (int)map.Tilesets[0].Image.Height, PixelComponentType.RGBA8, manager.context);
             FullScreenQuad quad = new FullScreenQuad();
-            quad.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Shaders/TransparentColor"), FragmentShader.Load("Shaders/TransparentColor"));
+            quad.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, VertexShader.Load("Shaders/TransparentColor", manager.context), FragmentShader.Load("Shaders/TransparentColor", manager.context));
 
 
             for (int i = 0; i < map.Tilesets.Count; i++)
@@ -185,7 +185,7 @@ namespace Akane.World
                     MinMaxTileset.Add(new Vector2(t.FirstGid, CalculateFinalGID(t.FirstGid, (int)t.Image.Width, (int)t.Image.Height, t.TileWidth, t.TileHeight)));
 
                     manager.context.Clear(0, 0, 0, 0);
-                    quad.Materials[0].AlbedoMap = new Texture(t.Image.Source, true);
+                    quad.Materials[0].AlbedoMap = new Texture(t.Image.Source, true, manager.context);
                     quad.Materials[0].Shader["TransparentColor"] = new Vector3(t.Image.Trans.R / 255f, t.Image.Trans.G / 255f, t.Image.Trans.B / 255f);
 
                     quad.Draw(manager.context);
@@ -193,7 +193,7 @@ namespace Akane.World
                     TextureAtlases.Add(tileSetTmpBuffer["Color"]);
                     if (i < map.Tilesets.Count - 1)
                         tileSetTmpBuffer.Add("Color",
-new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i + 1].Image.Height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float)
+new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i + 1].Image.Height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, manager.context)
 , FrameBufferAttachments.ColorAttachment0, manager.context);
                     //if (i < map.Tilesets.Count - 1) tileSetTmpBuffer = new FrameBuffer((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i + 1].Image.Height, PixelComponentType.RGBA8, manager.context);
 
@@ -201,7 +201,7 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
 
                     if (t.Properties.ContainsKey("HeightMap"))
                     {
-                        HeightMaps.Add(new Texture(t.Properties["HeightMap"], false));
+                        HeightMaps.Add(new Texture(t.Properties["HeightMap"], false, manager.context));
                     }
                     else
                     {

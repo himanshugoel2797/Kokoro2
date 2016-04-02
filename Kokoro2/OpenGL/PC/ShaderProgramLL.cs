@@ -12,41 +12,36 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kokoro2.OpenGL.PC
 {
-    public class ShaderProgramLL
+    public class ShaderProgramLL : IEngineObject
     {
-        private static Dictionary<string, int> programDB = new Dictionary<string, int>();
+        private static Dictionary<string, ulong> programDB = new Dictionary<string, ulong>();
         private string shaderName;
         private Shader[] shaderStages;
-        private int id;
         private bool transformSet = false;
 
-        public ShaderProgramLL(params Shader[] shaders)
+        private ShaderProgramLL(GraphicsContext c)
         {
+            ParentContext = c;
             variables = new Dictionary<string, shaderVars>();
             shaderStages = new Shader[5];
-            id = GL.CreateProgram();
             shaderName = "";
+        }
 
+        public ShaderProgramLL(GraphicsContext c, params Shader[] shaders) : this(c)
+        {
             foreach (Shader s in shaders)
             {
                 this.AttachShader(s);
             }
+            LinkShader();
         }
 
-        public ShaderProgramLL(Shader[] shaders, string[] transformVariables)
+        public ShaderProgramLL(GraphicsContext c, Shader[] shaders, string[] transformVariables) : this(c, shaders)
         {
-            variables = new Dictionary<string, shaderVars>();
-            shaderStages = new Shader[5];
-            id = GL.CreateProgram();
-            shaderName = "";
-
-            foreach (Shader s in shaders)
-            {
-                this.AttachShader(s, transformVariables);
-            }
+            LinkShader(transformVariables);
         }
 
-        public void AttachShader(Shader s, string[] transformVars = null)
+        private void AttachShader(Shader s)
         {
 
             if (s.GetShaderType() != ShaderTypes.TessellationComb) shaderStages[(int)s.GetShaderType()] = s;
@@ -65,27 +60,37 @@ namespace Kokoro2.OpenGL.PC
                 if (shaderStages[i] != null)
                 {
                     stageCount++;
-                    name += shaderStages[i].GetID().ToString() + ",";
+                    name += shaderStages[i].ID.ToString() + ",";
                 }
                 else name += "-1,";
             }
+            shaderName = name;  //Finally update the shader's name
+        }
 
-
-            if (!programDB.ContainsKey(name))
+        private void LinkShader(string[] transformVars = null)
+        {
+            int stageCount = 0;
+            for (int i = 0; i < shaderStages.Length; i++)
             {
-                if (stageCount < 2) return;
+                if (shaderStages[i] != null) stageCount++;
+            }
+
+            if (!programDB.ContainsKey(shaderName))
+            {
+                if (stageCount < 2) throw new Exception("ShaderProgram is incomplete");
                 if (!programDB.ContainsKey(shaderName)) //Backup current program
                 {
-                    programDB.Add(name, id);     //If the programDB doesn't contain the key, add the program
+                    programDB.Add(shaderName, ID);     //If the programDB doesn't contain the key, add the program
                 }
 
                 //Recreate the current program with all its shaders
                 //Link the program
-                id = GL.CreateProgram();
+                int id = GL.CreateProgram();
+                ID = ParentContext.EngineObjects.RegisterObject(id);
 
                 for (int i = 0; i < 5; i++)
                 {
-                    if (shaderStages[i] != null) GL.AttachShader(id, shaderStages[i].GetID());
+                    if (shaderStages[i] != null) GL.AttachShader(id, shaderStages[i].ParentContext.EngineObjects[shaderStages[i].ID, shaderStages[i].GetType()]);
                 }
                 int result = 1;
 
@@ -97,12 +102,10 @@ namespace Kokoro2.OpenGL.PC
 
                 GL.LinkProgram(id);
                 GL.GetProgram(id, GetProgramParameterName.LinkStatus, out result);
-                Kokoro2.Debug.ErrorLogger.AddMessage(id, "Program Linking Result: " + result.ToString("X8") + "\n" + GL.GetProgramInfoLog(id), Kokoro2.Debug.DebugType.Other, Kokoro2.Debug.Severity.Notification);
+                Kokoro2.Engine.ErrorLogger.AddMessage(ID, "Program Linking Result: " + result.ToString("X8") + "\n" + GL.GetProgramInfoLog(id), Kokoro2.Engine.DebugType.Other, Kokoro2.Engine.Severity.Notification);
 
             }
-            else id = programDB[name];                                       //Retrieve the shader if it already exists
-
-            shaderName = name;  //Finally update the shader's name
+            else ID = programDB[shaderName];                                       //Retrieve the shader if it already exists
         }
 
         #region Shader Handler
@@ -127,6 +130,7 @@ namespace Kokoro2.OpenGL.PC
         protected virtual void sApply(GraphicsContext context)
         {
             var variables = this.variables.Values.ToList();
+            int id = ParentContext.EngineObjects[ID, this.GetType()];
 
             for (int i = 0; i < variables.Count; i++)
             {
@@ -228,7 +232,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(ParentContext.EngineObjects[ID, this.GetType()], name),
                 type = VarType.Matrix4,
                 dirty = true
             };
@@ -239,7 +243,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(ParentContext.EngineObjects[ID, this.GetType()], name),
                 type = VarType.Matrix2,
                 dirty = true
             };
@@ -250,7 +254,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(ParentContext.EngineObjects[ID, this.GetType()], name),
                 type = VarType.Matrix3,
                 dirty = true
             };
@@ -261,7 +265,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(ParentContext.EngineObjects[ID, this.GetType()], name),
                 type = VarType.Vector4,
                 dirty = true
             };
@@ -272,7 +276,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(ParentContext.EngineObjects[ID, this.GetType()], name),
                 type = VarType.Vector3,
                 dirty = true
             };
@@ -283,7 +287,7 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(ParentContext.EngineObjects[ID, this.GetType()], name),
                 type = VarType.Vector2,
                 dirty = true
             };
@@ -296,13 +300,40 @@ namespace Kokoro2.OpenGL.PC
             variables[name] = new shaderVars()
             {
                 obj = val,
-                pos = GetUniformLocation(this.id, name),
+                pos = GetUniformLocation(ParentContext.EngineObjects[ID, this.GetType()], name),
                 type = VarType.Float,
                 dirty = true
             };
         }
 
         int texUnit = 0;
+
+        public ulong ID
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public GraphicsContext ParentContext
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         protected void aSetTexture(string name, Texture tex)
         {
             if (variables.ContainsKey(name))
@@ -322,7 +353,7 @@ namespace Kokoro2.OpenGL.PC
                 {
                     metadata = texUnit++,
                     obj = tex,
-                    pos = GetUniformLocation(this.id, name),
+                    pos = GetUniformLocation(ParentContext.EngineObjects[ID, this.GetType()], name),
                     type = VarType.Texture,
                     dirty = true
                 };
@@ -348,7 +379,7 @@ namespace Kokoro2.OpenGL.PC
                 {
                     metadata = texUnit++,
                     obj = tex,
-                    pos = GetUniformLocation(this.id, name),
+                    pos = GetUniformLocation(ParentContext.EngineObjects[ID, this.GetType()], name),
                     type = VarType.CubeMap,
                     dirty = true
                 };

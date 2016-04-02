@@ -9,11 +9,11 @@ namespace Kokoro2.Engine.Shaders
 {
     public class FragmentShader : Shader
     {
-        public FragmentShader(string fshader) : base(fshader, ShaderTypes.Fragment) { }
+        public FragmentShader(string fshader, GraphicsContext c) : base(fshader, ShaderTypes.Fragment, c) { }
 
-        public static FragmentShader Load(string dir)
+        public static FragmentShader Load(string dir, GraphicsContext c)
         {
-            return new FragmentShader(Shader.GetFile(dir + "/fragment.glsl"));
+            return new FragmentShader(Shader.GetFile(dir + "/fragment.glsl"), c);
         }
     }
 }

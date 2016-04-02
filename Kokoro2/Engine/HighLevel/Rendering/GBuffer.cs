@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Kokoro2.Math;
 using Kokoro2.Engine;
-using Kokoro2.Debug;
 using Kokoro2.Engine.SceneGraph;
 using Kokoro2.Engine.Prefabs;
 using Kokoro2.Engine.Shaders;
@@ -25,14 +24,14 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             buffer = new FrameBuffer(width, height, PixelComponentType.RGBA16f, context);
 
             //Create the GBuffer texture targets
-            buffer.Add("Shadow", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
-            buffer.Add("WorldPos", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.UInt1010102), FrameBufferAttachments.ColorAttachment1, context);
-            buffer.Add("Normal", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment2, context);
-            buffer.Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float), FrameBufferAttachments.ColorAttachment3, context);
-            buffer.Add("Specular", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment4, context);
+            buffer.Add("Shadow", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+            buffer.Add("WorldPos", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.UInt1010102, context), FrameBufferAttachments.ColorAttachment1, context);
+            buffer.Add("Normal", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment2, context);
+            buffer.Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment3, context);
+            buffer.Add("Specular", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment4, context);
 
             //TODO setup the new GBufferShader
-            GBufferShader = new ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed"));
+            GBufferShader = new ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context));
         }
 
         public void Add(string name, FrameBufferTexture tex, FrameBufferAttachments attachment, GraphicsContext context)
@@ -51,13 +50,6 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         public void Bind(GraphicsContext context)
         {
             buffer.Bind(context);
-            /*context.Blending = new BlendFunc()
-            {
-                Src = BlendingFactor.One,
-                Dst = BlendingFactor.Zero
-            };*/
-
-            //buffer.SetBlendFunc(context.Blending, FrameBufferAttachments.ColorAttachment0);
         }
 
         public void SetBlendFunc(BlendFunc func)
@@ -72,7 +64,6 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         public void UnBind(GraphicsContext context)
         {
             buffer.UnBind(context);
-            //context.Viewport = new Vector4(0, 0, context.WindowSize.X, context.WindowSize.Y);
         }
 
     }

@@ -8,11 +8,9 @@ using OpenTK.Graphics.OpenGL4;
 
 namespace Kokoro2.OpenGL.PC
 {
-    public class VertexArrayLL : IDisposable
+    public class VertexArrayLL : Engine.IEngineObject
     {
         GPUBufferLL[] buffers;
-        int vaID = 0;
-
         int[] elementCount;
         Kokoro2.Engine.BufferUse[] bufferUses;
 
@@ -39,6 +37,16 @@ namespace Kokoro2.OpenGL.PC
             }
         }
 
+        public ulong ID
+        {
+            get; set;
+        }
+
+        public Engine.GraphicsContext ParentContext
+        {
+            get; set;
+        }
+
         public void PostFence()
         {
             for (int i = 0; i < buffers.Length; i++)
@@ -47,20 +55,23 @@ namespace Kokoro2.OpenGL.PC
             }
         }
 
-        public VertexArrayLL(int bufferCount, long bufferSize, Kokoro2.Engine.UpdateMode updateMode, Kokoro2.Engine.BufferUse[] bufferUses, int[] elementCount)
+        public VertexArrayLL(int bufferCount, long bufferSize, Kokoro2.Engine.UpdateMode updateMode, Kokoro2.Engine.BufferUse[] bufferUses, int[] elementCount, Engine.GraphicsContext c)
         {
+            ParentContext = c;
+            ParentContext.Disposing += Dispose;
+
             //Generate all GPUBuffers
             buffers = new GPUBufferLL[bufferCount];
             for (int i = 0; i < bufferCount; i++)
             {
-                buffers[i] = new GPUBufferLL(updateMode, bufferUses[i], bufferSize * elementCount[i] * 8);  //NOTE: bufferSize no longer refers to the number of bytes of data, but the number of elements in total
+                buffers[i] = new GPUBufferLL(updateMode, bufferUses[i], bufferSize * elementCount[i] * 8, c);  //NOTE: bufferSize no longer refers to the number of bytes of data, but the number of elements in total
             }
 
             this.elementCount = elementCount;
             this.bufferUses = bufferUses;
 
-            vaID = GL.GenVertexArray();
-            GL.BindVertexArray(vaID);
+            ID = ParentContext.EngineObjects.RegisterObject(GL.GenVertexArray());
+            GL.BindVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
 
             if (bufferUses[0] == Engine.BufferUse.Index)
             {
@@ -89,7 +100,7 @@ namespace Kokoro2.OpenGL.PC
         //Bind the VAO
         public void Bind()
         {
-            GL.BindVertexArray(vaID);
+            GL.BindVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
             int bufferCount = elementCount.Length;
 
             if (bufferUses[0] == Engine.BufferUse.Index)
@@ -126,19 +137,17 @@ namespace Kokoro2.OpenGL.PC
 
         public void Dispose()
         {
-#if DEBUG
-            disposed = true;
-#endif
-            Kokoro2.Debug.ErrorLogger.AddMessage(vaID, "VertexArrayLL marked for deletion", Kokoro2.Debug.DebugType.Marker, Kokoro2.Debug.Severity.Notification);
-
-            //Mark all owned GPUBuffers to be erased as well
-            for (int i = 0; i < buffers.Length; i++)
+            if (ID != 0)
             {
-                buffers[i].Dispose();
-            }
+                //Mark all owned GPUBuffers to be erased as well
+                for (int i = 0; i < buffers.Length; i++)
+                {
+                    buffers[i].Dispose();
+                }
 
-            Kokoro2.Debug.ObjectAllocTracker.ObjectDestroyed(this, vaID, "VertexArrayLL Destroyed");
-            GL.DeleteVertexArray(vaID);
+                Kokoro2.Engine.ObjectAllocTracker.ObjectDestroyed(this);
+                GL.DeleteVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
+            }
         }
 
         public void ResetAll()
@@ -149,17 +158,10 @@ namespace Kokoro2.OpenGL.PC
             }
         }
 
-#if DEBUG
-        bool disposed = false;
         ~VertexArrayLL()
         {
-            if (!disposed)
-            {
-                Kokoro2.Debug.ErrorLogger.AddMessage(vaID, "VertexArray was automatically marked for deletion, Will cause memory leak", Kokoro2.Debug.DebugType.Performance, Kokoro2.Debug.Severity.High);
-                Dispose();
-            }
+            Dispose();
         }
-#endif
 
     }
 }

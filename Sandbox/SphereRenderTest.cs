@@ -36,13 +36,13 @@ namespace Sandbox
 
                 TestSphereA = new Sphere(1, 10);
                 //TestSphereA.Materials[0].Shader = new ShaderProgram(VertexShader.Load("GBuffer"), FragmentShader.Load("GBuffer"));
-                TestSphereA.Materials[0].Shader = new ShaderProgram(VertexShader.Load("LoD"), TessellationShader.Load("LoD", "LoD"), FragmentShader.Load("LoD"));
+                TestSphereA.Materials[0].Shader = new ShaderProgram(context, VertexShader.Load("LoD", context), TessellationShader.Load("LoD", "LoD", context), FragmentShader.Load("LoD", context));
                 TestSphereA.DrawMode = DrawMode.Patches;
 
                 gBuffer = new GBuffer(1920, 1080, context);
 
                 FSQ = new FullScreenQuad();
-                FSQ.Materials[0].Shader = new ShaderProgram(VertexShader.Load("FrameBuffer"), FragmentShader.Load("FrameBuffer"));
+                FSQ.Materials[0].Shader = new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("FrameBuffer", context));
                 FSQ.Materials[0].AlbedoMap = gBuffer["RGBA0"];
 
                 context.ZFar = 1000;

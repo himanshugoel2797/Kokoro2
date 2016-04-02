@@ -72,7 +72,7 @@ namespace Kokoro2.Engine
     /// <summary>
     /// The GraphicsContext acts as a high level wrapper to the lower level functionality exposed by the platform dependant code
     /// </summary>
-    public class GraphicsContext : GraphicsContextLL
+    public class GraphicsContext : GraphicsContextLL, IEngineObject
     {
         #region State Machine Properties
         /// <summary>
@@ -90,6 +90,9 @@ namespace Kokoro2.Engine
             }
         }
 
+        /// <summary>
+        /// Enable/Disable Transform Feedback
+        /// </summary>
         public bool TransformFeedback
         {
             get
@@ -102,6 +105,11 @@ namespace Kokoro2.Engine
                 else GraphicsContextLL.DisableFeedback();
             }
         }
+
+        /// <summary>
+        /// Manage all the objects created by this control
+        /// </summary>
+        public EngineObjectManager EngineObjects { get; set; }
 
         /// <summary>
         /// Enable/Disable writing to the Depth buffer
@@ -370,8 +378,11 @@ namespace Kokoro2.Engine
         /// <summary>
         /// The thread on which the engine resource manager runs
         /// </summary>
-        public Thread ResourceManagerThread { get; private set; }     //NOTE: The resource manager also deals with balancing the world octree, as a result it manages the resources in the tree by unloading any objects which are too far away for current use
+        public Thread ResourceManagerThread { get; private set; }
 
+        /// <summary>
+        /// The thread running the Render Loop
+        /// </summary>
         public Thread RenderThread { get; private set; }
 
         /// <summary>
@@ -386,31 +397,54 @@ namespace Kokoro2.Engine
         /// The initialization handler
         /// </summary>
         public Action<GraphicsContext> Initialize { get; set; }
+
         /// <summary>
         /// The Resource Manager handler - Use for Async resource loading
         /// </summary>
         public Action<GraphicsContext> ResourceManager { get; set; }
 
+        /// <summary>
+        /// The Resize event handler - Use to resize anything that depends on the window information
+        /// </summary>
         public Action<GraphicsContext> WindowResized { get; set; }
 
+        /// <summary>
+        /// The Disposing event handler - Use to cleanly free any objects or save any data when this context is destroyed
+        /// </summary>
+        public Action Disposing { get; set; }
 
-        private bool stopGame = false, pause = false, devOverride = false;
-
-        public void SetDevOverride(bool v)
+        public ulong ID
         {
-            devOverride = v;
+            get;
+            set;
         }
 
+        public GraphicsContext ParentContext
+        {
+            get; set;
+        }
+
+        private bool stopGame = false, pause = false;
+
+        /// <summary>
+        /// Pause engine execution
+        /// </summary>
         public void Pause()
         {
             pause = true;
         }
 
+        /// <summary>
+        /// Resume engine execution
+        /// </summary>
         public void Resume()
         {
             pause = false;
         }
 
+        /// <summary>
+        /// Stop engine execution and exit
+        /// </summary>
         public void Stop()
         {
             stopGame = true;
@@ -421,116 +455,64 @@ namespace Kokoro2.Engine
         /// </summary>
         public void Start(int tpf, int tpu)
         {
+
+            #region LL executor
             //Update handler thread
             UpdateThread = new Thread(() =>
             {
-                Stopwatch su = Stopwatch.StartNew();
-                //TODO: Implement skipping to prevent the spiral of death
-                while (true)
+                GameLooper(tpu, (a, b) =>
                 {
-                    if (stopGame) return;
-                    while (pause) Thread.Sleep(tpu);
-                    if (Update != null)
-                    {
-                        lock (Update)
-                        {
-                            //Update all input data
-                            Keyboard.Update();
-                            Mouse.Update();
+                    Keyboard.Update();
+                    Mouse.Update();
 
-                            //Call update handler
-                            double interval = su.ElapsedMilliseconds;
-                            su.Reset();
-                            su.Start();
-                            Update(interval, this);
-                        }
-                    }
-
-                    if (tpu != 0 && tpu > su.ElapsedMilliseconds)
-                    {
-                        try
-                        {
-                            Thread.Sleep(TimeSpan.FromMilliseconds((long)tpu - (long)su.ElapsedMilliseconds));
-                        }
-                        catch (Exception) { }
-                    }
-                }
+                    Update?.Invoke(a, b);
+                });
             });
 
             ResourceManagerThread = new Thread(() =>
             {
-                GameLooper(160000, (a, b) =>
+                //Create a new GL context and use it to load resources on the side for sharing
+                var resourceWindow = new OpenTK.GameWindow();
+                resourceWindow.MakeCurrent();
+                GameLooper(16, (a, b) =>
                 {
-
+                    ResourceManager?.Invoke(this);
                 });
             });
 
-            #region LL executor
-            bool rThreadHasContext = false;
             bool tmpCtrl = false;
-            Stopwatch s = new Stopwatch();
-
             RenderThread = new Thread(() =>
             {
-                while (!stopGame)
+                GameLooper(tpf, (a, b) =>
                 {
-                    rThreadHasContext = true;
-                    //Window.MakeCurrent();
                     ViewportControl.BeginInvoke(new MethodInvoker(() =>
+                    {
+                        if (inited)
                         {
-                            if (inited)
+                            if (!tmpCtrl)
                             {
-                                if (!tmpCtrl)
-                                {
-                                    Initialize(this);
+                                Initialize(this);
                                 //Push the accumulated command buffers for this thread right now
                                 tmpCtrl = true;
-                                }
-
-                                if (!s.IsRunning) s.Start();
-
-                                if (ResourceManager != null) ResourceManager(this);
-                                ResourceManager = null;
-
-                                Window_RenderFrame(0);
-                                Render(s.ElapsedMilliseconds, this);
                             }
 
-                        }));
-                    rThreadHasContext = false;
-                    if (tpf != 0 && tpf > s.ElapsedMilliseconds)
-                    {
-                        try
-                        {
-                            Thread.Sleep(TimeSpan.FromMilliseconds((long)tpf - (long)s.ElapsedMilliseconds));
+                            if (ResourceManager != null) ResourceManager(this);
+                            ResourceManager = null;
+
+                            Window_RenderFrame(0);
+                            Render(a, b);
                         }
-                        catch (Exception) { }
-                    }
-                    s.Reset();
-                    s.Start();
 
-                }
+                    }));
+                });
             });
-            RenderThread.Start();
-
-            ViewportControl.Paint += (a, b) =>
-            {
-                if (stopGame) return;
-                if (pause) return;
-
-                //TODO setup command buffer system
-                if (inited && !rThreadHasContext)
-                {
-                }
-            };
-
             #endregion
+
 
             var tmp = Initialize;
             Initialize = (GraphicsContext c) =>
                         {
-                            Debug.ErrorLogger.StartLogger(true);
-                            Debug.ErrorLogger.AddMessage(0, "Engine Started", Debug.DebugType.Marker, Debug.Severity.Notification);
+                            ErrorLogger.AddMessage(0, "Engine Started", DebugType.Marker, Severity.Notification);
 
                             ZNear = 0.0001f;
                             ZFar = 1000000f;
@@ -546,6 +528,8 @@ namespace Kokoro2.Engine
                 UpdateThread.Start();
                 //TODO ResourceManagerThread.Start();
             };
+
+            RenderThread.Start();
         }
 
         /// <summary>
@@ -556,26 +540,27 @@ namespace Kokoro2.Engine
             swapBuffers();
         }
 
-        private void GameLooper(double timestep, Action<double, GraphicsContext> handler)
+        private void GameLooper(int timestep, Action<double, GraphicsContext> handler)
         {
             Stopwatch s = Stopwatch.StartNew();
             //TODO: Implement skipping to avoid the spiral of death
-            while (true)
+            while (!stopGame)
             {
+                while (pause) Thread.Sleep(timestep);
                 if (handler != null)
                 {
                     lock (handler)
                     {
-                        handler((timestep == 0) ? GetNormTicks(s) : timestep, this);
+                        handler((timestep == 0) ? s.ElapsedMilliseconds : timestep, this);
                     }
                     //Each thread is required to push its commandbuffer when done
                 }
 
-                if (timestep != 0 && timestep > GetNormTicks(s))
+                if (timestep != 0 && timestep > s.ElapsedMilliseconds)
                 {
                     try
                     {
-                        Thread.Sleep(TimeSpan.FromTicks((long)timestep - (long)GetNormTicks(s)));
+                        Thread.Sleep(timestep - (int)s.ElapsedMilliseconds);
                     }
                     catch (InvalidOperationException) { }
                     catch (ArgumentOutOfRangeException) { }
@@ -585,29 +570,58 @@ namespace Kokoro2.Engine
             }
         }
 
-        private double GetNormTicks(Stopwatch s)
-        {
-            return (double)(s.ElapsedTicks * 1000 * 10000) / (Stopwatch.Frequency);
-        }
-
         #endregion
 
         /// <summary>
         /// Create a new GraphicsContext
         /// </summary>
         /// <param name="WindowSize">The size of the Window</param>
-        public GraphicsContext(Vector2 WindowSize) : this(WindowSize, true) { }
-
-        /// <summary>
-        /// Create a new GraphicsContext
-        /// </summary>
-        /// <param name="WindowSize">The size of the Window</param>
-        public GraphicsContext(Vector2 WindowSize, bool debugger)
+        public GraphicsContext(Vector2 WindowSize)
                     : base((int)WindowSize.X, (int)WindowSize.Y)
         {
-            if (debugger) Debug.DebuggerManager.ShowDebugger();
-            Debug.ObjectAllocTracker.NewCreated(this, 0, "GraphicsContext Created");
+            EngineObjects = new EngineObjectManager();
+            ParentContext = this;
+            ID = EngineObjectManager.RegisterContext();
+            ErrorLogger.StartLogger();
+            ObjectAllocTracker.NewCreated(this, "GraphicsContext Created");
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects).
+                    Disposing?.Invoke();
+                    Window.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
+
+                disposedValue = true;
+            }
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~GraphicsContext() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
+        }
+        #endregion
 
     }
 }
