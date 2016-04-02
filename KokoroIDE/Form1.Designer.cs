@@ -1,4 +1,4 @@
-﻿namespace Kokoro2.IDE
+﻿namespace Kokoro.IDE
 {
     partial class Form1
     {
@@ -93,6 +93,8 @@
             this.updaterateLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.openPrj = new System.Windows.Forms.OpenFileDialog();
             this.frameUpdater = new System.Windows.Forms.Timer(this.components);
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.showEngineOutput = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
             this.toolsContainer.ContentPanel.SuspendLayout();
             this.toolsContainer.TopToolStripPanel.SuspendLayout();
@@ -574,10 +576,12 @@
             this.addScript,
             this.toolStripSeparator7,
             this.pbrViewer,
-            this.textureTool});
+            this.textureTool,
+            this.toolStripSeparator8,
+            this.showEngineOutput});
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(185, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(245, 25);
             this.toolStrip1.TabIndex = 0;
             // 
             // PlayPauseGame
@@ -692,6 +696,21 @@
             this.frameUpdater.Interval = 500;
             this.frameUpdater.Tick += new System.EventHandler(this.PerFrameInfoUpdater_Elapsed);
             // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(6, 25);
+            // 
+            // showEngineOutput
+            // 
+            this.showEngineOutput.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.showEngineOutput.Image = ((System.Drawing.Image)(resources.GetObject("showEngineOutput.Image")));
+            this.showEngineOutput.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.showEngineOutput.Name = "showEngineOutput";
+            this.showEngineOutput.Size = new System.Drawing.Size(23, 22);
+            this.showEngineOutput.Text = "Show Engine Output";
+            this.showEngineOutput.Click += new System.EventHandler(this.showEngineOutput_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -805,5 +824,7 @@
         private System.Windows.Forms.TreeView sceneTreeView;
         private System.Windows.Forms.PropertyGrid curObjProperties;
         private System.Windows.Forms.Timer frameUpdater;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
+        private System.Windows.Forms.ToolStripButton showEngineOutput;
     }
 }

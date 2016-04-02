@@ -75,7 +75,6 @@ namespace Kokoro2.OpenGL.PC
 #if DEBUG
             if (curRequestTexture != 0) Debug.DLbmp(curRequestTexture);
             curRequestTexture = 0;
-            Kokoro2.Engine.ErrorLogger.AddMessage(0, "End Render Frame", Kokoro2.Engine.DebugType.Other, Kokoro2.Engine.Severity.Notification);
 
 #endif
         }

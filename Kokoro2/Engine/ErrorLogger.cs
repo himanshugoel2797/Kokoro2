@@ -42,9 +42,9 @@ namespace Kokoro2.Engine
             public Severity severity;
         }
 
-        public static Action<DebugMessageData> NewMessage { get; set; }
-        public static Action<DebugMessageData> ErrorMessage { get; set; }
-
+        public static event Action<DebugMessageData> NewMessage;
+        public static event Action<DebugMessageData> ErrorMessage;
+        private static bool engineStarted = false;
 
         /// <summary>
         /// Start logging
@@ -55,6 +55,11 @@ namespace Kokoro2.Engine
 #if DEBUG
             deb.EnableDebug();
             deb.RegisterCallback(Callback);
+            if (!engineStarted)
+            {
+                AddMessage(0, "Engine Started", DebugType.Marker, Severity.Notification);
+                engineStarted = true;
+            }
 #endif
         }
 

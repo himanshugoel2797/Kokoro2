@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Kokoro2.IDE
+namespace Kokoro.IDE
 {
     static class Program
     {

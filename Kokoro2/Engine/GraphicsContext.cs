@@ -74,7 +74,7 @@ namespace Kokoro2.Engine
     /// </summary>
     public class GraphicsContext : GraphicsContextLL, IEngineObject
     {
-        
+
         #region State Machine Properties
         /// <summary>
         /// Enable/Disable Wireframe rendering
@@ -537,14 +537,13 @@ namespace Kokoro2.Engine
             var tmp = Initialize;
             Initialize = (GraphicsContext c) =>
                         {
-                            ErrorLogger.AddMessage(0, "Engine Started", DebugType.Marker, Severity.Notification);
+                            ErrorLogger.StartLogger();
 
                             ZNear = 0.0001f;
                             ZFar = 1000000f;
                             DepthWrite = true;
                             Viewport = new Vector4(0, 0, WindowSize.X, WindowSize.Y);
-                            ErrorLogger.StartLogger();
-                            ObjectAllocTracker.NewCreated(this, "GraphicsContext Created");
+                            ObjectAllocTracker.NewCreated(this);
 
                         };
             Initialize += tmp;

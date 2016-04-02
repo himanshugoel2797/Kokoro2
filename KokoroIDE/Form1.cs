@@ -1,4 +1,6 @@
-﻿using Kokoro.IDE.Project;
+﻿using Kokoro.IDE;
+using Kokoro.IDE.Editor;
+using Kokoro.IDE.Project;
 using Kokoro.IDE.ProjectWindows;
 using Kokoro2.Engine;
 using Kokoro2.Engine.SceneGraph;
@@ -13,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Kokoro2.IDE
+namespace Kokoro.IDE
 {
     public partial class Form1 : Form
     {
@@ -21,6 +23,8 @@ namespace Kokoro2.IDE
         private GraphicsContext context;
         private EditorUIManager uiManager;
         private SceneManager iSceneManager;     //Internal scene manager
+        private EngineOutputLogger logger;
+
 
         public Form1(GraphicsContext c)
         {
@@ -41,9 +45,12 @@ namespace Kokoro2.IDE
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
             iSceneManager.Register(context);
             context.Start(16, 16);
             frameUpdater.Start();
+
+            logger = new EngineOutputLogger();
             //context.Pause();
         }
 
@@ -76,6 +83,12 @@ namespace Kokoro2.IDE
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             context.Stop();
+        }
+
+        private void showEngineOutput_Click(object sender, EventArgs e)
+        {
+            EngineOutputWindow engineOut = new EngineOutputWindow(logger);
+            engineOut.Show();
         }
     }
 }
