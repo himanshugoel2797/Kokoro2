@@ -29,8 +29,6 @@ namespace Kokoro2.Engine.Prefabs
         public HighResQuad(float x0, float y0, int terrainWidth, int terrainHeight, Texture tex = null)
             : base()
         {
-            filepath = "";
-            Init(1);
 
             Vector3[] vertices = new Vector3[terrainWidth * terrainHeight];
             Vector2[] uvs = new Vector2[terrainWidth * terrainHeight];
@@ -77,15 +75,14 @@ namespace Kokoro2.Engine.Prefabs
                 norms.AddRange(new float[] { 0, 1, 0 });
             }
 
-            SetIndices(UpdateMode.Static, indices, 0);
-            SetUVs(UpdateMode.Static, uv.ToArray(), 0);
-            SetVertices(UpdateMode.Static, verts.ToArray(), 0);
-            SetNormals(UpdateMode.Static, norms.ToArray(), 0);
+            SetIndices(indices, 0);
+            SetUVs(uv.ToArray(), 0);
+            SetVertices(verts.ToArray(), 0);
+            SetNormals(norms.ToArray(), 0);
 
-            Materials[0] = new Material { AlbedoMap = tex };
+            Material.AlbedoMap = tex;
 
 
-            World = Matrix4.Identity;
         }
 
     }

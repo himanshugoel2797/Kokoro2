@@ -35,6 +35,17 @@ namespace Kokoro2.Engine
     public class ErrorLogger
     {
 
+        public struct DebugMessageData
+        {
+            public string message;
+            public DebugType debType;
+            public Severity severity;
+        }
+
+        public static Action<DebugMessageData> NewMessage { get; set; }
+        public static Action<DebugMessageData> ErrorMessage { get; set; }
+
+
         /// <summary>
         /// Start logging
         /// </summary>
@@ -49,7 +60,15 @@ namespace Kokoro2.Engine
 
         private static void Callback(string message, DebugType debType, Severity severity)
         {
+            DebugMessageData d = new DebugMessageData()
+            {
+                message = message,
+                debType = debType,
+                severity = severity
+            };
 
+            NewMessage?.Invoke(d);
+            ErrorMessage?.Invoke(d);
         }
 
         /// <summary>

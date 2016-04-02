@@ -77,7 +77,7 @@ namespace Akane.World
             //Each pixel is one tile
             FrameBuffer renderTarget = new FrameBuffer(map.Width, map.Height, PixelComponentType.RGBA16f, akane.context);
             Model tileRenderer = new FullScreenQuad();
-            tileRenderer.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, new VertexShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context), new FragmentShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context));
+            tileRenderer.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, new VertexShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context), new FragmentShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context)));
 
             Matrix4 TileLayersOrthoMatrix = Matrix4.CreateOrthographicOffCenter(0, map.Width, -map.Height, 0, -1.0f, 1.0f);
             akane.context.Projection = TileLayersOrthoMatrix;
@@ -97,11 +97,11 @@ namespace Akane.World
                     for (int y = 0; y < map.Height; y++)
                     {
                         //Need a shader to generate this
-                        tileRenderer.Materials[0].Shader["Height"] = (float)(i) / (float)(map.Layers.Count);
-                        tileRenderer.Materials[0].Shader["tileID"] = tileInfo[x, y].X;
-                        tileRenderer.Materials[0].Shader["maxGID"] = (float)maxGid;
-                        tileRenderer.World = Matrix4.CreateTranslation(x, -y, 0.0f);
-                        tileRenderer.Draw(akane.context);
+                        tileRenderer.Shader["Height"] = (float)(i) / (float)(map.Layers.Count);
+                        tileRenderer.Shader["tileID"] = tileInfo[x, y].X;
+                        tileRenderer.Shader["maxGID"] = (float)maxGid;
+                        tileRenderer.RenderInfo.World = Matrix4.CreateTranslation(x, -y, 0.0f);
+                        akane.context.Draw(tileRenderer);
                     }
                 }
 
@@ -118,7 +118,7 @@ namespace Akane.World
             #endregion
 
             quad = new FullScreenQuad();
-            quad.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, VertexShader.Load("Shaders/LayerDrawer", manager.context), FragmentShader.Load("Shaders/LayerDrawer", manager.context));
+            quad.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, VertexShader.Load("Shaders/LayerDrawer", manager.context), FragmentShader.Load("Shaders/LayerDrawer", manager.context)));
             DefaultShader = new ShaderProgram(manager.context, VertexShader.Load("Shaders/FrameBuffer", manager.context), FragmentShader.Load("Shaders/FrameBuffer", manager.context));
 
             LoadResources(akane);
@@ -172,7 +172,7 @@ namespace Akane.World
         {
             FrameBuffer tileSetTmpBuffer = new FrameBuffer((int)map.Tilesets[0].Image.Width, (int)map.Tilesets[0].Image.Height, PixelComponentType.RGBA8, manager.context);
             FullScreenQuad quad = new FullScreenQuad();
-            quad.Materials[0].Shader = new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, VertexShader.Load("Shaders/TransparentColor", manager.context), FragmentShader.Load("Shaders/TransparentColor", manager.context));
+            quad.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, VertexShader.Load("Shaders/TransparentColor", manager.context), FragmentShader.Load("Shaders/TransparentColor", manager.context)));
 
 
             for (int i = 0; i < map.Tilesets.Count; i++)
@@ -185,10 +185,10 @@ namespace Akane.World
                     MinMaxTileset.Add(new Vector2(t.FirstGid, CalculateFinalGID(t.FirstGid, (int)t.Image.Width, (int)t.Image.Height, t.TileWidth, t.TileHeight)));
 
                     manager.context.Clear(0, 0, 0, 0);
-                    quad.Materials[0].AlbedoMap = new Texture(t.Image.Source, true, manager.context);
-                    quad.Materials[0].Shader["TransparentColor"] = new Vector3(t.Image.Trans.R / 255f, t.Image.Trans.G / 255f, t.Image.Trans.B / 255f);
+                    quad.Material.AlbedoMap = new Texture(t.Image.Source, true, manager.context);
+                    quad.Shader["TransparentColor"] = new Vector3(t.Image.Trans.R / 255f, t.Image.Trans.G / 255f, t.Image.Trans.B / 255f);
 
-                    quad.Draw(manager.context);
+                    manager.context.Draw(quad);
 
                     TextureAtlases.Add(tileSetTmpBuffer["Color"]);
                     if (i < map.Tilesets.Count - 1)
@@ -197,7 +197,7 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
 , FrameBufferAttachments.ColorAttachment0, manager.context);
                     //if (i < map.Tilesets.Count - 1) tileSetTmpBuffer = new FrameBuffer((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i + 1].Image.Height, PixelComponentType.RGBA8, manager.context);
 
-                    quad.Materials[0].AlbedoMap.Dispose();
+                    quad.Material.AlbedoMap.Dispose();
 
                     if (t.Properties.ContainsKey("HeightMap"))
                     {
@@ -222,33 +222,33 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
                 {
                     if (curMax < MinMaxTileset[i].Y)
                     {
-                        quad.Materials[0].AlbedoMap = TextureAtlases[i];
-                        quad.Materials[0].Shader["HeightMap"] = HeightMaps[i];
-                        quad.Materials[0].Shader["firstGid"] = (float)MinMaxTileset[i].X;
-                        quad.Materials[0].Shader["layerNum"] = (float)layer;
-                        quad.Materials[0].Shader["maxLayer"] = (float)(TileLayers.Count - 1);
-                        quad.Materials[0].Shader["TileIDs"] = TileLayers[layer];
-                        quad.Materials[0].Shader["maxGid"] = (float)MaxGID_onLayer[layer];
-                        quad.Materials[0].Shader["textureSize"] = TextureAtlases[i].Size;
-                        quad.Materials[0].Shader["mapSize"] = TilesCount;
-                        quad.Materials[0].Shader["tileSize"] = new Vector2(TileSize.X, TileSize.Y);
-                        quad.Materials[0].Shader["viewportTileRes"] = new Vector2(ViewportTileResolution.X + 2, ViewportTileResolution.Y + 2);
-                        quad.Materials[0].Shader["viewportOffset"] = new Vector2(ViewportOffset.X, ViewportOffset.Y + 1);
+                        quad.Material.AlbedoMap = TextureAtlases[i];
+                        quad.RenderInfo.Shader["HeightMap"] = HeightMaps[i];
+                        quad.RenderInfo.Shader["firstGid"] = (float)MinMaxTileset[i].X;
+                        quad.RenderInfo.Shader["layerNum"] = (float)layer;
+                        quad.RenderInfo.Shader["maxLayer"] = (float)(TileLayers.Count - 1);
+                        quad.RenderInfo.Shader["TileIDs"] = TileLayers[layer];
+                        quad.RenderInfo.Shader["maxGid"] = (float)MaxGID_onLayer[layer];
+                        quad.RenderInfo.Shader["textureSize"] = TextureAtlases[i].Size;
+                        quad.RenderInfo.Shader["mapSize"] = TilesCount;
+                        quad.RenderInfo.Shader["tileSize"] = new Vector2(TileSize.X, TileSize.Y);
+                        quad.RenderInfo.Shader["viewportTileRes"] = new Vector2(ViewportTileResolution.X + 2, ViewportTileResolution.Y + 2);
+                        quad.RenderInfo.Shader["viewportOffset"] = new Vector2(ViewportOffset.X, ViewportOffset.Y + 1);
 
                         manager.context.Viewport = new Vector4(0, 0, manager.context.WindowSize.X, manager.context.WindowSize.Y);
-                        quad.Draw(manager.context);
+                        manager.context.Draw(quad);
                     }
 
                 }
             }
             tileMapPhaseA.UnBind(manager.context);
 
-            var tmp = quad.Materials[0].Shader;
+            quad.RenderInfo.PushShader(DefaultShader);
 
-            quad.Materials[0].Shader = DefaultShader;
-            quad.Materials[0].AlbedoMap = tileMapPhaseA["Color"];
-            quad.Draw(manager.context);
-            quad.Materials[0].Shader = tmp;
+            quad.Material.AlbedoMap = tileMapPhaseA["Color"];
+            manager.context.Draw(quad);
+
+            quad.RenderInfo.PopShader();
 
             //TODO: The tilemap rendered has been adjusted to ensure that we always have the full amount of information available, next we draw it while adjusting it to have per pixel scrolling and control over scaling methods
             //Better scaling without any artifacts can be achieved by having the GPU sample the final render result

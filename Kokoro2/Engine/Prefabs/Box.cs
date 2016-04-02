@@ -16,7 +16,6 @@ namespace Kokoro2.Engine.Prefabs
         public Box(float width, float height, float depth)
             : base()
         {
-            Init(1);
 
             this.DrawMode = DrawMode.Triangles;
 
@@ -24,7 +23,7 @@ namespace Kokoro2.Engine.Prefabs
             height /= 2;
             depth /= 2;
 
-            SetIndices(UpdateMode.Static, new uint[] { 
+            SetIndices(new uint[] { 
                 0, 1, 2, 3,
                 0, 4, 5, 0,
                 6, 3, 6, 0,
@@ -35,7 +34,7 @@ namespace Kokoro2.Engine.Prefabs
                 3, 4, 7, 4, 
                 2, 7, 2, 5 }, 0);
 
-            SetUVs(UpdateMode.Static, new float[] {
+            SetUVs(new float[] {
                 0,1,
                 1,1,
                 1,0,
@@ -46,7 +45,7 @@ namespace Kokoro2.Engine.Prefabs
                 0,0,
             }, 0);
 
-            SetVertices(UpdateMode.Static, new float[]{
+            SetVertices(new float[]{
                 -width, -height, -depth,    //0
                 -width, -height, depth,     //1
                 -width, height, depth,      //2
@@ -62,8 +61,6 @@ namespace Kokoro2.Engine.Prefabs
                 Max = new Math.Vector3(width, height, depth),
                 Min = new Math.Vector3(-width, -height, -depth)
             };
-
-            World = Math.Matrix4.Identity;
         }
     }
 }

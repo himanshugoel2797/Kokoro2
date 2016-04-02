@@ -29,33 +29,29 @@ namespace Kokoro2.Engine.Prefabs
         public Quad(float x, float y, float width, float height, Texture tex = null)
             : base()
         {
-            filepath = "";
             this.DrawMode = DrawMode.Triangles;
-            Init(1);
 
-            SetIndices(UpdateMode.Static, new uint[] { 3, 2, 0, 0, 2, 1 }, 0);
-            SetUVs(UpdateMode.Static, new float[] { 
+            SetIndices(new uint[] { 3, 2, 0, 0, 2, 1 }, 0);
+            SetUVs(new float[] {
                 0,1,
                 1,1,
                 1,0,
                 0,0
             }, 0);
 
-            SetVertices(UpdateMode.Static, new float[]{
+            SetVertices(new float[]{
                 x, 0, y + height,
                 x + width, 0, y + height,
                 x + width, 0, y,
                 x, 0, y
             }, 0);
-            Materials[0] = new Material { AlbedoMap = tex };
+            Material.AlbedoMap = tex;
 
             Bound = new BoundingBox()
             {
                 Max = new Vector3(width, 0, height),
                 Min = new Vector3(0, 0, 0)
             };
-
-            World = Matrix4.Identity;
         }
 
     }

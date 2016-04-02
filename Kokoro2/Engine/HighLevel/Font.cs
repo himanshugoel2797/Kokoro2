@@ -92,11 +92,11 @@ namespace Kokoro2.Engine.HighLevel
         {
             if (!fontCache.ContainsKey(text))
             {
-                box.Materials[0].AlbedoMap = new Texture(DrawText(text, fnt, Color.FromArgb((int)(ForeColor.W * 255), (int)(ForeColor.X * 255), (int)(ForeColor.Y * 255), (int)(ForeColor.Z * 255)), Color.Transparent), false);
+                box.Material.AlbedoMap = new Texture(DrawText(text, fnt, Color.FromArgb((int)(ForeColor.W * 255), (int)(ForeColor.X * 255), (int)(ForeColor.Y * 255), (int)(ForeColor.Z * 255)), Color.Transparent), false);
             }
             else
             {
-                box.Materials[0].AlbedoMap = fontCache[text];
+                box.Material.AlbedoMap = fontCache[text];
             }
 
             var tmp = context.FaceCulling;
@@ -104,8 +104,8 @@ namespace Kokoro2.Engine.HighLevel
             var tmp2 = pos - context.Camera.Position;
             tmp2.Normalize();
             Vector3 rotation = Vector3.ToSpherical(tmp2);
-            box.World = Matrix4.CreateRotationX(rotation.X + 3.14f / 2f) * Matrix4.CreateRotationY(rotation.Y + 3.14f / 2f) * Matrix4.CreateRotationZ(rotation.Z + 3.14f / 2f) * Matrix4.CreateTranslation(pos.X, pos.Y, pos.Z) * Matrix4.Scale(box.Materials[0].AlbedoMap.Size.X, box.Materials[0].AlbedoMap.Size.Y * (float)context.AspectRatio, 1);
-            box.Draw(context);
+            box.RenderInfo.World = Matrix4.CreateRotationX(rotation.X + 3.14f / 2f) * Matrix4.CreateRotationY(rotation.Y + 3.14f / 2f) * Matrix4.CreateRotationZ(rotation.Z + 3.14f / 2f) * Matrix4.CreateTranslation(pos.X, pos.Y, pos.Z) * Matrix4.Scale(box.Material.AlbedoMap.Size.X, box.Material.AlbedoMap.Size.Y * (float)context.AspectRatio, 1);
+            context.Draw(box);
             context.FaceCulling = tmp;
         }
     }

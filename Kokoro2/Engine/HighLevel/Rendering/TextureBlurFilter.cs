@@ -43,20 +43,20 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             tmpBuffer.Bind(c);
             c.Clear(0, 0, 0, 0);
 
-            fsq.PushShader(horizontal);
-            fsq.AlbedoMap = t;
+            fsq.RenderInfo.PushShader(horizontal);
+            fsq.Material.AlbedoMap = t;
             horizontal["blurSize"] = vertical["blurSize"] = BlurRadius;
-            fsq.Draw(c);
-            fsq.PopShader();
+            c.Draw(fsq);
+            fsq.RenderInfo.PopShader();
 
             tmpBuffer.UnBind(c);
             resultBuffer.Bind(c);
             c.Clear(0, 0, 0, 0);
 
-            fsq.PushShader(vertical);
-            fsq.AlbedoMap = tmpBuffer["Hblurred"];
-            fsq.Draw(c);
-            fsq.PopShader();
+            fsq.RenderInfo.PushShader(vertical);
+            fsq.Material.AlbedoMap = tmpBuffer["Hblurred"];
+            c.Draw(fsq);
+            fsq.RenderInfo.PopShader();
 
             resultBuffer.UnBind(c);
 

@@ -28,10 +28,7 @@ namespace Kokoro2.Engine.HighLevel.Voxel
 
         public VoxelRenderer(int side, VoxelCollection VoxelInfo)
         {
-            Init(1);
             allocSize = side * side * side * 56;
-            PreAlloc(UpdateMode.Static, 0, allocSize);
-            World = Matrix4.Identity;
             voxelInfo = VoxelInfo;
         }
 
@@ -136,15 +133,10 @@ namespace Kokoro2.Engine.HighLevel.Voxel
                 base.UpdateNormals(Normals.ToArray(), 0);
                 base.UpdateUVs(UVs.ToArray(), 0);
 
-                this.Materials[0].AlbedoMap = voxelInfo.Atlas;
+                this.Material.AlbedoMap = voxelInfo.Atlas;
             }
             IndexCount = Indices.Count;
             if (IndexCount > allocSize) throw new OverflowException();
-        }
-
-        public void RenderTerrain(GraphicsContext context)
-        {
-            if (IndexCount > 0) Draw(context);
         }
     }
 }

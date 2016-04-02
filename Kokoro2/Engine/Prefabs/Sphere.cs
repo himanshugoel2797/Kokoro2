@@ -33,7 +33,6 @@ namespace Kokoro2.Engine.Prefabs
             List<float> uvs = new List<float>();
             List<float> normals = new List<float>();
             List<uint> indices = new List<uint>();
-            World = Matrix4.Identity;
 
             float angleStep = 360f / (float)step;
             double toRad = MathHelper.Pi / 180;
@@ -154,12 +153,10 @@ namespace Kokoro2.Engine.Prefabs
                 }
             }
 
-            Init(1);
-
-            SetIndices(UpdateMode.Static, indices.ToArray(), 0);
-            SetUVs(UpdateMode.Static, uvs.ToArray(), 0);
-            SetVertices(UpdateMode.Static, verts.ToArray(), 0);
-            SetNormals(UpdateMode.Static, normals.ToArray(), 0);
+            SetIndices(indices.ToArray(), 0);
+            SetUVs(uvs.ToArray(), 0);
+            SetVertices(verts.ToArray(), 0);
+            SetNormals(normals.ToArray(), 0);
             Bound = new BoundingBox()
             {
                 Max = new Vector3(maxX, maxY, maxZ),

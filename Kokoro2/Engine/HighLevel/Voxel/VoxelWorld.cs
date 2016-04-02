@@ -34,10 +34,10 @@ namespace Kokoro2.Engine.HighLevel.Voxel
             for (int i = 0; i < rendererCount; i++)
             {
                 renderers[i] = new InputDataMesh(SideLength * SideLength * SideLength * 14 * 4);    //Define the maximum possible stored amount
-                
+
                 //TODO Fix the shader setup for the voxelworld
 
-                renderers[i].Materials[0].AlbedoMap = voxelTypes.Atlas;
+                renderers[i].Material.AlbedoMap = voxelTypes.Atlas;
             }
         }
 
@@ -70,9 +70,9 @@ namespace Kokoro2.Engine.HighLevel.Voxel
                         Chunks[key].Indices = extractor.Indices.ToList();
                     }
 
-                    renderers[(x + drawRadius / 2) + (y + drawRadius / 2)].GenerateMeshData(Chunks[key].Vertices.ToArray(), Vector4.One, Chunks[key].UVs.ToArray(), Chunks[key].Normals.ToArray(), Chunks[key].Indices.ToArray());
-                    renderers[(x + drawRadius / 2) + (y + drawRadius / 2)].World = Matrix4.CreateTranslation((float)blockPos.X + x * SideLength, 0, (float)blockPos.Y + y * SideLength);
-                    renderers[(x + drawRadius / 2) + (y + drawRadius / 2)].Draw(context);
+                    renderers[(x + drawRadius / 2) + (y + drawRadius / 2)].GenerateMeshData(Chunks[key].Vertices.ToArray(), Chunks[key].UVs.ToArray(), Chunks[key].Normals.ToArray(), Chunks[key].Indices.ToArray());
+                    renderers[(x + drawRadius / 2) + (y + drawRadius / 2)].RenderInfo.World = Matrix4.CreateTranslation((float)blockPos.X + x * SideLength, 0, (float)blockPos.Y + y * SideLength);
+                    context.Draw(renderers[(x + drawRadius / 2) + (y + drawRadius / 2)]);
 
                 }
             }

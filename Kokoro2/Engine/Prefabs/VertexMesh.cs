@@ -92,15 +92,13 @@ namespace Kokoro2.Engine.Prefabs
             }
 
             animatedMesh = animated;
-
-            World = Kokoro2.Math.Matrix4.Identity;
-            Init(tmp.Mesh.Length);
+            
             for (int i = 0; i < tmp.Mesh.Length; i++)
             {
-                SetIndices(UpdateMode.Static, tmp.Mesh[i].indices, i);
-                SetUVs(UpdateMode.Static, tmp.Mesh[i].uvs, i);
-                SetVertices(UpdateMode.Static, tmp.Mesh[i].Vertices, i);
-                SetNormals(UpdateMode.Static, tmp.Mesh[i].normals, i);
+                SetIndices(tmp.Mesh[i].indices, i);
+                SetUVs(tmp.Mesh[i].uvs, i);
+                SetVertices(tmp.Mesh[i].Vertices, i);
+                SetNormals(tmp.Mesh[i].normals, i);
 
                 if (tmp.Mesh[i].isLine) DrawMode = DrawMode.Lines;
             }

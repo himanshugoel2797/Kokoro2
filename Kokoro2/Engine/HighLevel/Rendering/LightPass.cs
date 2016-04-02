@@ -44,14 +44,19 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
         public LightPass(int width, int height, GraphicsContext c)
         {
-            outFSQ = new FullScreenQuad();
-            outFSQ.Shader = outShader = new ShaderProgram(c, VertexShader.Load("LightShadowBloom", c), FragmentShader.Load("LightShadowBloom", c));
+            outShader = new ShaderProgram(c, VertexShader.Load("LightShadowBloom", c), FragmentShader.Load("LightShadowBloom", c));
             avgSceneShader = new ShaderProgram(c, VertexShader.Load("FrameBuffer", c), FragmentShader.Load("FrameBuffer", c));
             dLightShader = new ShaderProgram(c, VertexShader.Load("DirectionalLight", c), FragmentShader.Load("DirectionalLight", c));
+
+            outFSQ = new FullScreenQuad();
+            outFSQ.RenderInfo.PushShader(outShader);
+
             pLightPrim = new Sphere(1, 10);
-            pLightPrim.Shader = pLightShader;
+            pLightPrim.RenderInfo.PushShader(pLightShader);
+
             dLightPrim = new FullScreenQuad();
-            dLightPrim.Shader = dLightShader;
+            dLightPrim.RenderInfo.PushShader(dLightShader);
+
             dlights = new List<DirectionalLight>();
             plights = new List<PointLight>();
             idMap = new Dictionary<int, Tuple<int, int>>();
@@ -66,7 +71,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             shadowPass.BlurRadius = 0.0025f * 960 / width;
 
             avgSceneFSQ = new FullScreenQuad();
-            avgSceneFSQ.Shader = avgSceneShader;
+            avgSceneFSQ.RenderInfo.PushShader(avgSceneShader);
             avgSceneColor = new FrameBuffer(1, 1, PixelComponentType.RGBA8, c);
             avgSceneColor.Add("AvgColor", new FrameBufferTexture(1, 1, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
         }
@@ -126,7 +131,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             {
                 dLightShader["lColor"] = dlights[i].LightColor;
                 dLightShader["lDir"] = dlights[i].Direction;
-                dLightPrim.Draw(c);
+                c.Draw(dLightPrim);
             }
 
             /*
@@ -144,8 +149,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             lightBuffer.UnBind(c);
 
             avgSceneColor.Bind(c);
-            avgSceneFSQ.AlbedoMap = g["Color"];
-            avgSceneFSQ.Draw(c);
+            avgSceneFSQ.Material.AlbedoMap = g["Color"];
+            c.Draw(avgSceneFSQ);
             avgSceneColor.UnBind(c);
 
             //Now, blur and blend the shadow map on top of the lighting, then blend in the bloom
@@ -154,7 +159,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             outShader["BloomMap"] = bloomPass.ApplyBlur(lightBuffer["Bloom"], c);
             outShader["ShadowMap"] = shadowPass.ApplyBlur(g["Shadow"], c);
             outShader["AvgColor"] = avgSceneColor["AvgColor"];
-            outFSQ.Draw(c);
+            c.Draw(outFSQ);
 
         }
 

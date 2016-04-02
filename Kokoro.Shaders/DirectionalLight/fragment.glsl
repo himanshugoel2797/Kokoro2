@@ -16,7 +16,7 @@ uniform samplerCube envMap;
 
 uniform vec3 lDir;
 uniform vec4 lColor;
-uniform vec3 eyePos;
+uniform vec3 EyePos;
 
 float rand(vec4 seed4)
 {
@@ -82,7 +82,7 @@ void main(){
 	float f0 = 0.5f;
 
 	vec3 l = normalize(-lDir);
-	vec3 v = eyePos - worldCoord;
+	vec3 v = EyePos - worldCoord;
 	v = normalize(v);
 
 	lit = lColor * cooktorr(n, v, l, f0, spec, dif);

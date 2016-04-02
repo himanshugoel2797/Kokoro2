@@ -73,15 +73,15 @@ namespace Akane.Graphics
 
             //buffer.Bind(manager.context);
 
-            //TODO Draw sprite
-            spriteQuad.World = Matrix4.Scale(manager.AspectRatio * 2 * Scale.X, Scale.Y, 1) * Matrix4.CreateTranslation(Position.X * manager.AspectRatio * 2 * 0.25f, -Position.Y * 0.25f, 0);
-            spriteQuad.Materials[0].Shader = spriteShader;
-            spriteQuad.Materials[0].AlbedoMap = spriteImg;
-            spriteQuad.Materials[0].Shader["TexSize"] = spriteImg.Size;
-            spriteQuad.Materials[0].Shader["TexPos"] = new Vector2(img.X, img.Y);
-            spriteQuad.Materials[0].Shader["SpriteSize"] = Size;
+            //Draw sprite
+            spriteQuad.RenderInfo.World = Matrix4.Scale(manager.AspectRatio * 2 * Scale.X, Scale.Y, 1) * Matrix4.CreateTranslation(Position.X * manager.AspectRatio * 2 * 0.25f, -Position.Y * 0.25f, 0);
 
-            spriteQuad.Draw(manager.context);
+            spriteShader["TexSize"] = spriteImg.Size;
+            spriteShader["TexPos"] = new Vector2(img.X, img.Y);
+            spriteShader["SpriteSize"] = Size;
+            spriteShader["AlbedoMap"] = spriteImg;
+            manager.context.Draw(spriteQuad);
+
             //EngineCore.SetTexture(Textures.GetTexture(spriteImg), 0);
             //EngineCore.DrawRect(Position.X, Position.Y, img.X, img.Y, img.Width, img.Height);
             //buffer.UnBind();

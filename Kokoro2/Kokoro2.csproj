@@ -128,6 +128,7 @@
     <Compile Include="Engine\ErrorLogger.cs" />
     <Compile Include="Engine\FrameBuffer.cs" />
     <Compile Include="Engine\FrameBufferTexture.cs" />
+    <Compile Include="Engine\GeometryInfo.cs" />
     <Compile Include="Engine\GraphicsContext.cs" />
     <Compile Include="Engine\HighLevel\Cameras\Camera.cs" />
     <Compile Include="Engine\HighLevel\Cameras\FirstPersonCamera.cs" />
@@ -156,7 +157,10 @@
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\Model.cs" />
     <Compile Include="Engine\ObjectAllocTracker.cs" />
-    <Compile Include="Engine\Pipeline.cs" />
+    <Compile Include="Engine\PhysicsInfo.cs" />
+    <Compile Include="Engine\Physics\BaseEntity.cs" />
+    <Compile Include="Engine\Physics\MobileMesh.cs" />
+    <Compile Include="Engine\Physics\Sphere.cs" />
     <Compile Include="Engine\PixelInfo.cs" />
     <Compile Include="Engine\Prefabs\BoundingBox.cs" />
     <Compile Include="Engine\Prefabs\Box.cs" />
@@ -166,6 +170,7 @@
     <Compile Include="Engine\Prefabs\Quad.cs" />
     <Compile Include="Engine\Prefabs\Sphere.cs" />
     <Compile Include="Engine\Prefabs\VertexMesh.cs" />
+    <Compile Include="Engine\RenderInfo.cs" />
     <Compile Include="Engine\RenderPass.cs" />
     <Compile Include="Engine\SceneGraph\IScene.cs" />
     <Compile Include="Engine\SceneGraph\ITransitionEvaluator.cs" />
@@ -174,6 +179,7 @@
     <Compile Include="Engine\Shaders\ComputeShader.cs" />
     <Compile Include="Engine\Shaders\FragmentShader.cs" />
     <Compile Include="Engine\Shaders\GeometryShader.cs" />
+    <Compile Include="Engine\VertexBatch.cs" />
     <Compile Include="Math\BoundingBox.cs" />
     <Compile Include="Math\BoundingFrustum.cs" />
     <Compile Include="Math\ContainmentType.cs" />
@@ -183,7 +189,7 @@
     <Compile Include="OpenGL\PC\BindingManager.cs" />
     <Compile Include="OpenGL\PC\CubeMapTextureLL.cs" />
     <Compile Include="Physics\BEPUBody.cs" />
-    <Compile Include="Physics\PhysicsWorld.cs" />
+    <Compile Include="Engine\Physics\PhysicsWorld.cs" />
     <Compile Include="Engine\Shaders\Shader.cs" />
     <Compile Include="Engine\Shaders\ShaderProgram.cs" />
     <Compile Include="Engine\Shaders\TessellationShader.cs" />

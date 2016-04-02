@@ -71,8 +71,8 @@ namespace Kokoro2.OpenGL.PC
             else if (severity == Kokoro2.Engine.Severity.Medium) severeness = DebugSeverity.DebugSeverityMedium;
             else if (severity == Kokoro2.Engine.Severity.Notification) severeness = DebugSeverity.DebugSeverityNotification;
 
-            //DebugCallback(DebugSource.DebugSourceApplication, type, id, severeness, message.Length, Marshal.StringToHGlobalAnsi(message), IntPtr.Zero);
-            GL.DebugMessageInsert(DebugSourceExternal.DebugSourceApplication, type, id, severeness, message.Length, message);
+            DebugCallback(DebugSource.DebugSourceApplication, type, id, severeness, message.Length, Marshal.StringToHGlobalAnsi(message), IntPtr.Zero);
+            //GL.DebugMessageInsert(DebugSourceExternal.DebugSourceApplication, type, id, severeness, message.Length, message);
 #endif
         }
 
@@ -106,7 +106,7 @@ namespace Kokoro2.OpenGL.PC
 
             if (message != IntPtr.Zero) msg += System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message, length);
 
-            actionCallback(msg, EnumConverters.ODebugType(type), (Kokoro2.Engine.Severity)Enum.Parse(typeof(Kokoro2.Engine.Severity), severity.ToString().Replace("DebugSeverity", "")));
+            actionCallback?.Invoke(msg, EnumConverters.ODebugType(type), (Kokoro2.Engine.Severity)Enum.Parse(typeof(Kokoro2.Engine.Severity), severity.ToString().Replace("DebugSeverity", "")));
 #endif
         }
         public static void RegisterCallback(Action<string, Kokoro2.Engine.DebugType, Kokoro2.Engine.Severity> callback)

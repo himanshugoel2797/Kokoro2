@@ -74,6 +74,7 @@ namespace Kokoro2.Engine
     /// </summary>
     public class GraphicsContext : GraphicsContextLL, IEngineObject
     {
+        
         #region State Machine Properties
         /// <summary>
         /// Enable/Disable Wireframe rendering
@@ -141,6 +142,9 @@ namespace Kokoro2.Engine
             }
         }
 
+        /// <summary>
+        /// Enable/Disable depth clamping
+        /// </summary>
         public bool DepthClamp
         {
             get
@@ -359,15 +363,36 @@ namespace Kokoro2.Engine
         #endregion
 
         #region Draw
-        public void Draw(Model m)
+        public void Draw(RenderInfo r, GeometryInfo g)
         {
-            base.AddDraw(m);
+            var CurrentShader = r.Shader;
+            CurrentShader["ZNear"] = ZNear;
+            CurrentShader["ZFar"] = ZFar;
+            CurrentShader["EyePos"] = Camera.Position;
+            CurrentShader["EyeDir"] = Camera.Direction;
+            CurrentShader["Fcoef"] = 2.0f / (float)System.Math.Log(ZFar + 1.0, 2);
+
+            if (r.Material.AlbedoMap != null) CurrentShader["AlbedoMap"] = r.Material.AlbedoMap;
+            if (r.Material.GlossinessMap != null) CurrentShader["GlossinessMap"] = r.Material.GlossinessMap;
+            if (r.Material.SpecularMap != null) CurrentShader["SpecularMap"] = r.Material.SpecularMap;
+            else if (r.Material.AlbedoMap != null) CurrentShader["SpecularMap"] = r.Material.AlbedoMap;
+            CurrentShader["World"] = r.World;
+            CurrentShader["View"] = View;
+            CurrentShader["Projection"] = Projection;
+            CurrentShader.Apply(this);
+
+            //Bind the geometry
+            //Draw
+
+            CurrentShader.Cleanup(this);
         }
 
-        public void DrawBatch(Model[] m, Shaders.ShaderProgram shader)
+        public void Draw(Model m)
         {
-            base.AddDrawBatch(m, shader);
+            Draw(m.RenderInfo, m.GeometryInfo);
         }
+
+        //TODO implement overloads with multiple RenderInfo objects and one GeometryInfo object and vice versa
         #endregion
 
         #region Game Loop
@@ -518,6 +543,8 @@ namespace Kokoro2.Engine
                             ZFar = 1000000f;
                             DepthWrite = true;
                             Viewport = new Vector4(0, 0, WindowSize.X, WindowSize.Y);
+                            ErrorLogger.StartLogger();
+                            ObjectAllocTracker.NewCreated(this, "GraphicsContext Created");
 
                         };
             Initialize += tmp;
@@ -582,8 +609,6 @@ namespace Kokoro2.Engine
             EngineObjects = new EngineObjectManager();
             ParentContext = this;
             ID = EngineObjectManager.RegisterContext();
-            ErrorLogger.StartLogger();
-            ObjectAllocTracker.NewCreated(this, "GraphicsContext Created");
         }
 
         #region IDisposable Support

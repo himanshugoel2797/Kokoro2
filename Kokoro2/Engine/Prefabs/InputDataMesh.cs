@@ -22,13 +22,10 @@ namespace Kokoro2.Engine.Prefabs
 
         public InputDataMesh(int vertCount)
         {
-            Init(1);
             allocSize = vertCount;
-            PreAlloc(UpdateMode.Static, 0, allocSize);
-            World = Matrix4.Identity;
         }
 
-        public void GenerateMeshData(float[] vertices, Vector4 color, float[] UVs = null, float[] norms = null, uint[] index = null)
+        public void GenerateMeshData(float[] vertices, float[] UVs = null, float[] norms = null, uint[] index = null)
         {
             List<uint> Indices = new List<uint>();
             //Generate indices for all vertices
@@ -50,19 +47,9 @@ namespace Kokoro2.Engine.Prefabs
                 base.UpdateVertices(vertices, 0);
                 if (UVs != null) base.UpdateUVs(UVs, 0);
                 if (norms != null) base.UpdateNormals(norms, 0);
-
-                this.Materials[0].Shader["inColor"] = color;
             }
             IndexCount = Indices.Count;
             if (IndexCount > allocSize) throw new OverflowException();
-        }
-
-        public void RenderTerrain(GraphicsContext context)
-        {
-            if (IndexCount > 0)
-            {
-                Draw(context);
-            }
         }
     }
 }

@@ -87,7 +87,7 @@ namespace Kokoro2.OpenGL.PC
         protected void AddDraw(Kokoro2.Engine.Model m)
         {
             //Place the model object into a bucket depending on its shader
-            m.Draw((this as Kokoro2.Engine.GraphicsContext));   //TODO make this proper   
+            //m.Draw((this as Kokoro2.Engine.GraphicsContext));   //TODO make this proper   
         }
 
         protected void AddDrawBatch(Kokoro2.Engine.Model[] m, ShaderProgramLL shader)
@@ -95,7 +95,7 @@ namespace Kokoro2.OpenGL.PC
             throw new NotImplementedException();
         }
 
-        internal static void Draw(Engine.DrawMode dm, uint first, uint count, uint baseVertex)
+        static void Draw(Engine.DrawMode dm, uint first, uint count, uint baseVertex)
         {
 
             if (transformEnabled)

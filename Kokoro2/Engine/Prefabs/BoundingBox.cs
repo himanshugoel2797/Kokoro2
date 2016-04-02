@@ -18,23 +18,23 @@ namespace Kokoro2.Engine.Prefabs
         /// <param name="box">The bounding box as calculated from another Model</param>
         public OBV(BoundingBox box)
         {
-            this.World = Matrix4.CreateTranslation((box.Min + box.Max) / 2) * Matrix4.Scale(box.Max - box.Min);
             this.DrawMode = Engine.DrawMode.Lines;
-            Init(1);
 
+            Vector3 sc = box.Max - box.Min;
+            Vector3 tl = (box.Min + box.Max) / 2;
 
-            SetVertices(UpdateMode.Static, new float[]{
-                -0.5f, -0.5f, -0.5f,
-                0.5f, -0.5f, -0.5f,
-                0.5f,  0.5f, -0.5f,
-                -0.5f,  0.5f, -0.5f,
-                -0.5f, -0.5f,  0.5f,
-                0.5f, -0.5f,  0.5f,
-                0.5f,  0.5f,  0.5f,
-                -0.5f,  0.5f,  0.5f
+            SetVertices(new float[]{
+                -0.5f * sc.X + tl.X, -0.5f * sc.Y + tl.Y, -0.5f * sc.Z + tl.Z,
+                0.5f * sc.X + tl.X, -0.5f * sc.Y + tl.Y, -0.5f * sc.Z + tl.Z,
+                0.5f * sc.X + tl.X,  0.5f * sc.Y + tl.Y, -0.5f * sc.Z + tl.Z,
+                -0.5f * sc.X + tl.X,  0.5f * sc.Y + tl.Y, -0.5f * sc.Z + tl.Z,
+                -0.5f * sc.X + tl.X, -0.5f * sc.Y + tl.Y,  0.5f * sc.Z + tl.Z,
+                0.5f * sc.X + tl.X, -0.5f * sc.Y + tl.Y,  0.5f * sc.Z + tl.Z,
+                0.5f * sc.X + tl.X,  0.5f * sc.Y + tl.Y,  0.5f * sc.Z + tl.Z,
+                -0.5f * sc.X + tl.X,  0.5f * sc.Y + tl.Y,  0.5f * sc.Z + tl.Z
             }, 0);
 
-            SetIndices(UpdateMode.Static, new uint[] {
+            SetIndices(new uint[] {
                 0, 1,
                 1, 2,
                 2, 3,
@@ -49,7 +49,7 @@ namespace Kokoro2.Engine.Prefabs
                 3, 7
             }, 0);
 
-            SetUVs(UpdateMode.Static, new float[]{
+            SetUVs(new float[]{
                 -0.5f, -0.5f,
                 0.5f, -0.5f,
                 0.5f,  0.5f,

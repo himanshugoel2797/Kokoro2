@@ -36,276 +36,92 @@ namespace Kokoro2.Engine
         Array, Index, Uniform, ShaderStorage, Indirect
     }
 
-    public class Model : IDisposable
+    public class Model : IEngineObject
     {
-        internal static VertexArrayLL staticBuffer;
-        protected static long[] staticBufferOffset;
-        protected static long[] staticBufferLength;
+        #region Graphics Methods
+        public RenderInfo RenderInfo;
+        public GeometryInfo GeometryInfo;
 
-        internal static VertexArrayLL dynamicBuffer;
-        protected static long[] dynamicBufferOffset;
-        protected static long[] dynamicBufferLength;
+        private VertexArrayLL Buffer { get { return GeometryInfo.Buffer; } set { GeometryInfo.Buffer = value; } }
 
 
-        protected string filepath;
-        protected uint[][] offsets;
-        protected uint[] lengths;
+        protected void SetUVs(float[] uvs, int index)
+        {
+            Buffer[3].AppendData(uvs);
+        }
 
-        protected void Init(int num)
+        protected void SetNormals(float[] norms, int index)
         {
-            offsets = new uint[num][];
-            lengths = new uint[num];
-            Materials = new Material[num];
-            for (int a = 0; a < num; a++)
-            {
-                offsets[a] = new uint[4];
-                Materials[a] = new Material();
-            }
+            Buffer[2].AppendData(norms);
         }
-        protected void PreAlloc(UpdateMode mode, int index, int len)
+
+        protected void SetVertices(float[] verts, int index)
         {
-            if (mode == UpdateMode.Dynamic)
-            {
-                offsets[index][0] = dynamicBuffer[0].AllocData(len * sizeof(uint) * 1);
-                offsets[index][1] = dynamicBuffer[1].AllocData(len * sizeof(float) * 3);
-                offsets[index][2] = dynamicBuffer[2].AllocData(len * sizeof(float) * 3);
-                offsets[index][3] = dynamicBuffer[3].AllocData(len * sizeof(float) * 2);
-            }
-            else if (mode == UpdateMode.Static)
-            {
-                offsets[index][0] = staticBuffer[0].AllocData(len * sizeof(float) * 1);
-                offsets[index][1] = staticBuffer[1].AllocData(len * sizeof(float) * 3);
-                offsets[index][2] = staticBuffer[2].AllocData(len * sizeof(float) * 3);
-                offsets[index][3] = staticBuffer[3].AllocData(len * sizeof(float) * 2);
-            }
-            lengths[index] = (uint)len;
-            //this.mode = mode;
+            Buffer[1].AppendData(verts);
         }
-        protected void SetUVs(UpdateMode mode, float[] uvs, int index)
+
+        protected void SetIndices(uint[] indices, int index)
         {
-            if (mode == UpdateMode.Dynamic)
-            {
-                offsets[index][3] = dynamicBuffer[3].AppendData(uvs);
-            }
-            else if (mode == UpdateMode.Static)
-            {
-                offsets[index][3] = staticBuffer[3].AppendData(uvs);
-            }
-        }
-        protected void SetNormals(UpdateMode mode, float[] norms, int index)
-        {
-            if (mode == UpdateMode.Dynamic)
-            {
-                offsets[index][2] = dynamicBuffer[2].AppendData(norms);
-            }
-            else if (mode == UpdateMode.Static)
-            {
-                offsets[index][2] = staticBuffer[2].AppendData(norms);
-            }
-        }
-        protected void SetVertices(UpdateMode mode, float[] verts, int index)
-        {
-            if (mode == UpdateMode.Dynamic)
-            {
-                offsets[index][1] = dynamicBuffer[1].AppendData(verts);
-            }
-            else if (mode == UpdateMode.Static)
-            {
-                offsets[index][1] = staticBuffer[1].AppendData(verts);
-            }
-        }
-        protected void SetIndices(UpdateMode mode, uint[] indices, int index)
-        {
-            if (mode == UpdateMode.Dynamic)
-            {
-                offsets[index][0] = dynamicBuffer[0].AppendData(indices);
-            }
-            else if (mode == UpdateMode.Static)
-            {
-                offsets[index][0] = staticBuffer[0].AppendData(indices);
-            }
-            if (lengths[index] < indices.Length) lengths[index] = (uint)indices.Length;
-            this.mode = mode;
+            Buffer[0].AppendData(indices);
         }
 
         #region Data Updates
         protected void UpdateUVs(float[] uvs, int index)
         {
-            if (mode == UpdateMode.Dynamic)
-            {
-                dynamicBuffer[3].BufferData(uvs, (int)offsets[index][3], uvs.Length * sizeof(float));
-            }
-            else if (mode == UpdateMode.Static)
-            {
-                staticBuffer[3].BufferData(uvs, (int)offsets[index][3], uvs.Length * sizeof(float));
-            }
+            Buffer[3].BufferData(uvs, 0, uvs.Length * sizeof(float));
         }
         protected void UpdateNormals(float[] norms, int index)
         {
-            if (mode == UpdateMode.Dynamic)
-            {
-                dynamicBuffer[2].BufferData(norms, (int)offsets[index][2], norms.Length * sizeof(float));
-            }
-            else if (mode == UpdateMode.Static)
-            {
-                staticBuffer[2].BufferData(norms, (int)offsets[index][2], norms.Length * sizeof(float));
-            }
+            Buffer[2].BufferData(norms, 0, norms.Length * sizeof(float));
         }
         protected void UpdateVertices(float[] verts, int index)
         {
-            if (mode == UpdateMode.Dynamic)
-            {
-                dynamicBuffer[1].BufferData(verts, (int)offsets[index][1], verts.Length * sizeof(float));
-            }
-            else if (mode == UpdateMode.Static)
-            {
-                staticBuffer[1].BufferData(verts, (int)offsets[index][1], verts.Length * sizeof(float));
-            }
+            Buffer[1].BufferData(verts, 0, verts.Length * sizeof(float));
         }
         protected void UpdateIndices(uint[] indices, int index)
         {
-            if (mode == UpdateMode.Dynamic)
-            {
-                dynamicBuffer[0].BufferData(indices, (int)offsets[index][0], indices.Length * sizeof(uint));
-            }
-            else if (mode == UpdateMode.Static)
-            {
-                staticBuffer[0].BufferData(indices, (int)offsets[index][0], indices.Length * sizeof(uint));
-            }
-            //The length might increase, this should actually be handled by the allocater, to make sure to request enough space to not overwrite anything
+            Buffer[0].BufferData(indices, 0, indices.Length * sizeof(uint));
         }
         #endregion
 
-        public Matrix4 World { get; set; }
-        public Material[] Materials { get; set; }
-        public DrawMode DrawMode { get; set; }
+        public Material Material { get { return RenderInfo.Material; } set { RenderInfo.Material = value; } }
+        public DrawMode DrawMode { get { return RenderInfo.DrawMode; } set { RenderInfo.DrawMode = value; } }
         public BoundingBox Bound;
 
-        UpdateMode mode;
-        protected bool IsDataReady = true;
-        protected object syncObject = new object();
-
-        private Stack<ShaderProgram> shaderStack;
         public ShaderProgram Shader
         {
             get
             {
-                if (shaderStack.Count > 0) return shaderStack.Peek();
-                else throw new InvalidOperationException();
-            }
-            set
-            {
-                for (int i = 0; i < Materials.Length; i++)
-                {
-                    Materials[i].Shader = value;
-                }
+                return RenderInfo.Shader;
             }
         }
-        public Texture AlbedoMap
+        #endregion
+
+        #region Physics Methods
+        public PhysicsInfo PhysicsInfo;
+        #endregion
+
+        public ulong ID
         {
-            set
-            {
-                for (int i = 0; i < Materials.Length; i++)
-                {
-                    Materials[i].AlbedoMap = value;
-                }
-            }
+            get; set;
         }
 
-        static Model()
+        public GraphicsContext ParentContext
         {
-            int numBufs = 4;
-
-            /*
-             * 0: Index
-             * 1: Vertex
-             * 2: Normal
-             * 3: UV
-             */
-
-            //TODO: Everything is switched over to Shader storage buffers so the vertex data can be written to in all shader stages, assign a fourth buffer to store indexed material information
-            if (staticBuffer != null) staticBuffer.Dispose();
-            staticBufferOffset = new long[numBufs];
-            staticBufferLength = new long[numBufs]; /*How much should we allocate?*/  //Current limit = 10 Million Elements
-            staticBufferLength[0] = 1000000;
-            staticBufferLength[1] = 3000000;
-            staticBufferLength[2] = 3000000;
-            staticBufferLength[3] = 2000000;
-            staticBuffer = new VertexArrayLL(4, staticBufferLength[0], UpdateMode.Dynamic, new BufferUse[] { BufferUse.Index, BufferUse.Array, BufferUse.Array, BufferUse.Array }, new int[] { 1, 3, 3, 2 });
-
-
-            if (dynamicBuffer != null) dynamicBuffer.Dispose();
-            dynamicBufferOffset = new long[numBufs];
-            dynamicBufferLength = new long[numBufs]; /*How much should we allocate?*/ //Current limit = 1 Million Elements
-            dynamicBufferLength[0] = 100000;
-            dynamicBufferLength[1] = 300000;
-            dynamicBufferLength[2] = 300000;
-            dynamicBufferLength[3] = 200000;
-            dynamicBuffer = new VertexArrayLL(4, dynamicBufferLength[0], UpdateMode.Dynamic, new BufferUse[] { BufferUse.Index, BufferUse.Array, BufferUse.Array, BufferUse.Array }, new int[] { 1, 3, 3, 2 });
-        }
-
-        public static void ResetModelStorage()
-        {
-            staticBuffer.ResetAll();
-            dynamicBuffer.ResetAll();
+            get; set;
         }
 
         public Model()
         {
-            Materials = new Material[] { new Material() };
+            Material = new Material();
             DrawMode = Engine.DrawMode.Triangles;
-            shaderStack = new Stack<ShaderProgram>();
-#if DEBUG
+
             Kokoro2.Engine.ObjectAllocTracker.NewCreated(this);
-#endif
         }
-#if DEBUG
+
         ~Model()
         {
             Kokoro2.Engine.ObjectAllocTracker.ObjectDestroyed(this);
-        }
-#endif
-
-        public void PushShader(ShaderProgram s)
-        {
-            shaderStack.Push(s);
-            Shader = s;
-        }
-
-        public ShaderProgram PopShader()
-        {
-            ShaderProgram s = null;
-            if (shaderStack.Count > 0) s = shaderStack.Pop();
-            if (shaderStack.Count > 0) Shader = shaderStack.Peek();
-            return s;
-        }
-
-        //Use this to build a list of all the commands to send to the appropriate multidraw indirect buffers
-        public void Draw(GraphicsContext context)
-        {
-            //lock (syncObject)
-            {
-                if (IsDataReady)
-                {
-                    //Append a draw command to the MDI queue
-                    for (int a = 0; a < offsets.Length; a++)
-                    {
-                        //Apply the Material
-                        Materials[a].Apply(context, this);      //Material pipeline will just setup textures and uniform buffer parameters somehow
-
-                        if ((mode == UpdateMode.Static)) staticBuffer.Bind();
-                        else dynamicBuffer.Bind();
-
-                        GraphicsContextLL.Draw(DrawMode, offsets[a][0] / sizeof(uint), lengths[a], offsets[a][1] / (3 * sizeof(float)));   //Send the draw call
-
-                        if ((mode == UpdateMode.Static)) staticBuffer.UnBind();
-                        else dynamicBuffer.UnBind();
-
-                        //Cleanup the Material
-                        Materials[a].Cleanup(context, this);    //Queue the material to be cleaned out after everything has been done
-                    }
-                }
-            }
         }
 
         public void Dispose()
