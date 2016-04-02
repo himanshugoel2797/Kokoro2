@@ -53,13 +53,16 @@ namespace Kokoro2.OpenGL.PC
             //GL.Enable(EnableCap.DepthClamp);
             GL.LineWidth(2);
 
+#if DEBUG
+                Console.WriteLine(GL.GetString(StringName.Renderer));
+#endif
         }
 
         void Window_Resize(object sender, EventArgs e)
         {
             //TODO Implement Resize handler
             SetViewport(new Math.Vector4(0, 0, Window.ClientSize.Width, Window.ClientSize.Height));
-            (this as Engine.GraphicsContext)?.WindowResized?.Invoke(this as Engine.GraphicsContext);
+            if(Window.ClientSize.Width != 0 && Window.ClientSize.Height != 0)(this as Engine.GraphicsContext)?.WindowResized?.Invoke(this as Engine.GraphicsContext);
             InitializeMSAA(0);
         }
 
@@ -108,8 +111,8 @@ namespace Kokoro2.OpenGL.PC
                 GL.Enable(EnableCap.ProgramPointSize);
             }
 
-            GL.DrawElementsInstancedBaseVertex((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)), 1, (int)baseVertex);
-
+            //GL.DrawElementsInstancedBaseVertex((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)), 1, (int)baseVertex);
+            GL.DrawElementsBaseVertex((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)), (int)baseVertex);
 
             if (transformEnabled)
             {

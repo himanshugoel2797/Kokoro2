@@ -1,4 +1,4 @@
-﻿
+﻿#version 430 core
 
 // Interpolated values from the vertex shaders
 in vec2 UV;
@@ -11,8 +11,6 @@ uniform sampler2D AlbedoMap;
 uniform float blurSize;
 
 void main(){
-
-   vec4 clamp = vec4(0.4,0.4,0.4,0);
    vec4 sum = vec4(0.0);
  
    // blur in y (vertical)

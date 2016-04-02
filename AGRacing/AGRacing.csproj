@@ -88,6 +88,9 @@
     <Content Include="Resources\Proc\Tex\car1_0_tex.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Proc\Tex\track_roughness.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Proc\Tex\track_tex.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

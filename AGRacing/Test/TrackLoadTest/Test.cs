@@ -11,6 +11,7 @@ using Kokoro2.Engine.Shaders;
 using Kokoro2.Physics;
 using AGRacing.ShipControllers;
 using System.Diagnostics;
+using Kokoro2.Engine.Prefabs;
 
 namespace AGRacing.Test.TrackLoadTest
 {
@@ -25,6 +26,8 @@ namespace AGRacing.Test.TrackLoadTest
         Ship s1;
         Track track;
 
+        Sphere sp;
+
         private bool ResourcesLoaded = false;
         public void LoadResources(GraphicsContext context)
         {
@@ -36,10 +39,15 @@ namespace AGRacing.Test.TrackLoadTest
                 track.Reverse = true;
                 track.AddShip(0, s1);
 
+                sp = new Sphere(10, 10);
+                sp.Shader = new ShaderProgram(VertexShader.Load("Default"), FragmentShader.Load("Default"));
+                sp.AlbedoMap = new Texture("Resources/Proc/Tex/track_tex.png", false);
+                sp.World = Matrix4.CreateTranslation(Vector3.UnitY * -0.75f + Vector3.UnitX * -0.25f);
+
                 context.DepthWrite = true;
                 context.FaceCulling = CullMode.Back;
                 context.DepthFunction = DepthFunc.LEqual;
-                context.DepthClamp = true;
+                //context.DepthClamp = true;
                 context.ZFar = 1000;
                 context.ZNear = 0.1f;
                 context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
@@ -60,9 +68,15 @@ namespace AGRacing.Test.TrackLoadTest
             if (ResourcesLoaded)
             {
                 context.Clear(0, 0.5f, 1.0f, 0);
-
+                
                 track.Draw(context);
-
+                /*context.DepthFunction = DepthFunc.Always;
+                sp.World = Matrix4.CreateTranslation(Vector3.UnitY * -75f + Vector3.UnitX * -25f);
+                sp.Draw(context);
+                sp.World = Matrix4.Identity;
+                sp.Draw(context);
+                context.DepthFunction = DepthFunc.LEqual;
+                */
                 context.SwapBuffers();
             }
         }

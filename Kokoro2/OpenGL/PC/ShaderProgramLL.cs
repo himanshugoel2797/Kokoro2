@@ -191,7 +191,7 @@ namespace Kokoro2.OpenGL.PC
         protected virtual void sCleanup(GraphicsContext context)
         {
             var variables = this.variables.Values.ToList();
-
+            /*
             for (int i = 0; i < variables.Count; i++)
             {
                 switch (variables[i].type)
@@ -206,8 +206,8 @@ namespace Kokoro2.OpenGL.PC
             }
 
             for (int i = 0; i < 8; i++) Texture.UnBind(i);  //Unbind all textures
-
-            GL.UseProgram(0);
+           
+            GL.UseProgram(0);*/
         }
         #endregion
 

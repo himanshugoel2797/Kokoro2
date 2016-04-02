@@ -19,12 +19,14 @@ namespace Kokoro2.IDE
         static void Main()
         {
             Form1 form = new Form1();
-            context = new GraphicsContext(new Vector2(10, 10));
+            context = new GraphicsContext(new Vector2(10, 10), false);
             context.ViewportControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            form.Controls.Add(context.ViewportControl);
-            form.ClientSize = new System.Drawing.Size(960, 540);
 
-            //Kokoro2.Game.Game game = new Game.Game(context);
+            //Find the entry for the graphicsPanel
+            var container = form.Controls.Find("graphicsPanel", true);
+            if (container.Length != 1) throw new Exception("Failed to initialize editor. Contact the developer.");
+            container[0].Controls.Add(context.ViewportControl);
+            
             form.ShowDialog();
             return;
         }

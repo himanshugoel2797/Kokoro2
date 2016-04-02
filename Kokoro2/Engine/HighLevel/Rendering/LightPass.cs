@@ -26,43 +26,32 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         private static Sphere pLightPrim;
         private static ShaderProgram pLightShader;
 
-        private static FullScreenQuad dLightPrim;
-        private static ShaderProgram dLightShader;
+        private FullScreenQuad dLightPrim;
+        private ShaderProgram dLightShader;
 
-        private static ShaderProgram outShader;
-        private static FullScreenQuad outFSQ;
+        private ShaderProgram outShader;
+        private FullScreenQuad outFSQ;
 
         private TextureBlurFilter bloomPass, shadowPass;
         private int id = 0;
 
         private FrameBuffer avgSceneColor;
 
-        private static ShaderProgram avgSceneShader;
-        private static FullScreenQuad avgSceneFSQ;
+        private ShaderProgram avgSceneShader;
+        private FullScreenQuad avgSceneFSQ;
 
         public CubeMapTexture EnvironmentMap { get; set; }
 
-        static LightPass()
+        public LightPass(int width, int height, GraphicsContext c)
         {
             outFSQ = new FullScreenQuad();
             outFSQ.Shader = outShader = new ShaderProgram(VertexShader.Load("LightShadowBloom"), FragmentShader.Load("LightShadowBloom"));
-
             avgSceneShader = new ShaderProgram(VertexShader.Load("FrameBuffer"), FragmentShader.Load("FrameBuffer"));
             dLightShader = new ShaderProgram(VertexShader.Load("DirectionalLight"), FragmentShader.Load("DirectionalLight"));
-
-
             pLightPrim = new Sphere(1, 10);
             pLightPrim.Shader = pLightShader;
-
             dLightPrim = new FullScreenQuad();
             dLightPrim.Shader = dLightShader;
-
-            avgSceneFSQ = new FullScreenQuad();
-            avgSceneFSQ.Shader = avgSceneShader;
-        }
-
-        public LightPass(int width, int height, GraphicsContext c)
-        {
             dlights = new List<DirectionalLight>();
             plights = new List<PointLight>();
             idMap = new Dictionary<int, Tuple<int, int>>();
@@ -76,6 +65,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             shadowPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA8, c);
             shadowPass.BlurRadius = 0.0025f * 960 / width;
 
+            avgSceneFSQ = new FullScreenQuad();
+            avgSceneFSQ.Shader = avgSceneShader;
             avgSceneColor = new FrameBuffer(1, 1, PixelComponentType.RGBA8, c);
             avgSceneColor.Add("AvgColor", new FrameBufferTexture(1, 1, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float), FrameBufferAttachments.ColorAttachment0, c);
         }
@@ -128,11 +119,11 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             dLightShader["normData"] = g["Normal"];
             dLightShader["specularData"] = g["Specular"];
             dLightShader["worldData"] = g["WorldPos"];
+            dLightShader["eyePos"] = c.Camera.Position;
 
             //First apply all directional lights
             for (int i = 0; i < dlights.Count; i++)
             {
-                dLightShader["eyePos"] = c.Camera.Position;
                 dLightShader["lColor"] = dlights[i].LightColor;
                 dLightShader["lDir"] = dlights[i].Direction;
                 dLightPrim.Draw(c);

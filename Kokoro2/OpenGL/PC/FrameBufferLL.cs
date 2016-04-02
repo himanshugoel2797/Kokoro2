@@ -28,7 +28,19 @@ namespace Kokoro2.OpenGL.PC
             //TODO Setup DrawBuffer attachments
             DrawBuffersEnum[] dbEnum = new DrawBuffersEnum[attachments.Length];
             for (int i = 0; i < dbEnum.Length; i++) { dbEnum[i] = EnumConverters.EDrawBufferAttachment(attachments[i]); }
-            GL.DrawBuffers(dbEnum.Length, dbEnum.OrderBy(x => x).ToArray());
+            dbEnum = dbEnum.OrderBy(x => x).ToArray();
+
+            if (dbEnum.Length > 0)
+            {
+                List<DrawBuffersEnum> t = new List<DrawBuffersEnum>();
+                for (int i = (int)dbEnum[0]; i <= (int)dbEnum[dbEnum.Length - 1]; i++)
+                {
+                    if (dbEnum.Contains((DrawBuffersEnum)i)) t.Add((DrawBuffersEnum)i);
+                    else t.Add(0);
+                }
+
+                GL.DrawBuffers(t.Count(), t.ToArray());
+            }
         }
 
         protected void BlendFunction(Engine.BlendFunc func, int index)

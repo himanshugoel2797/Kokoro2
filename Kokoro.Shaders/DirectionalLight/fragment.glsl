@@ -32,11 +32,8 @@ float ggx(vec3 n, vec3 m, float a)
 	float top = a * a;
 
 	float pA = dot(n, m);
-	pA *= pA;
-	pA *= top - 1;
-	pA += 1;
-	pA *= pA;
-	pA *= 3.14159;
+	pA = pA * pA * (top - 1) + 1;
+	pA = pA * pA * 3.14159;
 
 	return top/pA;
 }
@@ -51,10 +48,7 @@ float fresnel_schlick(float f0,	vec3 h, vec3 v, float vDotH)
 
 float kelemen(vec3 l, vec3 v, vec3 h, vec3 n, float nDotL, float nDotV, float vDotH)
 {
-	float top = nDotL * nDotV;
-	float bottom = vDotH;
-	bottom *= bottom;
-	return top/bottom;
+	return (nDotL * nDotV)/(vDotH * vDotH);
 }
 
 vec4 cooktorr(vec3 n, vec3 v, vec3 l, float f0, vec4 spec, vec4 dif)
@@ -69,8 +63,7 @@ vec4 cooktorr(vec3 n, vec3 v, vec3 l, float f0, vec4 spec, vec4 dif)
 	float fresnel = fresnel_schlick(f0, m, v, vDotH);
 	float geometric = kelemen(l, v, m, n, nDotL, nDotV, vDotH);
 
-	float rs = fresnel * roughness * geometric;
-	rs /= (nDotV * nDotL);
+	float rs = fresnel * roughness * geometric/(nDotV * nDotL);
 
 	rs = max(0.0, rs);
 
@@ -94,8 +87,8 @@ void main(){
 
 	lit = lColor * cooktorr(n, v, l, f0, spec, dif);
 	//lit.rgb = v;
-	
-	float lum = (0.299*lit.r + 0.587*lit.g + 0.114*lit.b);
+	const vec3 fac = vec3(0.299, 0.587, 0.114);
+	float lum = dot(fac, lit.rgb);
 	bloom = mix(0.0, 1.0, step(0.8, lum)) * lit;
 
 	lit.a = 1;

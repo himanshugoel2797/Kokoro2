@@ -26,22 +26,21 @@ namespace Kokoro2.Engine.HighLevel.Lights
                                                             ShadowBoxLocation.Y + ShadowBoxSize.Min.Y, ShadowBoxLocation.Y + ShadowBoxSize.Max.Y,
                                                             ShadowBoxLocation.Z - ShadowBoxSize.Max.Z, ShadowBoxLocation.Z - ShadowBoxSize.Min.Z);
 
-            p = Matrix4.CreateOrthographicOffCenter(ShadowBoxSize.Min.X, ShadowBoxSize.Max.X, ShadowBoxSize.Min.Y, ShadowBoxSize.Max.Y, -ShadowBoxSize.Max.Z, -ShadowBoxSize.Min.Z);
+            Vector3 sz = ShadowBoxSize.Max - ShadowBoxSize.Min;
+            Vector3 sbL = new Vector3(ShadowBoxLocation.Y, ShadowBoxLocation.X, ShadowBoxLocation.Z);
+            //p = Matrix4.CreateOrthographicOffCenter(ShadowBoxSize.Min.X, ShadowBoxSize.Max.X, ShadowBoxSize.Min.Y, ShadowBoxSize.Max.Y, -ShadowBoxSize.Max.Z, -ShadowBoxSize.Min.Z);
+            p = Matrix4.CreateOrthographic(400, 400, -200, 200);
 
-            Matrix4 v = Matrix4.LookAt(ShadowBoxLocation - Direction, ShadowBoxLocation, Vector3.UnitX);
-            v = Matrix4.LookAt(Vector3.Zero, -Direction, Vector3.UnitX);
+            Matrix4 v = Matrix4.LookAt(ShadowBoxLocation + Direction, ShadowBoxLocation, Vector3.UnitX);
+            v = Matrix4.LookAt(Vector3.Zero + ShadowBoxLocation, Direction + ShadowBoxLocation, Vector3.UnitX);
 
-            return p * v;
+            return v * p;
         }
 
         protected override Matrix4 GetShadowMapMatrix(GraphicsContext context)
         {
             Matrix4 a = GetShadowShaderMatrix(context);
-            Matrix4 b = new Matrix4(new Vector4(0.5f, 0, 0, 0),
-                                    new Vector4(0, 0.5f, 0, 0),
-                                    new Vector4(0, 0, 0.5f, 0),
-                                    new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-
+            
             return a;
         }
     }

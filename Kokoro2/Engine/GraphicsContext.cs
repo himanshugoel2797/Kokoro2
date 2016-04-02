@@ -539,13 +539,18 @@ namespace Kokoro2.Engine
         /// Create a new GraphicsContext
         /// </summary>
         /// <param name="WindowSize">The size of the Window</param>
-        public GraphicsContext(Vector2 WindowSize)
+        public GraphicsContext(Vector2 WindowSize) : this(WindowSize, true) { }
+
+        /// <summary>
+        /// Create a new GraphicsContext
+        /// </summary>
+        /// <param name="WindowSize">The size of the Window</param>
+        public GraphicsContext(Vector2 WindowSize, bool debugger)
             : base((int)WindowSize.X, (int)WindowSize.Y)
         {
-            Debug.DebuggerManager.ShowDebugger();
+            if (debugger) Debug.DebuggerManager.ShowDebugger();
             Debug.ObjectAllocTracker.NewCreated(this, 0, "GraphicsContext Created");
         }
-
 
     }
 }

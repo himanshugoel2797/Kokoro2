@@ -40,9 +40,12 @@ namespace AGRacing
         public Track(string infoLine, GraphicsContext context)
         {
             string[] parts = infoLine.Split(',');
-            if (parts.Length != 3) throw new ArgumentException();
+            if (parts.Length != 4) throw new ArgumentException();
             Name = parts[1];
             trackModel = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false);
+            trackModel.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true);
+            trackModel.Materials[0].GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[3], false);
+            trackModel.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
 
 #if DEBUG
             //collisionVis = new Kokoro2.Engine.Prefabs.Box(100, 100, 100);
@@ -54,8 +57,6 @@ namespace AGRacing
 
 #endif
 
-            trackModel.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true);
-            trackModel.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(VertexShader.Load("Shadowed"), FragmentShader.Load("Shadowed")));
 
             trackPath = VertexMesh.GetVertices("Resources/Proc/Track_Path/" + parts[0] + "_path.ko", false);
 
@@ -81,7 +82,7 @@ namespace AGRacing
 
             //BEPUphysics.Entities.Prefabs.Box b = new BEPUphysics.Entities.Prefabs.Box(-Vector3.UnitY * 55 + -Vector3.UnitZ * 50 + Vector3.UnitX * 225, 100, 100, 100);
             //phys.AddEntity(b);
-            sun = new DirectionalLight(context, -Vector3.UnitY * 0.75f + Vector3.UnitX * 0.25f);
+            sun = new DirectionalLight(context, -Vector3.UnitY * 1.0f + -Vector3.UnitX * 0f);
             sun.ShadowResolution = 2048;
             sun.CastShadows = true;
             sun.InitializeShadowBuffer(context);
@@ -179,19 +180,17 @@ namespace AGRacing
         public void Draw(GraphicsContext context)
         {
 
-            if (!sceneShaddowMapPass)
-            {
-                sceneShaddowMapPass = true;
-                context.FaceCulling = CullMode.Off;
-                sun.SetupShadowPass(context);
-                //context.Wireframe = true;
-                trackModel.PushShader(sun.ShadowShader);
-                trackModel.Draw(context);
-                trackModel.PopShader();
-                sun.EndShadowPass(context);
-                context.FaceCulling = CullMode.Back;
-            }
-            /*
+            sceneShaddowMapPass = true;
+            context.FaceCulling = CullMode.Off;
+            sun.SetupShadowPass(context);
+            //context.Wireframe = true;
+            trackModel.PushShader(sun.ShadowShader);
+            trackModel.Draw(context);
+            trackModel.PopShader();
+            sun.EndShadowPass(context);
+            context.FaceCulling = CullMode.Back;
+
+
             //context.Wireframe = false;
             for (int i = 0; i < ships.Length; i++)
             {
@@ -201,7 +200,7 @@ namespace AGRacing
                     ships[i].Draw(context);
                     ships[i].PopShader();
                 }
-            }*/
+            }
 
             gbuf.Bind(context);
             context.Clear(0, 0, 0, 0);

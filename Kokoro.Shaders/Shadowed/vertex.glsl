@@ -1,4 +1,4 @@
-﻿#version 430 core
+﻿#version 450 core
 
 // Input vertex data, different for all executions of this shader.
 layout(location = 0) in vec3 vertexPosition_modelspace;
@@ -23,11 +23,14 @@ uniform float Fcoef;
 
 void main(){
     // Output position of the vertex, in clip space : MVP * position
-	mat4 MVP = Projection * View * World;
-    gl_Position =  MVP * vec4(vertexPosition_modelspace, 1);
-    shadowCoord = sWVP * World * vec4(vertexPosition_modelspace, 1);
+	
+	vec4 tmp = World * vec4(vertexPosition_modelspace, 1);
 
-	worldCoord = (World * vec4(vertexPosition_modelspace, 1)).xyz;
+    gl_Position =  Projection * View * tmp;
+    shadowCoord = sWVP * tmp;
+
+	worldCoord = tmp.xyz;
+	//worldCoord = (World * vec4(vertexPosition_modelspace, 1)).xyz;
 	norm = (World * vec4(normal, 0)).xyz;
 	
     gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * Fcoef - 1.0;
