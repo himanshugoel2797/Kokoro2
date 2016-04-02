@@ -13,13 +13,12 @@ namespace Kokoro.Launcher
         static GraphicsContext context;
         static void Main(string[] args)
         {
-            Form1 form = new Form1();
             context = new GraphicsContext(new Vector2(10, 10));
             context.ViewportControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            Form1 form = new Form1(context);
             form.Controls.Add(context.ViewportControl);
             form.ClientSize = new System.Drawing.Size(960, 540);
 
-            Kokoro2.Game.Game game = new Kokoro2.Game.Game(context);
             form.ShowDialog();
             return;
         }

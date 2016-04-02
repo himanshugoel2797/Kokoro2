@@ -19,11 +19,13 @@ namespace Kokoro2.Debug
 #if DEBUG
             var thrdA = new Thread(() =>
                 {
+                    logger.Active = true;
                     Application.Run(logger);
                 });
 
             var thrdB = new Thread(() =>
             {
+                monitor.Active = true;
                 Application.Run(monitor);
             });
 

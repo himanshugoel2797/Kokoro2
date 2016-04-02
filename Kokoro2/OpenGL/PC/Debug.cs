@@ -114,7 +114,7 @@ namespace Kokoro2.OpenGL.PC
 #if DEBUG
             actionCallback = callback;
             proc = DebugCallback;
-            //GL.DebugMessageCallback(proc, IntPtr.Zero);
+            GL.DebugMessageCallback(proc, IntPtr.Zero);
 #endif
         }
 

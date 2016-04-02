@@ -13,6 +13,7 @@ namespace Kokoro2.Debug
     public partial class LogViewer : Form
     {
         public bool Pause;
+        public bool Active;
 
         public LogViewer()
         {
@@ -21,6 +22,7 @@ namespace Kokoro2.Debug
 
         private void UpdateRichTextBox(RichTextBox control, string message, Severity severity)
         {
+            if (!Active) return;
             switch (severity)
             {
                 case Severity.High:
@@ -46,6 +48,7 @@ namespace Kokoro2.Debug
 
         public void NewMessage(string message, DebugType type, Severity severity)
         {
+            if (!Active) return;
             this.BeginInvoke(new MethodInvoker(() =>
                     {
                         switch (type)
@@ -74,16 +77,19 @@ namespace Kokoro2.Debug
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (!Active) return;
             Pause = !Pause;
         }
 
         private void LogViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!Active) return;
             Pause = false;
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            if (!Active) return;
             e.Cancel = true;
             //base.OnClosing(e);
         }

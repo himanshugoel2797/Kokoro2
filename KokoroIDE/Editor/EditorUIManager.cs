@@ -16,19 +16,48 @@ namespace Kokoro2.IDE.Editor
             set;
         }
 
+        private System.Diagnostics.Stopwatch frameTimer;
+        private int rFrames = 0, uFrames = 0;
+        public int RenderRate { get; private set; }
+        public int UpdateRate { get; private set; }
+
+        private bool ResourcesLoaded;
+
         public void LoadResources(GraphicsContext context)
         {
+            if (!ResourcesLoaded)
+            {
+                frameTimer = new System.Diagnostics.Stopwatch();
+                frameTimer.Start();
 
+                ResourcesLoaded = true;
+            }
         }
 
         public void Render(double interval, GraphicsContext context)
         {
+            if (ResourcesLoaded)
+            {
+                rFrames++;
+                context.Clear(0, 0.5f, 1.0f, 0.0f);
 
+                context.SwapBuffers();
+            }
         }
 
         public void Update(double interval, GraphicsContext context)
         {
-
+            if (ResourcesLoaded)
+            {
+                uFrames++;
+                if (frameTimer.ElapsedMilliseconds >= 1000)
+                {
+                    UpdateRate = uFrames;
+                    RenderRate = rFrames;
+                    uFrames = rFrames = 0;
+                    frameTimer.Restart();
+                }
+            }
         }
     }
 }

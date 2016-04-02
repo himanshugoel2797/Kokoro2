@@ -372,6 +372,8 @@ namespace Kokoro2.Engine
         /// </summary>
         public Thread ResourceManagerThread { get; private set; }     //NOTE: The resource manager also deals with balancing the world octree, as a result it manages the resources in the tree by unloading any objects which are too far away for current use
 
+        public Thread RenderThread { get; private set; }
+
         /// <summary>
         /// The Update handler
         /// </summary>
@@ -391,6 +393,29 @@ namespace Kokoro2.Engine
 
         public Action<GraphicsContext> WindowResized { get; set; }
 
+
+        private bool stopGame = false, pause = false, devOverride = false;
+
+        public void SetDevOverride(bool v)
+        {
+            devOverride = v;
+        }
+
+        public void Pause()
+        {
+            pause = true;
+        }
+
+        public void Resume()
+        {
+            pause = false;
+        }
+
+        public void Stop()
+        {
+            stopGame = true;
+        }
+
         /// <summary>
         /// Start the game loop
         /// </summary>
@@ -403,6 +428,8 @@ namespace Kokoro2.Engine
                 //TODO: Implement skipping to prevent the spiral of death
                 while (true)
                 {
+                    if (stopGame) return;
+                    while (pause) Thread.Sleep(tpu);
                     if (Update != null)
                     {
                         lock (Update)
@@ -439,48 +466,78 @@ namespace Kokoro2.Engine
             });
 
             #region LL executor
-            Stopwatch s = new Stopwatch();
+            bool rThreadHasContext = false;
             bool tmpCtrl = false;
+            Stopwatch s = new Stopwatch();
+
+            RenderThread = new Thread(() =>
+            {
+                while (!stopGame)
+                {
+                    rThreadHasContext = true;
+                    //Window.MakeCurrent();
+                    ViewportControl.BeginInvoke(new MethodInvoker(() =>
+                        {
+                            if (inited)
+                            {
+                                if (!tmpCtrl)
+                                {
+                                    Initialize(this);
+                                //Push the accumulated command buffers for this thread right now
+                                tmpCtrl = true;
+                                }
+
+                                if (!s.IsRunning) s.Start();
+
+                                if (ResourceManager != null) ResourceManager(this);
+                                ResourceManager = null;
+
+                                Window_RenderFrame(0);
+                                Render(s.ElapsedMilliseconds, this);
+                            }
+
+                        }));
+                    rThreadHasContext = false;
+                    if (tpf != 0 && tpf > s.ElapsedMilliseconds)
+                    {
+                        try
+                        {
+                            Thread.Sleep(TimeSpan.FromMilliseconds((long)tpf - (long)s.ElapsedMilliseconds));
+                        }
+                        catch (Exception) { }
+                    }
+                    s.Reset();
+                    s.Start();
+
+                }
+            });
+            RenderThread.Start();
+
             ViewportControl.Paint += (a, b) =>
             {
+                if (stopGame) return;
+                if (pause) return;
+
                 //TODO setup command buffer system
-                if (inited)
+                if (inited && !rThreadHasContext)
                 {
-                    if (!tmpCtrl)
-                    {
-                        Initialize(this);
-                        //Push the accumulated command buffers for this thread right now
-                        tmpCtrl = true;
-                    }
-
-                    if (!s.IsRunning) s.Start();
-
-                    if (ResourceManager != null) ResourceManager(this);
-                    ResourceManager = null;
-
-                    Window_RenderFrame(0);
-                    Render(s.ElapsedMilliseconds, this);
                 }
-                s.Reset();
-                s.Start();
-
-                //Kokoro2.Debug.ObjectAllocTracker.PostFPS(GetNormTicks(s));
-                ViewportControl.Invalidate();
             };
+
             #endregion
 
             var tmp = Initialize;
             Initialize = (GraphicsContext c) =>
-            {
-                Debug.ErrorLogger.StartLogger(true);
-                Debug.ErrorLogger.AddMessage(0, "Engine Started", Debug.DebugType.Marker, Debug.Severity.Notification);
+                        {
+                            Debug.ErrorLogger.StartLogger(true);
+                            Debug.ErrorLogger.AddMessage(0, "Engine Started", Debug.DebugType.Marker, Debug.Severity.Notification);
 
-                ZNear = 0.0001f;
-                ZFar = 1000000f;
-                DepthWrite = true;
-                Viewport = new Vector4(0, 0, WindowSize.X, WindowSize.Y);
+                            ZNear = 0.0001f;
+                            ZFar = 1000000f;
+                            DepthWrite = true;
+                            Viewport = new Vector4(0, 0, WindowSize.X, WindowSize.Y);
 
-            };
+                        };
             Initialize += tmp;
             Initialize += (GraphicsContext c) =>
             {
@@ -546,7 +603,7 @@ namespace Kokoro2.Engine
         /// </summary>
         /// <param name="WindowSize">The size of the Window</param>
         public GraphicsContext(Vector2 WindowSize, bool debugger)
-            : base((int)WindowSize.X, (int)WindowSize.Y)
+                    : base((int)WindowSize.X, (int)WindowSize.Y)
         {
             if (debugger) Debug.DebuggerManager.ShowDebugger();
             Debug.ObjectAllocTracker.NewCreated(this, 0, "GraphicsContext Created");

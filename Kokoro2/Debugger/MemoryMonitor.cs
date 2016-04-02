@@ -22,6 +22,8 @@ namespace Kokoro2.Debug
 {
     public partial class MemoryMonitor : Form
     {
+        public bool Active;
+
         public MemoryMonitor()
         {
             InitializeComponent();
@@ -111,6 +113,7 @@ namespace Kokoro2.Debug
         #region GL Status
         public void PostGLStatus(GraphicsContext context)
         {
+            if (!Active) return;
             this.BeginInvoke(new MethodInvoker(() =>
             {
                 glStatusList.Items[0].SubItems[1] =
@@ -153,6 +156,7 @@ namespace Kokoro2.Debug
         private Dictionary<Type, int> sizes = new Dictionary<Type, int>();
         public void ObjectAllocated(Type type)
         {
+            if (!Active) return;
             if (!objects.ContainsKey(type))
             {
                 sizes.Add(type, 0);
@@ -170,6 +174,7 @@ namespace Kokoro2.Debug
         public void ObjectFreed(Type type)
         {
 
+            if (!Active) return;
             if (!objects.ContainsKey(type))
             {
                 sizes.Add(type, 0);
@@ -187,6 +192,7 @@ namespace Kokoro2.Debug
 
         private void UpdateList()
         {
+            if (!Active) return;
             try
             {
                 this.BeginInvoke(new MethodInvoker(() =>
@@ -217,6 +223,7 @@ namespace Kokoro2.Debug
 
         public void MarkLoop()
         {
+            if (!Active) return;
             foreach (Type key in objects.Keys.ToArray())
             {
                 curFrameObjectsAlloc[key] = 0;
@@ -261,17 +268,20 @@ namespace Kokoro2.Debug
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            if (!Active) return;
             //base.OnClosing(e);
             e.Cancel = true;
         }
 
         protected override void OnClosed(EventArgs e)
         {
+            if (!Active) return;
             //base.OnClosed(e);
         }
 
         private void objectsList_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (!Active) return;
 #if DEBUG
             if (objectsList.SelectedIndices.Count > 0) textureBox.Image = deb.TexToBMP(textures[objectsList.Items[objectsList.SelectedIndices[0]].Text]);
 #endif

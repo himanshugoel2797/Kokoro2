@@ -18,9 +18,10 @@ namespace Kokoro2.IDE
         [STAThread]
         static void Main()
         {
-            Form1 form = new Form1();
             context = new GraphicsContext(new Vector2(10, 10), false);
             context.ViewportControl.Dock = System.Windows.Forms.DockStyle.Fill;
+
+            Form1 form = new Form1(context);
 
             //Find the entry for the graphicsPanel
             var container = form.Controls.Find("graphicsPanel", true);

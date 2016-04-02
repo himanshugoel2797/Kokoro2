@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kokoro2.Engine;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +13,22 @@ namespace Kokoro.Launcher
 {
     public partial class Form1 : Form
     {
-        public Form1()
+        private GraphicsContext context;
+
+        public Form1(GraphicsContext c)
         {
+            context = c;
             InitializeComponent();
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            Kokoro2.Game.Game game = new Kokoro2.Game.Game(context);
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            context.Stop();
         }
     }
 }

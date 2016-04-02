@@ -19,7 +19,7 @@ namespace Kokoro2.OpenGL.PC
     public class GraphicsContextLL
     {
         protected bool inited, tmpCtrl;
-        private GLControl Window;
+        protected GLControl Window;
         public Control ViewportControl
         {
             get
