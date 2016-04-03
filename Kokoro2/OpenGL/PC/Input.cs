@@ -25,6 +25,10 @@ namespace Kokoro2.OpenGL.PC
         internal static void IsFocused(bool focused)
         {
             foc = focused;
+            if (focused)
+            {
+                scrollOffset = msState.WheelPrecise - prevScrollVal;
+            }
         }
         internal static void SetWinXY(int x, int y, int width, int height)
         {
@@ -54,6 +58,8 @@ namespace Kokoro2.OpenGL.PC
         #endregion
 
         #region Mouse
+        static float prevScrollVal = 0;
+        static float scrollOffset = 0;
         static MouseState msState;
         static object msLocker;
         public static Vector2 UpdateMouse()
@@ -79,20 +85,20 @@ namespace Kokoro2.OpenGL.PC
 
         public static bool LeftMouseButtonUp()
         {
-            if (!foc) return false; lock (msLocker) { return msState.IsButtonUp(MouseButton.Left); }
+            if (!foc) return true; lock (msLocker) { return msState.IsButtonUp(MouseButton.Left); }
         }
         public static bool RightMouseButtonUp()
         {
-            if (!foc) return false; lock (msLocker) { return msState.IsButtonUp(MouseButton.Right); }
+            if (!foc) return true; lock (msLocker) { return msState.IsButtonUp(MouseButton.Right); }
         }
         public static bool MiddleMouseButtonUp()
         {
-            if (!foc) return false; lock (msLocker) { return msState.IsButtonUp(MouseButton.Middle); }
+            if (!foc) return true; lock (msLocker) { return msState.IsButtonUp(MouseButton.Middle); }
         }
 
         public static float GetScroll()
         {
-            if (!foc) return 0; lock (msLocker) { return msState.WheelPrecise; }
+            if (!foc) return prevScrollVal; lock (msLocker) { prevScrollVal = msState.WheelPrecise - scrollOffset; return msState.WheelPrecise - scrollOffset; }
         }
         public static void SetMousePos(Vector2 pos) { Mouse.SetPosition(pos.X, pos.Y); }
 

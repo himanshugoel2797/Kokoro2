@@ -39,7 +39,8 @@ namespace Kokoro2.IDE.Editor
             if (ResourcesLoaded)
             {
                 rFrames++;
-                context.Clear(0, 0.5f, 1.0f, 0.0f);
+                context.ClearColor(0, 0.5f, 1.0f, 0.0f);
+                context.ClearDepth();
 
                 context.SwapBuffers();
             }

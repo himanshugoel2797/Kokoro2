@@ -57,7 +57,7 @@ namespace Akane
 
         public void Clear(Vector4 col)
         {
-            context.Clear(col);
+            context.ClearColor(col);
         }
 
         private void _update(double time, GraphicsContext context)

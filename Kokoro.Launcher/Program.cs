@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Kokoro.Launcher
 {
@@ -19,7 +20,7 @@ namespace Kokoro.Launcher
             form.Controls.Add(context.ViewportControl);
             form.ClientSize = new System.Drawing.Size(960, 540);
 
-            form.ShowDialog();
+            Application.Run(form);
             return;
         }
     }

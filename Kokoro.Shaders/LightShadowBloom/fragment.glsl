@@ -35,8 +35,9 @@ void main(){
     float lum = dot(col, fac);
     lum = max(0.4, lum);
     // Exposure tone mapping
-    vec3 mapped = Uncharted2Tonemap(color.rgb * lum)/0.2033 ;//Uncharted2Tonemap(vec3(0.9)); ~= 0.2033
+    vec3 mapped = color.rgb;//Uncharted2Tonemap(color.rgb * lum)/0.2033 ;//Uncharted2Tonemap(vec3(0.9)); ~= 0.2033
     // Gamma correction 
-    //mapped = pow(mapped, vec3(1.0 / gamma));
-    //color = vec4(mapped, 1.0);
+    mapped = pow(mapped, vec3(1.0 / gamma));
+    color = vec4(mapped, 1.0);
+	//color = texture2D(LitMap, UV);
 }

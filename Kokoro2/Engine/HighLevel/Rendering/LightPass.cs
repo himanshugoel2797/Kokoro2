@@ -40,7 +40,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         private ShaderProgram avgSceneShader;
         private FullScreenQuad avgSceneFSQ;
 
-        public CubeMapTexture EnvironmentMap { get; set; }
+        public Texture EnvironmentMap { get; set; }
 
         public LightPass(int width, int height, GraphicsContext c)
         {
@@ -66,7 +66,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             lightBuffer.Add("Bloom", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment1, c);
 
             bloomPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA16f, c);
-            bloomPass.BlurRadius = 0.0015f * 960 / width;
+            bloomPass.BlurRadius = 0.0025f * 960 / width;
             shadowPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA8, c);
             shadowPass.BlurRadius = 0.0025f * 960 / width;
 
@@ -118,13 +118,15 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         public void ApplyLights(GBuffer g, GraphicsContext c)
         {
             lightBuffer.Bind(c);
-            c.Clear(0, 0, 0, 0);
+            c.ClearColor(0, 0, 0, 0);
+            c.ClearDepth();
 
             dLightShader["colorMap"] = g["Color"];
             dLightShader["normData"] = g["Normal"];
             dLightShader["specularData"] = g["Specular"];
             dLightShader["worldData"] = g["WorldPos"];
             dLightShader["eyePos"] = c.Camera.Position;
+            dLightShader["envMap"] = EnvironmentMap;
 
             //First apply all directional lights
             for (int i = 0; i < dlights.Count; i++)
@@ -153,10 +155,17 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             c.Draw(avgSceneFSQ);
             avgSceneColor.UnBind(c);
 
+            var b0 = bloomPass.ApplyBlur(lightBuffer["Bloom"], c);
+            for (int i = 0; i < 3; i++)
+            {
+                b0 = bloomPass.ApplyBlur(b0, c);
+            }
+
             //Now, blur and blend the shadow map on top of the lighting, then blend in the bloom
             outShader["DiffuseMap"] = g["Color"];
             outShader["LitMap"] = lightBuffer["Lit"];
-            outShader["BloomMap"] = bloomPass.ApplyBlur(lightBuffer["Bloom"], c);
+            outShader["BloomMap"] = lightBuffer["Bloom"];
+            //outShader["BloomMap"] = bloomPass.ApplyBlur(b0, c);
             outShader["ShadowMap"] = shadowPass.ApplyBlur(g["Shadow"], c);
             outShader["AvgColor"] = avgSceneColor["AvgColor"];
             c.Draw(outFSQ);

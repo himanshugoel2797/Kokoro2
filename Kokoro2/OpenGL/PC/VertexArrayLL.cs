@@ -166,7 +166,7 @@ namespace Kokoro2.OpenGL.PC
 
         ~VertexArrayLL()
         {
-            Dispose();
+
         }
 
     }

@@ -58,6 +58,7 @@ namespace Kokoro.IDE.ProjectWindows
             NewProjectInfo.Description = projDescBox.Text;
             NewProjectInfo.SaveDir = projDirTextBox.Text;
             NewProjectInfo.SaveProject();   //Save the project
+            this.Close();
         }
     }
 }

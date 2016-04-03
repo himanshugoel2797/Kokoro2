@@ -67,15 +67,20 @@ namespace Kokoro2.Engine.HighLevel.Lights
         protected abstract Matrix4 GetShadowShaderMatrix(GraphicsContext context);
         protected abstract Matrix4 GetShadowMapMatrix(GraphicsContext context);
 
+        private bool passSetup = false;
+        private CullMode prevCullMode;
         public void SetupShadowPass(GraphicsContext context)
         {
             if (CastShadows)
             {
-                context.FaceCulling = CullMode.Off;
+                passSetup = true;
+                prevCullMode = context.FaceCulling;
+                context.FaceCulling = CullMode.Front;
                 ShadowSpace = GetShadowMapMatrix(context);
                 ShadowShader["sWVP"] = GetShadowShaderMatrix(context);
                 shadowBuffer.Bind(context);
-                context.Clear(1, 1, 1, 1);
+                context.ClearColor(1, 1, 1, 1);
+                context.ClearDepth();
             }
         }
 
@@ -83,8 +88,10 @@ namespace Kokoro2.Engine.HighLevel.Lights
         {
             if (CastShadows)
             {
-                context.FaceCulling = CullMode.Back;
+                if (!passSetup) throw new InvalidOperationException("Setup the shadow pass first!");
+                passSetup = false;
                 shadowBuffer.UnBind(context);
+                context.FaceCulling = prevCullMode;
             }
         }
 

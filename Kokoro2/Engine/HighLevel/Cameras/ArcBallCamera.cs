@@ -21,12 +21,17 @@ namespace Kokoro2.Engine.HighLevel.Cameras
             get; set;
         } = 100.0f;
         public Vector3 EyePos { get; set; }
+        public bool Pannable { get; set; }
 
         float leftrightRot = MathHelper.PiOver2;
         float updownRot = -MathHelper.Pi / 10.0f;
         public float rotationSpeed = 0.2f;
         public float moveSpeed = 50f;
         Vector2 mousePos;
+
+        public float RotationSpeed { get { return rotationSpeed; } set { rotationSpeed = value; } }
+        public float MoveSpeed { get { return moveSpeed; } set { moveSpeed = value; } }
+        public float ZoomSpeed { get; set; } = 1;
 
         /// <summary>
         /// Create a new First Person Camera
@@ -52,15 +57,29 @@ namespace Kokoro2.Engine.HighLevel.Cameras
 
             if (Mouse.ButtonsDown.Left)
             {
-                if (System.Math.Abs(mousePos.X - Mouse.MousePos.X) > 0) leftrightRot -= (float)MathHelper.DegreesToRadians(rotationSpeed * (mousePos.X - Mouse.MousePos.X) * interval / 10000f);
-                if (System.Math.Abs(mousePos.Y - Mouse.MousePos.Y) > 0) updownRot -= (float)MathHelper.DegreesToRadians(rotationSpeed * Context.WindowSize.X / Context.WindowSize.Y * (mousePos.Y - Mouse.MousePos.Y) * interval / 10000f);
+                if (Pannable && Keyboard.IsKeyPressed(Key.LControl))
+                {
+                    Vector3 right = Vector3.Cross(Vector3.Normalize(EyePos), Up);
+                    right.Normalize();
+                    if (System.Math.Abs(mousePos.X - Mouse.MousePos.X) > 0) Position -= right * (float)MathHelper.DegreesToRadians(moveSpeed * (mousePos.X - Mouse.MousePos.X) * interval / 10000f);
+                    if (System.Math.Abs(mousePos.Y - Mouse.MousePos.Y) > 0) Position -= Up * (float)MathHelper.DegreesToRadians(moveSpeed * Context.WindowSize.X / Context.WindowSize.Y * (mousePos.Y - Mouse.MousePos.Y) * interval / 10000f);
+
+                }
+                else {
+                    if (System.Math.Abs(mousePos.X - Mouse.MousePos.X) > 0) leftrightRot -= (float)MathHelper.DegreesToRadians(rotationSpeed * (mousePos.X - Mouse.MousePos.X) * interval / 10000f);
+                    if (System.Math.Abs(mousePos.Y - Mouse.MousePos.Y) > 0) updownRot -= (float)MathHelper.DegreesToRadians(rotationSpeed * Context.WindowSize.X / Context.WindowSize.Y * (mousePos.Y - Mouse.MousePos.Y) * interval / 10000f);
+                }
             }
             else
             {
                 mousePos = Mouse.MousePos;
             }
 
-            Radius += Mouse.ScrollDelta * (float)System.Math.Sqrt(Radius);
+            Radius += Mouse.ScrollDelta * (float)System.Math.Sqrt(Radius) * ZoomSpeed;
+            if (Pannable && Radius < 0.1f)
+            {
+                Position += Vector3.Normalize(EyePos) * Mouse.ScrollDelta;
+            }
             if (Radius < 0.1f) Radius = 0.1f;
 
             float sin_Up = (float)System.Math.Sin(updownRot);

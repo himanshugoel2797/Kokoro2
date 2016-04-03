@@ -27,7 +27,7 @@ namespace Kokoro2.Engine
         {
             var tmp = FrameBuffer.GetCurrentFrameBuffer();
             RenderTarget.Bind(context);
-            context.Clear(r, g, b, a);
+            context.ClearColor(r, g, b, a);
             tmp.Bind(context);
         }
 

@@ -277,6 +277,7 @@ namespace Kokoro2.OpenGL.PC
                         //GL.UnmapBuffer(BufferTarget.ArrayBuffer);
                         GL.DeleteBuffer(ParentContext.EngineObjects[ID, this.GetType()]);
                     }
+                    GL.DeleteSync(syncObj);
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.

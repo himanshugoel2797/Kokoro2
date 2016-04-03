@@ -20,8 +20,8 @@ namespace Kokoro.IDE
     public partial class Form1 : Form
     {
         private ProjectInfo CurrentProject;
-        private GraphicsContext context;
         private EditorUIManager uiManager;
+        private GraphicsContext context;
         private SceneManager iSceneManager;     //Internal scene manager
         private EngineOutputLogger logger;
 

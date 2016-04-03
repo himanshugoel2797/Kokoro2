@@ -23,6 +23,8 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         /// </summary>
         public Matrix4 Projection { get; internal set; }
 
+        public const float RecommendedFieldOfView = 0.7853f;
+
         public BoundingFrustum Frustum { get; internal set; }
 
         Vector3 pos;
@@ -51,7 +53,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
             Direction = Vector3.UnitX;
             View = Matrix4.LookAt(new Vector3(-1, 0, 0), Vector3.Zero, Vector3.UnitY);
             Position = -Vector3.UnitX;
-            CalculateFrustum(0.7853f, 16f / 9f, context.ZNear, context.ZFar);
+            CalculateFrustum(RecommendedFieldOfView, 16f / 9f, context.ZNear, context.ZFar);
         }
 
         /// <summary>

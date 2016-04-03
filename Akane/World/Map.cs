@@ -89,7 +89,7 @@ namespace Akane.World
                 int maxGid = 0, minGid = 0;
                 Vector2[,] tileInfo = GenerateTileIDArray(i, out maxGid, out minGid);
 
-                akane.context.Clear(0, 0, 0, 0);
+                akane.context.ClearColor(0, 0, 0, 0);
 
                 //Generate a tile layer texture for this layer
                 for (int x = 0; x < map.Width; x++)
@@ -184,7 +184,7 @@ namespace Akane.World
                     tileSetTmpBuffer.Bind(manager.context);
                     MinMaxTileset.Add(new Vector2(t.FirstGid, CalculateFinalGID(t.FirstGid, (int)t.Image.Width, (int)t.Image.Height, t.TileWidth, t.TileHeight)));
 
-                    manager.context.Clear(0, 0, 0, 0);
+                    manager.context.ClearColor(0, 0, 0, 0);
                     quad.Material.AlbedoMap = new Texture(t.Image.Source, true, manager.context);
                     quad.Shader["TransparentColor"] = new Vector3(t.Image.Trans.R / 255f, t.Image.Trans.G / 255f, t.Image.Trans.B / 255f);
 

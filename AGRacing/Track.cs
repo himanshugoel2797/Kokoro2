@@ -82,11 +82,13 @@ namespace AGRacing
             {
                 lights = new LightPass((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
                 lights.AddLight(sun);
+                lights.EnvironmentMap = new Texture("Resources/Proc/Tex/envMap.jpg", true, con);
                 gbuf = new GBuffer((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
             };
 
             lights = new LightPass((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
             lights.AddLight(sun);
+            lights.EnvironmentMap = new Texture("Resources/Proc/Tex/envMap.jpg", true, context);
 
             gbuf = new GBuffer((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
             fsq = new FullScreenQuad(context);
@@ -173,8 +175,6 @@ namespace AGRacing
             trackModel.RenderInfo.PushShader(sun.ShadowShader);
             context.Draw(trackModel);
             trackModel.RenderInfo.PopShader();
-            sun.EndShadowPass(context);
-            context.FaceCulling = CullMode.Back;
 
 
             //context.Wireframe = false;
@@ -187,9 +187,12 @@ namespace AGRacing
                     ships[i].PopShader();
                 }
             }
+            sun.EndShadowPass(context);
+            context.FaceCulling = CullMode.Back;
 
             gbuf.Bind(context);
-            context.Clear(0, 0, 0, 0);
+            context.ClearColor(0, 0, 0, 0);
+            context.ClearDepth();
             trackModel.Shader["ShadowMap"] = sun.GetShadowMap();
             trackModel.Shader["sWVP"] = sun.ShadowSpace;
             trackModel.Shader["ReflectiveNormMap"] = sun.GetNormals();
@@ -210,7 +213,7 @@ namespace AGRacing
             gbuf.UnBind(context);
 
             lights.ApplyLights(gbuf, context);
-            
+
 #if DEBUG
             context.Wireframe = true;
             context.Draw(collisionVis);

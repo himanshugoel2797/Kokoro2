@@ -76,6 +76,15 @@ namespace Kokoro2.Engine
     {
 
         #region State Machine Properties
+
+        public bool IsFocused
+        {
+            get { return base.aGetFocus(); }
+            set { base.aSetFocus(value); }
+        }
+
+        public Action<GraphicsContext> FocusPollHandler { get; set; }
+
         /// <summary>
         /// Enable/Disable Wireframe rendering
         /// </summary>
@@ -351,7 +360,7 @@ namespace Kokoro2.Engine
         /// <param name="g">The green component from 0 to 1</param>
         /// <param name="b">The blue component from 0 to 1</param>
         /// <param name="a">The alpha component from 0 to 1</param>
-        public void Clear(float r, float g, float b, float a)
+        public void ClearColor(float r, float g, float b, float a)
         {
             base.aClear(r, g, b, a);
         }
@@ -359,7 +368,9 @@ namespace Kokoro2.Engine
         /// Clear the screen
         /// </summary>
         /// <param name="col">The color to clear the screen with (all 0 to 1)</param>
-        public void Clear(Vector4 col) { Clear(col.X, col.Y, col.Z, col.W); }
+        public void ClearColor(Vector4 col) { ClearColor(col.X, col.Y, col.Z, col.W); }
+
+        public void ClearDepth() { base.aClearDepth(); }
         #endregion
 
         #region Draw
@@ -522,6 +533,8 @@ namespace Kokoro2.Engine
 
                             ResourceLoader?.Invoke(this);
                             ResourceLoader = null;
+
+                            FocusPollHandler?.Invoke(this);
 
                             Window_RenderFrame(0);
                             Render(a, b);

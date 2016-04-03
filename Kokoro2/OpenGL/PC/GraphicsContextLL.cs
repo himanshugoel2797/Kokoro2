@@ -40,11 +40,12 @@ namespace Kokoro2.OpenGL.PC
 
         void Window_Load(object sender, EventArgs e)
         {
-            Window.GotFocus += ParentForm_GotFocus;
-            Window.LostFocus += ParentForm_LostFocus;
+
+            //Window.GotFocus += ParentForm_GotFocus;
+            //Window.LostFocus += ParentForm_LostFocus;
             Window.ParentForm.Move += Window_Move;
-            Window.ParentForm.ResizeBegin += ParentForm_ResizeBegin;
-            Window.ParentForm.ResizeEnd += ParentForm_ResizeEnd;
+            //Window.ParentForm.ResizeBegin += ParentForm_ResizeBegin;
+            //Window.ParentForm.ResizeEnd += ParentForm_ResizeEnd;
 
             inited = true;
             //Depth Test is always enabled, it's a matter of what the depth function is
@@ -128,24 +129,15 @@ namespace Kokoro2.OpenGL.PC
 #endif
 
         #region Input Focus Handlers
-        void ParentForm_ResizeEnd(object sender, EventArgs e)
+        private bool focusStatus = false;
+        protected bool aGetFocus()
         {
-            InputLL.IsFocused(Window.Focused);
+            return focusStatus;
         }
-
-        void ParentForm_ResizeBegin(object sender, EventArgs e)
+        protected void aSetFocus(bool value)
         {
-            InputLL.IsFocused(Window.Focused);
-        }
-
-        void ParentForm_LostFocus(object sender, EventArgs e)
-        {
-            InputLL.IsFocused(false);
-        }
-
-        void ParentForm_GotFocus(object sender, EventArgs e)
-        {
-            InputLL.IsFocused(true);
+            focusStatus = value;
+            InputLL.IsFocused(focusStatus);
         }
 
         void Window_Move(object sender, EventArgs e)
@@ -160,7 +152,12 @@ namespace Kokoro2.OpenGL.PC
         {
             //TODO maybe it'll be faster to just disable depth testing and draw a fsq? This is currently one of the slowest parts of the engine
             GL.ClearColor(r, g, b, a);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+        }
+
+        protected void aClearDepth()
+        {
+            GL.Clear(ClearBufferMask.DepthBufferBit);
         }
 
         #region Depth Write

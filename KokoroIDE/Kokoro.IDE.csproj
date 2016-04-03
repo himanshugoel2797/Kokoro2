@@ -100,6 +100,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kokoro.ContentPipeline\Kokoro.ContentPipeline.csproj">
+      <Project>{45400486-bf2d-4090-be73-a6f4201344f8}</Project>
+      <Name>Kokoro.ContentPipeline</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kokoro.Controls\Kokoro.Controls.csproj">
+      <Project>{a36a8d5f-71d4-4e45-8309-95868ed81d93}</Project>
+      <Name>Kokoro.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Kokoro.EssencePainter\Kokoro.EssencePainter.csproj">
+      <Project>{1cfd103b-4637-4753-8e7c-f7835a0e9f35}</Project>
+      <Name>Kokoro.EssencePainter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Kokoro2\Kokoro2.csproj">
       <Project>{db0a76c9-b908-4c67-b1d0-31559c480a4a}</Project>
       <Name>Kokoro2</Name>

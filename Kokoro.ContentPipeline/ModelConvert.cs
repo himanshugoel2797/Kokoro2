@@ -12,7 +12,7 @@ namespace Kokoro.ContentPipeline
 {
     public class ModelConvert
     {
-        internal static byte[] Process(string filename)
+        public static byte[] Process(string filename)
         {
             float[][] bounds = new float[2][];
             bounds[0] = new float[3];

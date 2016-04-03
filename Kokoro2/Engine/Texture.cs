@@ -39,6 +39,7 @@ namespace Kokoro2.Engine
         bool srgba;
 
         private static Dictionary<string, ulong> loadedImages = new Dictionary<string, ulong>();
+        private static Dictionary<string, int> refCounts = new Dictionary<string, int>();
 
         public Vector2 Size
         {
@@ -83,6 +84,7 @@ namespace Kokoro2.Engine
         public Texture(int width, int height, PixelFormat pf, PixelComponentType pct, PixelType pixelType, GraphicsContext c)
         {
             ParentContext = c;
+            c.Disposing += Dispose;
             lock (locker)
             {
                 base.Create(width, height, pct, pf, pixelType);
@@ -92,32 +94,42 @@ namespace Kokoro2.Engine
         public Texture(string filename, bool srgba, GraphicsContext c)
         {
             ParentContext = c;
+            c.Disposing += Dispose;
+            file = filename;
             //TODO make this write to a texture array where the ID returned is the layer, additionally maintain a GPU buffer with the normalized sizes and offsets of the textures in their respective layers
             lock (locker)
             {
                 if (loadedImages.ContainsKey(filename))
                 {
                     ID = loadedImages[filename];
+                    refCounts[filename]++;
                 }
                 else
                 {
                     base.Create(filename, srgba);
                     loadedImages[filename] = ID;
+                    refCounts[filename] = 1;
                     ObjectAllocTracker.NewCreated(this, filename);
                 }
             }
         }
 
-        public Texture(ulong id)
+        public Texture(ulong id, GraphicsContext c)
         {
+            ParentContext = c;
+            c.Disposing += Dispose;
+
             lock (locker)
             {
                 this.ID = id;
                 ObjectAllocTracker.NewCreated(this, " Duplicate");
             }
         }
-        public Texture(Image img, bool srgba)
+        public Texture(Image img, bool srgba, GraphicsContext c)
         {
+            ParentContext = c;
+            c.Disposing += Dispose;
+
             lock (locker)
             {
                 base.Create(img, srgba);
@@ -149,7 +161,12 @@ namespace Kokoro2.Engine
 
         public new void Dispose()
         {
-            base.Dispose();
+            if (!string.IsNullOrWhiteSpace(file))
+            {
+                if (refCounts[file] == 1) base.Dispose();
+                else refCounts[file]--;
+            }
+            else base.Dispose();
         }
 
     }

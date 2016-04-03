@@ -57,7 +57,7 @@ namespace Sandbox
         {
             if (ResourcesLoaded)
             {
-                context.Clear(0, 0, 0, 0);
+                context.ClearColor(0, 0, 0, 0);
 
                 context.DepthWrite = true;
 
@@ -65,7 +65,7 @@ namespace Sandbox
 
                 context.Wireframe = true;
 
-                context.Clear(1, 1, 1, 1);
+                context.ClearColor(1, 1, 1, 1);
                 context.Draw(TestSphereA);
 
                 context.Wireframe = false;

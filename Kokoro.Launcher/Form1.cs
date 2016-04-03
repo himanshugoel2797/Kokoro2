@@ -17,6 +17,7 @@ namespace Kokoro.Launcher
 
         public Form1(GraphicsContext c)
         {
+            c.FocusPollHandler += (context) => { context.IsFocused = this.ContainsFocus; };
             context = c;
             InitializeComponent();
         }

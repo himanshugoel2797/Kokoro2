@@ -27,13 +27,29 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             horizontal = new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("BlurHorizontal", context));
             vertical = new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("BlurVertical", context));
 
-            tmpBuffer = new FrameBuffer(width, height, PixelComponentType.D32, context);
-            tmpBuffer.Add("Hblurred", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+            if (pct != PixelComponentType.RGBA16f && pct != PixelComponentType.RGBA32f)
+            {
+                tmpBuffer = new FrameBuffer(width / 2, height / 2, PixelComponentType.D32, context);
+                tmpBuffer.Add("Hblurred", new FrameBufferTexture(width / 2, height / 2, PixelFormat.BGRA, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+                tmpBuffer["Hblurred"].FilterMode = TextureFilter.Linear;
+
+                resultBuffer = new FrameBuffer(width / 4, height / 4, PixelComponentType.D32, context);
+                resultBuffer.Add("Vblurred", new FrameBufferTexture(width / 4, height / 4, PixelFormat.BGRA, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+                resultBuffer["Vblurred"].FilterMode = TextureFilter.Linear;
+            }
+            else
+            {
+                tmpBuffer = new FrameBuffer(width / 2, height / 2, PixelComponentType.D32, context);
+                tmpBuffer.Add("Hblurred", new FrameBufferTexture(width / 2, height / 2, PixelFormat.BGRA, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+                tmpBuffer["Hblurred"].FilterMode = TextureFilter.Nearest;
+
+                resultBuffer = new FrameBuffer(width / 2, height / 2, PixelComponentType.D32, context);
+                resultBuffer.Add("Vblurred", new FrameBufferTexture(width / 2, height / 2, PixelFormat.BGRA, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+                resultBuffer["Vblurred"].FilterMode = TextureFilter.Nearest;
+            }
+
             tmpBuffer["Hblurred"].WrapX = false;
             tmpBuffer["Hblurred"].WrapY = false;
-
-            resultBuffer = new FrameBuffer(width, height, PixelComponentType.D32, context);
-            resultBuffer.Add("Vblurred", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
             resultBuffer["Vblurred"].WrapX = false;
             resultBuffer["Vblurred"].WrapY = false;
         }
@@ -41,7 +57,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         public Texture ApplyBlur(Texture t, GraphicsContext c)
         {
             tmpBuffer.Bind(c);
-            c.Clear(0, 0, 0, 0);
+            c.ClearColor(0, 0, 0, 0);
+            c.ClearDepth();
 
             fsq.RenderInfo.PushShader(horizontal);
             fsq.Material.AlbedoMap = t;
@@ -51,7 +68,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
             tmpBuffer.UnBind(c);
             resultBuffer.Bind(c);
-            c.Clear(0, 0, 0, 0);
+            c.ClearColor(0, 0, 0, 0);
+            c.ClearDepth();
 
             fsq.RenderInfo.PushShader(vertical);
             fsq.Material.AlbedoMap = tmpBuffer["Hblurred"];

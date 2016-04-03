@@ -50,13 +50,11 @@ namespace AGRacing.Test.TrackLoadTest
                 //context.DepthClamp = true;
                 context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
                 context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
-                context.Camera = new ArcBallCamera(context, Vector3.Zero, Vector3.UnitX);
+                //context.Camera = new ArcBallCamera(context, Vector3.Zero, Vector3.UnitX);
+                //(context.Camera as ArcBallCamera).Pannable = true;
                 //context.Wireframe = true;
 
-                if (context.Camera as FirstPersonCamera != null)
-                {
-                    //context.Camera.Position = track.GetPosition(0);
-                }
+                
 
                 ResourcesLoaded = true;
             }
@@ -66,7 +64,8 @@ namespace AGRacing.Test.TrackLoadTest
         {
             if (ResourcesLoaded)
             {
-                context.Clear(0, 0.5f, 1.0f, 0);
+                context.ClearColor(0, 0.5f, 1.0f, 0);
+                context.ClearDepth();
 
                 track.Draw(context);
                 context.DepthFunction = DepthFunc.Always;
@@ -85,6 +84,11 @@ namespace AGRacing.Test.TrackLoadTest
             {
                 track.Update(interval, context);
                 var tmpCam = context.Camera as FollowPointCamera;
+
+                if (context.Camera as FirstPersonCamera == null)
+                {
+                    context.Camera.Position = s1.Position;
+                }
 
                 if (tmpCam != null)
                 {
