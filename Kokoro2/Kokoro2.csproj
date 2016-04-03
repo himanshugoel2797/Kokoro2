@@ -131,6 +131,7 @@
     <Compile Include="Engine\GeometryInfo.cs" />
     <Compile Include="Engine\GraphicsContext.cs" />
     <Compile Include="Engine\HighLevel\Cameras\Camera.cs" />
+    <Compile Include="Engine\HighLevel\Cameras\ArcBallCamera.cs" />
     <Compile Include="Engine\HighLevel\Cameras\FirstPersonCamera.cs" />
     <Compile Include="Engine\HighLevel\Cameras\FollowPointCamera.cs" />
     <Compile Include="Engine\HighLevel\CharacterControllers\CharacterControllerBase.cs" />

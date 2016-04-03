@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Kokoro.IDE.Properties {
+namespace Kokoro.TextureConv.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -26,12 +26,12 @@ namespace Kokoro.IDE.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\AMD\\AMD Compress\\AMDCompressCLI.exe")]
-        public string AMDCompressCLI {
+        public string AMDCompressCLI_Path {
             get {
-                return ((string)(this["AMDCompressCLI"]));
+                return ((string)(this["AMDCompressCLI_Path"]));
             }
             set {
-                this["AMDCompressCLI"] = value;
+                this["AMDCompressCLI_Path"] = value;
             }
         }
     }

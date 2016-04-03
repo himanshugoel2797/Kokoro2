@@ -50,11 +50,12 @@ namespace AGRacing.Test.TrackLoadTest
                 //context.DepthClamp = true;
                 context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
                 context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
+                context.Camera = new ArcBallCamera(context, Vector3.Zero, Vector3.UnitX);
                 //context.Wireframe = true;
 
                 if (context.Camera as FirstPersonCamera != null)
                 {
-                    context.Camera.Position = track.GetPosition(0);
+                    //context.Camera.Position = track.GetPosition(0);
                 }
 
                 ResourcesLoaded = true;
@@ -68,17 +69,16 @@ namespace AGRacing.Test.TrackLoadTest
                 context.Clear(0, 0.5f, 1.0f, 0);
 
                 track.Draw(context);
-                /*context.DepthFunction = DepthFunc.Always;
-                sp.World = Matrix4.CreateTranslation(Vector3.UnitY * -75f + Vector3.UnitX * -25f);
-                sp.Draw(context);
-                sp.World = Matrix4.Identity;
-                sp.Draw(context);
+                context.DepthFunction = DepthFunc.Always;
+                sp.RenderInfo.World = Matrix4.CreateTranslation(Vector3.UnitY * -75f + Vector3.UnitX * -25f);
+                context.Draw(sp);
+                sp.RenderInfo.World = Matrix4.Identity;
+                context.Draw(sp);
                 context.DepthFunction = DepthFunc.LEqual;
-                */
                 context.SwapBuffers();
             }
         }
-        
+
         public void Update(double interval, GraphicsContext context)
         {
             if (ResourcesLoaded)

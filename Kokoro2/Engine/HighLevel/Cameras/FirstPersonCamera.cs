@@ -68,7 +68,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
             if (Mouse.ButtonsDown.Left)
             {
                 if (System.Math.Abs(mousePos.X - Mouse.MousePos.X) > 0) leftrightRot -= (float)MathHelper.DegreesToRadians(rotationSpeed * (mousePos.X - Mouse.MousePos.X) * interval / 10000f);
-                if (System.Math.Abs(mousePos.Y - Mouse.MousePos.Y) > 0) updownRot -= (float)MathHelper.DegreesToRadians(rotationSpeed * (mousePos.Y - Mouse.MousePos.Y) * interval / 10000f);
+                if (System.Math.Abs(mousePos.Y - Mouse.MousePos.Y) > 0) updownRot -= (float)MathHelper.DegreesToRadians(rotationSpeed * Context.WindowSize.X / Context.WindowSize.Y * (mousePos.Y - Mouse.MousePos.Y) * interval / 10000f);
             }
             else
             {

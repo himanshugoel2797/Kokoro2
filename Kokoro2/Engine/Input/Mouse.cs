@@ -67,6 +67,10 @@ namespace Kokoro2.Engine.Input
         /// </summary>
         public static Matrix4 MouseProjection { get; private set; }
 
+        private static float prevScroll;
+        public static float ScrollAbs { get; private set; }
+        public static float ScrollDelta { get; private set; }
+
         static Mouse()
         {
             MouseProjection = Matrix4.CreateOrthographicOffCenter(0, 1, 1, 0, 0.01f, 1);
@@ -77,9 +81,12 @@ namespace Kokoro2.Engine.Input
             lock (locker)
             {
                 prevMouse = curMouse;
+                prevScroll = ScrollAbs;
                 curMouse = InputLL.UpdateMouse();
+                ScrollAbs = InputLL.GetScroll();
 
                 MouseDelta = prevMouse - curMouse;
+                ScrollDelta = prevScroll - ScrollAbs;
 
                 ButtonsDown = new MouseButtons()
                 {
@@ -87,6 +94,7 @@ namespace Kokoro2.Engine.Input
                     Right = InputLL.RightMouseButtonDown(),
                     Middle = InputLL.MiddleMouseButtonDown()
                 };
+
 
                 NDMousePos = InputLL.GetNDMousePos(curMouse);
             }

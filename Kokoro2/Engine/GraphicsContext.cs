@@ -502,7 +502,11 @@ namespace Kokoro2.Engine
             {
                 GameLooper(tpf, (a, b) =>
                 {
-                    while (!prevFrameDone) Thread.Sleep(1);
+                    while (!prevFrameDone)
+                    {
+                        Thread.Sleep(1);
+                        if (stopGame) return;
+                    }
                     prevFrameDone = false;
                     ViewportControl.BeginInvoke(new MethodInvoker(() =>
                     {
@@ -547,7 +551,6 @@ namespace Kokoro2.Engine
             {
                 //Spawn threads for each: Update, Physics, Animation, Render
                 UpdateThread.Start();
-                ResourceManagerThread.Start();
             };
 
             RenderThread.Start();
