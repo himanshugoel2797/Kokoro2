@@ -432,11 +432,6 @@ namespace Kokoro2.Engine
         public Action<GraphicsContext> ResourceLoader { get; set; }
 
         /// <summary>
-        /// The Asynchronous Resource Manager handler - Use to stream/load textures and meshes on a separate thread
-        /// </summary>
-        public Action<GraphicsContext> AsyncResourceLoader { get; set; }
-
-        /// <summary>
         /// The Resize event handler - Use to resize anything that depends on the window information
         /// </summary>
         public Action<GraphicsContext> WindowResized { get; set; }
@@ -502,17 +497,6 @@ namespace Kokoro2.Engine
                 });
             });
 
-            OpenTK.GameWindow resourceWindow = null;
-            ResourceManagerThread = new Thread(() =>
-            {
-                //Create a new GL context and use it to load resources on the side for sharing
-                resourceWindow.MakeCurrent();
-                GameLooper(16, (a, b) =>
-                {
-                    AsyncResourceLoader?.Invoke(this);
-                });
-            });
-
             bool tmpCtrl = false, prevFrameDone = true;
             RenderThread = new Thread(() =>
             {
@@ -561,9 +545,6 @@ namespace Kokoro2.Engine
             Initialize += tmp;
             Initialize += (GraphicsContext c) =>
             {
-                resourceWindow = new OpenTK.GameWindow();
-                resourceWindow.Context.MakeCurrent(null);
-                Window.MakeCurrent();
                 //Spawn threads for each: Update, Physics, Animation, Render
                 UpdateThread.Start();
                 ResourceManagerThread.Start();
