@@ -14,7 +14,6 @@ namespace Kokoro2.Engine.Physics
     public class PhysicsWorld
     {
         Space world;
-        int tagCnt = 1;
 
         public Vector3 Gravity
         {
@@ -30,10 +29,7 @@ namespace Kokoro2.Engine.Physics
 
         public PhysicsWorld()
         {
-            var p = new ParallelLooper();
-            for (int i = 1; i < Environment.ProcessorCount - 2; i++) p.AddThread();
-
-            world = new Space(p);
+            world = new Space();
         }
 
         public bool RayCast(Vector3 o, Vector3 d, out float distance, out Vector3 normal)
@@ -47,19 +43,19 @@ namespace Kokoro2.Engine.Physics
             return intersection;
         }
 
-        public bool RayCast(Vector3 o, Vector3 d, out float[] distance, out Vector3[] normal, out BroadPhaseEntry[] target)
+        public bool RayCast(Vector3 o, Vector3 d, out float[] distance, out Vector3[] normal, out ulong[] target)
         {
             List<RayCastResult> res = new List<RayCastResult>();
             bool intersection = world.RayCast(new BEPUutilities.Ray(o, d), 1000f, res);
 
             normal = new Vector3[res.Count];
             distance = new float[res.Count];
-            target = new BroadPhaseEntry[res.Count];
+            target = new ulong[res.Count];
             for (int i = 0; i < res.Count; i++)
             {
                 normal[i] = res[i].HitData.Normal;
                 distance[i] = res[i].HitData.T;
-                target[i] = res[i].HitObject;
+                target[i] = (ulong)res[i].HitObject.Tag;
             }
 
             return intersection;
@@ -67,18 +63,13 @@ namespace Kokoro2.Engine.Physics
 
         public void Update(double interval)
         {
-            world.Update();
+            world.Update((float)interval);
         }
 
         public void AddEntity(BaseEntity b)
         {
+            b.ParentSpace = this;
             world.Add(b.physEntity);
-        }
-
-        public void AddEntity(ISpaceObject m)
-        {
-            m.Tag = tagCnt++;
-            world.Add(m);
         }
 
     }

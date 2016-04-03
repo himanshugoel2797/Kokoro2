@@ -76,7 +76,7 @@ namespace Akane.World
 
             //Each pixel is one tile
             FrameBuffer renderTarget = new FrameBuffer(map.Width, map.Height, PixelComponentType.RGBA16f, akane.context);
-            Model tileRenderer = new FullScreenQuad();
+            Model tileRenderer = new FullScreenQuad(akane.context);
             tileRenderer.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, new VertexShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context), new FragmentShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context)));
 
             Matrix4 TileLayersOrthoMatrix = Matrix4.CreateOrthographicOffCenter(0, map.Width, -map.Height, 0, -1.0f, 1.0f);
@@ -117,7 +117,7 @@ namespace Akane.World
             akane.context.Projection = projBackup;
             #endregion
 
-            quad = new FullScreenQuad();
+            quad = new FullScreenQuad(akane.context);
             quad.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, VertexShader.Load("Shaders/LayerDrawer", manager.context), FragmentShader.Load("Shaders/LayerDrawer", manager.context)));
             DefaultShader = new ShaderProgram(manager.context, VertexShader.Load("Shaders/FrameBuffer", manager.context), FragmentShader.Load("Shaders/FrameBuffer", manager.context));
 
@@ -171,7 +171,7 @@ namespace Akane.World
         private void LoadResources(AkaneManager manager)
         {
             FrameBuffer tileSetTmpBuffer = new FrameBuffer((int)map.Tilesets[0].Image.Width, (int)map.Tilesets[0].Image.Height, PixelComponentType.RGBA8, manager.context);
-            FullScreenQuad quad = new FullScreenQuad();
+            FullScreenQuad quad = new FullScreenQuad(manager.context);
             quad.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, VertexShader.Load("Shaders/TransparentColor", manager.context), FragmentShader.Load("Shaders/TransparentColor", manager.context)));
 
 

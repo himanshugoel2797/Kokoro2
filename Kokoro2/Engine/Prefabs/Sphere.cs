@@ -23,8 +23,8 @@ namespace Kokoro2.Engine.Prefabs
         /// </summary>
         /// <param name="radius">The radius of the sphere</param>
         /// <param name="step">The amount of detail to put in the sphere</param>
-        public Sphere(float radius, int step = 10)
-            : base()
+        public Sphere(float radius, int step, GraphicsContext c)
+            : base(c)
         {
 
             this.DrawMode = DrawMode.Triangles;

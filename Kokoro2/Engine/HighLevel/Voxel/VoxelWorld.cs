@@ -23,17 +23,17 @@ namespace Kokoro2.Engine.HighLevel.Voxel
         VoxelRenderer extractor;    //This is mainly used to extract the surface data, we use InputDataMesh to render the meshes
         InputDataMesh[] renderers;
 
-        public VoxelWorld(VoxelCollection voxelTypes, int seed)
+        public VoxelWorld(VoxelCollection voxelTypes, int seed, GraphicsContext c)
         {
             this.seed = seed;
             this.voxelTypes = voxelTypes;
             Chunks = new Dictionary<Vector3d, VoxelChunk>();
-            extractor = new VoxelRenderer(SideLength, voxelTypes);
+            extractor = new VoxelRenderer(SideLength, voxelTypes, c);
 
             renderers = new InputDataMesh[rendererCount];
             for (int i = 0; i < rendererCount; i++)
             {
-                renderers[i] = new InputDataMesh(SideLength * SideLength * SideLength * 14 * 4);    //Define the maximum possible stored amount
+                renderers[i] = new InputDataMesh(SideLength * SideLength * SideLength * 14 * 4, c);    //Define the maximum possible stored amount
 
                 //TODO Fix the shader setup for the voxelworld
 

@@ -79,7 +79,7 @@ namespace Kokoro2.Engine.Prefabs
 
         private bool animatedMesh;
 
-        public VertexMesh(string filename, bool animated, bool useVFS = false)
+        public VertexMesh(string filename, bool animated, GraphicsContext c, bool useVFS = false) : base(c)
         {
             Model_m tmp = null;
             if (useVFS)
@@ -92,7 +92,7 @@ namespace Kokoro2.Engine.Prefabs
             }
 
             animatedMesh = animated;
-            
+
             for (int i = 0; i < tmp.Mesh.Length; i++)
             {
                 SetIndices(tmp.Mesh[i].indices, i);

@@ -48,7 +48,7 @@ namespace Kokoro2.Engine.SceneGraph
         {
             context.Render += this.Render;
             context.Update += this.Update;
-            context.ResourceManager += this.LoadResources;
+            context.ResourceLoader += this.LoadResources;
         }
 
         /// <summary>

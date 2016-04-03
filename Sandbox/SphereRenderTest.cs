@@ -34,14 +34,14 @@ namespace Sandbox
                 //context.FaceCulling = CullMode.Back;
                 context.PatchSize = 3;
 
-                TestSphereA = new Sphere(1, 10);
+                TestSphereA = new Sphere(1, 10, context);
                 //TestSphereA.Materials[0].Shader = new ShaderProgram(VertexShader.Load("GBuffer"), FragmentShader.Load("GBuffer"));
                 TestSphereA.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("LoD", context), TessellationShader.Load("LoD", "LoD", context), FragmentShader.Load("LoD", context)));
                 TestSphereA.DrawMode = DrawMode.Patches;
 
                 gBuffer = new GBuffer(1920, 1080, context);
 
-                FSQ = new FullScreenQuad();
+                FSQ = new FullScreenQuad(context);
                 FSQ.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("FrameBuffer", context)));
                 FSQ.Material.AlbedoMap = gBuffer["RGBA0"];
 

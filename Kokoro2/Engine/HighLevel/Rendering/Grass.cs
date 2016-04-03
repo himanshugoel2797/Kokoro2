@@ -19,9 +19,9 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         /// Load a mesh to grow grass/fur on
         /// </summary>
         /// <param name="filename">The path to the file to load</param>
-        public Grass(string filename)
+        public Grass(string filename, GraphicsContext c) : base(c)
         {
-            
+
         }
     }
 }

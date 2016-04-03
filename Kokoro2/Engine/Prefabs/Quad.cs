@@ -26,8 +26,8 @@ namespace Kokoro2.Engine.Prefabs
         /// <param name="width">The width of the unit quad</param>
         /// <param name="height">The height of the unit quad</param>
         /// <param name="tex">An optional texture to be applied to the quad</param>
-        public Quad(float x, float y, float width, float height, Texture tex = null)
-            : base()
+        public Quad(float x, float y, float width, float height, GraphicsContext c)
+            : base(c)
         {
             this.DrawMode = DrawMode.Triangles;
 
@@ -45,7 +45,6 @@ namespace Kokoro2.Engine.Prefabs
                 x + width, 0, y,
                 x, 0, y
             }, 0);
-            Material.AlbedoMap = tex;
 
             Bound = new BoundingBox()
             {

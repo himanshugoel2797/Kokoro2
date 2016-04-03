@@ -21,8 +21,8 @@ namespace Kokoro2.Engine.Prefabs
         /// <summary>
         /// Creates a new FullScreenQuad object
         /// </summary>
-        public FullScreenQuad()
-            : base()
+        public FullScreenQuad(GraphicsContext c)
+            : base(c)
         {
 
             this.DrawMode = DrawMode.Triangles;

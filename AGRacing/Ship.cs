@@ -1,4 +1,5 @@
 ﻿using Kokoro2.Engine;
+using Kokoro2.Engine.Physics;
 using Kokoro2.Engine.Prefabs;
 using Kokoro2.Engine.Shaders;
 using Kokoro2.Math;
@@ -44,17 +45,19 @@ namespace AGRacing
         private Vector3 Rotations = Vector3.Zero;
         private Quaternion Orientation;
         private IShipController controller;
-        private BEPUphysics.Entities.Entity collisionMesh;
-
-        public ShaderProgram Shader
-        {
-            get { return Mesh.Shader; }
-            set { Mesh.Shader = value; }
-        }
+        private BaseEntity collisionMesh;
 
 #if DEBUG
         private Model colVis;
 #endif
+
+        public ShaderProgram Shader
+        {
+            get
+            {
+                return Mesh.Shader;
+            }
+        }
 
         public Ship(string infoString, IShipController controller, GraphicsContext c)
         {
@@ -63,11 +66,11 @@ namespace AGRacing
 
             Name = parts[1];
             this.controller = controller;
-            Mesh = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false);
+            Mesh = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false, c);
 
-            Mesh.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2] + "tex.png", true, c);
-            Mesh.Materials[0].GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[2] + "roughness.png", false, c);
-            Mesh.PushShader(new ShaderProgram(c, VertexShader.Load("Shadowed", c), FragmentShader.Load("Shadowed", c)));
+            Mesh.Material.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2] + "tex.png", true, c);
+            Mesh.Material.GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[2] + "roughness.png", false, c);
+            Mesh.RenderInfo.PushShader(new ShaderProgram(c, VertexShader.Load("Shadowed", c), FragmentShader.Load("Shadowed", c)));
 
             if (parts.Length > 3)
             {
@@ -107,41 +110,41 @@ namespace AGRacing
                 v.Add(new BEPUutilities.Vector3(verts[i] * sc, verts[i + 1] * sc, verts[i + 2] * sc));
             }
 
-            collisionMesh = new BEPUphysics.Entities.Prefabs.Sphere(Position, 0.5f, Mass);
+            collisionMesh = new Kokoro2.Engine.Physics.Sphere(Position, 0.5f, Mass);
+            collisionMesh.PositionUpdateMode = PositionUpdateMode.Continuous;
             //collisionMesh = new BEPUphysics.Entities.Prefabs.MobileMesh(v.ToArray(), VertexMesh.GetIndices("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false), BEPUutilities.AffineTransform.Identity, BEPUphysics.CollisionShapes.MobileMeshSolidity.DoubleSided, Mass);
 
-            collisionMesh.PositionUpdateMode = BEPUphysics.PositionUpdating.PositionUpdateMode.Continuous;
             collisionMesh.PositionUpdated += CollisionMesh_PositionUpdated;
 
             collisionMesh.Orientation = Quaternion.FromAxisAngle(Vector3.UnitX, Rotations.X) * Quaternion.FromAxisAngle(Vector3.UnitY, Rotations.Y) * Quaternion.FromAxisAngle(Vector3.UnitZ, Rotations.Z);
             PhysicalFront = Vector3.TransformVector(RealFront, Matrix4.CreateFromQuaternion(collisionMesh.Orientation));
 
 #if DEBUG
-            colVis = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false);
-            colVis.PushShader(new ShaderProgram(c, VertexShader.Load("Shadowed", c), FragmentShader.Load("Shadowed", c)));
-            colVis.AlbedoMap = Mesh.Materials[0].AlbedoMap;
+            colVis = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false, c);
+            colVis.RenderInfo.PushShader(new ShaderProgram(c, VertexShader.Load("Shadowed", c), FragmentShader.Load("Shadowed", c)));
+            colVis.Material.AlbedoMap = Mesh.Material.AlbedoMap;
 #endif
         }
 
         public void PushShader(ShaderProgram s)
         {
-            Mesh.PushShader(s);
+            Mesh.RenderInfo.PushShader(s);
 #if DEBUG
-            colVis.PushShader(s);
+            colVis.RenderInfo.PushShader(s);
 #endif
         }
 
         public ShaderProgram PopShader()
         {
 #if DEBUG
-            colVis.PopShader();
+            colVis.RenderInfo.PopShader();
 #endif
-            return Mesh.PopShader();
+            return Mesh.RenderInfo.PopShader();
         }
 
-        private void CollisionMesh_PositionUpdated(BEPUphysics.Entities.Entity obj)
+        private void CollisionMesh_PositionUpdated(BaseEntity obj)
         {
-            Position = collisionMesh.CollisionInformation.LocalPosition + collisionMesh.Position;
+            Position = collisionMesh.Position;
             Orientation = collisionMesh.Orientation;
             var rot = Matrix4.CreateFromQuaternion(Orientation);
 
@@ -155,7 +158,7 @@ namespace AGRacing
             Vector3 axis;
             float angle;
             ((Quaternion)collisionMesh.Orientation).ToAxisAngle(out axis, out angle);
-            colVis.World = Matrix4.Scale(Scale) * Matrix4.CreateFromAxisAngle(axis, angle) * Matrix4.CreateTranslation(collisionMesh.Position);
+            colVis.RenderInfo.World = Matrix4.Scale(Scale) * Matrix4.CreateFromAxisAngle(axis, angle) * Matrix4.CreateTranslation(collisionMesh.Position);
 #endif
         }
 
@@ -195,14 +198,14 @@ namespace AGRacing
 
         }
 
-        public BEPUphysics.Entities.Entity GetPhysicsEntity()
+        public BaseEntity GetPhysicsEntity()
         {
             return collisionMesh;
         }
 
         public void Draw(GraphicsContext context)
         {
-            Mesh.Draw(context);
+            context.Draw(Mesh);
 
 #if DEBUG
             context.Wireframe = true;
@@ -317,14 +320,14 @@ namespace AGRacing
             BEPUutilities.Vector3 l = loc;
             BEPUutilities.Vector3 a = amnt;
             //collisionMesh.ApplyImpulse(ref l, ref a);
-            collisionMesh.ApplyLinearImpulse(ref a);
+            collisionMesh.ApplyLinearImpulse(a);
         }
 
         public void ChangeVelocity(Vector3 nPos)
         {
 
             BEPUutilities.Vector3 impulse = nPos;
-            collisionMesh.ApplyLinearImpulse(ref impulse);
+            collisionMesh.ApplyLinearImpulse(impulse);
         }
 
         public void Rotate(Vector3 axis, float angle)
@@ -394,9 +397,7 @@ namespace AGRacing
             isGrounded = false;
             controller.Update(this, t);
 
-            collisionMesh.LocalInertiaTensorInverse = new BEPUutilities.Matrix3x3(0, 0, 0,
-                                                                             0, 0, 0,
-                                                                            0, 0, 0);
+            collisionMesh.RotationLock = new Vector3(0, 0, 0);  //Lock rotations on all three axis
 
             float tilt = Vector3.Dot(MovementDirection, PhysicalFront);
             tilt = (float)Math.Acos(tilt);
@@ -408,7 +409,7 @@ namespace AGRacing
             CalcAG(ShipRayLocations.BackRightBottom, t);
             CalcAG(ShipRayLocations.FrontLeftBottom, t);
             CalcAG(ShipRayLocations.FrontRightBottom, t);
-            Mesh.World = Matrix4.Scale(Scale) * Matrix4.CreateFromQuaternion(Orientation) * Matrix4.CreateFromAxisAngle(PhysicalRight, -0.2f + 0.05f * (float)Math.Sin(c) + angle) * Matrix4.CreateFromAxisAngle(PhysicalFront, tilt) * Matrix4.CreateTranslation(Position);
+            Mesh.RenderInfo.World = Matrix4.Scale(Scale) * Matrix4.CreateFromQuaternion(Orientation) * Matrix4.CreateFromAxisAngle(PhysicalRight, -0.2f + 0.05f * (float)Math.Sin(c) + angle) * Matrix4.CreateFromAxisAngle(PhysicalFront, tilt) * Matrix4.CreateTranslation(Position);
             c += 0.05f;
 
             Vector3 flat_v = collisionMesh.LinearVelocity;
@@ -418,7 +419,7 @@ namespace AGRacing
 
             Vector3 anti_slip = -slip * PhysicalRight * 2;
             BEPUutilities.Vector3 b_anti_slip = anti_slip;
-            collisionMesh.ApplyLinearImpulse(ref b_anti_slip);
+            collisionMesh.ApplyLinearImpulse(b_anti_slip);
         }
     }
 }

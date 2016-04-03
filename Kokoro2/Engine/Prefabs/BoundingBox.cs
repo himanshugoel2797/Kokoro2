@@ -16,7 +16,7 @@ namespace Kokoro2.Engine.Prefabs
         /// Create a new OBV object
         /// </summary>
         /// <param name="box">The bounding box as calculated from another Model</param>
-        public OBV(BoundingBox box)
+        public OBV(BoundingBox box, GraphicsContext c) : base(c)
         {
             this.DrawMode = Engine.DrawMode.Lines;
 

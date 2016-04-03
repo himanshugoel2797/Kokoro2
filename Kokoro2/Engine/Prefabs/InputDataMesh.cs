@@ -20,7 +20,7 @@ namespace Kokoro2.Engine.Prefabs
 
         int allocSize;
 
-        public InputDataMesh(int vertCount)
+        public InputDataMesh(int vertCount, GraphicsContext c) : base(c)
         {
             allocSize = vertCount;
         }

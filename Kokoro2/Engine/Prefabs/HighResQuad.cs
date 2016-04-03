@@ -26,8 +26,8 @@ namespace Kokoro2.Engine.Prefabs
         /// <param name="terrainWidth">The width of the quad</param>
         /// <param name="terrainHeight">The heigth of the quad</param>
         /// <param name="tex">The optional texture to be applied to the quad</param>
-        public HighResQuad(float x0, float y0, int terrainWidth, int terrainHeight, Texture tex = null)
-            : base()
+        public HighResQuad(float x0, float y0, int terrainWidth, int terrainHeight, GraphicsContext c)
+            : base(c)
         {
 
             Vector3[] vertices = new Vector3[terrainWidth * terrainHeight];
@@ -79,10 +79,6 @@ namespace Kokoro2.Engine.Prefabs
             SetUVs(uv.ToArray(), 0);
             SetVertices(verts.ToArray(), 0);
             SetNormals(norms.ToArray(), 0);
-
-            Material.AlbedoMap = tex;
-
-
         }
 
     }

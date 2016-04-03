@@ -160,6 +160,7 @@
     <Compile Include="Engine\PhysicsInfo.cs" />
     <Compile Include="Engine\Physics\BaseEntity.cs" />
     <Compile Include="Engine\Physics\MobileMesh.cs" />
+    <Compile Include="Engine\Physics\PositionUpdateMode.cs" />
     <Compile Include="Engine\Physics\Sphere.cs" />
     <Compile Include="Engine\PixelInfo.cs" />
     <Compile Include="Engine\Prefabs\BoundingBox.cs" />

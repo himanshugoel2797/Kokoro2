@@ -48,13 +48,13 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             avgSceneShader = new ShaderProgram(c, VertexShader.Load("FrameBuffer", c), FragmentShader.Load("FrameBuffer", c));
             dLightShader = new ShaderProgram(c, VertexShader.Load("DirectionalLight", c), FragmentShader.Load("DirectionalLight", c));
 
-            outFSQ = new FullScreenQuad();
+            outFSQ = new FullScreenQuad(c);
             outFSQ.RenderInfo.PushShader(outShader);
 
-            pLightPrim = new Sphere(1, 10);
+            pLightPrim = new Sphere(1, 10, c);
             pLightPrim.RenderInfo.PushShader(pLightShader);
 
-            dLightPrim = new FullScreenQuad();
+            dLightPrim = new FullScreenQuad(c);
             dLightPrim.RenderInfo.PushShader(dLightShader);
 
             dlights = new List<DirectionalLight>();
@@ -70,7 +70,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             shadowPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA8, c);
             shadowPass.BlurRadius = 0.0025f * 960 / width;
 
-            avgSceneFSQ = new FullScreenQuad();
+            avgSceneFSQ = new FullScreenQuad(c);
             avgSceneFSQ.RenderInfo.PushShader(avgSceneShader);
             avgSceneColor = new FrameBuffer(1, 1, PixelComponentType.RGBA8, c);
             avgSceneColor.Add("AvgColor", new FrameBufferTexture(1, 1, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);

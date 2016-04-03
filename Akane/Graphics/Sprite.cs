@@ -43,7 +43,7 @@ namespace Akane.Graphics
 
             spriteShader = new ShaderProgram(a.context, new VertexShader(Akane.Shaders.ShaderLibrary.LoadFile("Shaders/Sprite"), a.context), new FragmentShader(Akane.Shaders.ShaderLibrary.LoadFile("Shaders/Sprite"), a.context));
             //spriteQuad = new Quad(0, 0, 10, 10);
-            spriteQuad = new FullScreenQuad();
+            spriteQuad = new FullScreenQuad(a.context);
             Scale = new Vector2(1, 1);
         }
 

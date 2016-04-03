@@ -1,22 +1,10 @@
 # Blender MTL File: 'car1_0.blend'
-# Material Count: 11
+# Material Count: 2
 
-newmtl Material
+newmtl car0_main
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd car1_0_tex.png
-map_Ks car1_0_tex.png
-
-newmtl aerofoil_main
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.032388 0.604077
+Kd 0.400000 0.400000 0.400000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
@@ -24,11 +12,12 @@ d 1.000000
 illum 2
 map_Kd car1_0_tex.png
 map_Ks car1_0_spec.png
+map_Ns car1_0_roughness.png
 
-newmtl body_main_front
+newmtl car0_main_NONE
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
-Kd 0.800000 0.799614 0.061423
+Kd 0.400000 0.400000 0.400000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
@@ -36,95 +25,4 @@ d 1.000000
 illum 2
 map_Kd car1_0_tex.png
 map_Ks car1_0_spec.png
-
-newmtl bottom_main
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.005755 0.005755 0.005755
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd car1_0_tex.png
-map_Ks car1_0_tex.png
-
-newmtl cockpit
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.147773 0.155369 0.640000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd car1_0_tex.png
-map_Ks car1_0_spec.png
-
-newmtl engine_ag_main
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.000000 0.976552 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 0
-map_Kd car1_0_tex.png
-
-newmtl engine_main_source
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.800000 0.000000 0.002543
-Ks 0.799103 0.000000 0.002428
-Ke 1.600000 0.000000 0.005085
-Ni 1.000000
-d 1.000000
-illum 0
-map_Kd car1_0_tex.png
-
-newmtl engine_thrust_cone
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.053445 0.053445 0.053445
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd car1_0_tex.png
-map_Ks car1_0_tex.png
-
-newmtl lights_secondary
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.000000 0.860330 1.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 0
-map_Kd car1_0_tex.png
-
-newmtl turning_lights
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.800000 0.707437 0.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 0
-map_Kd car1_0_tex.png
-
-newmtl weapons_main
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.055524 0.640000 0.000000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd car1_0_tex.png
-map_Ks car1_0_spec.png
+map_Ns car1_0_roughness.png

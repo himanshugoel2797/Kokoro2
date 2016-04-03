@@ -254,28 +254,12 @@ namespace Kokoro2.OpenGL.PC
 
         public ulong ID
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get; set;
         }
 
         public GraphicsContext ParentContext
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get; set;
         }
 
         protected virtual void Dispose(bool disposing)

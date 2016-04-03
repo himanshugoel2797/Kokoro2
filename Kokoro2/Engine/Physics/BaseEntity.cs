@@ -24,6 +24,8 @@ namespace Kokoro2.Engine.Physics
             }
         }
 
+        public PhysicsWorld ParentSpace { get; internal set; }
+
         public float Mass { get { return physEntity.Mass; } set { physEntity.Mass = value; } }
         public Vector3 LinearVelocity { get { return physEntity.LinearVelocity; } set { physEntity.LinearVelocity = value; } }
         public Vector3 LinearMomentum { get { return physEntity.LinearMomentum; } set { physEntity.LinearMomentum = value; } }
@@ -37,6 +39,10 @@ namespace Kokoro2.Engine.Physics
 
         public Vector3 Position { get { return physEntity.Position; } set { physEntity.Position = value; } }
         public Quaternion Orientation { get { return physEntity.Orientation; } set { physEntity.Orientation = value; } }
+
+        public PositionUpdateMode PositionUpdateMode { get { return (PositionUpdateMode)physEntity.PositionUpdateMode; } set { physEntity.PositionUpdateMode = (BEPUphysics.PositionUpdating.PositionUpdateMode)value; } }
+
+        public event Action<BaseEntity> PositionUpdated;
 
         private Vector3 rotLock;
         public Vector3 RotationLock
@@ -58,6 +64,11 @@ namespace Kokoro2.Engine.Physics
         {
             physEntity = e;
             ID = ++id_counter;
+
+            e.PositionUpdated += (a) =>
+            {
+                PositionUpdated?.Invoke(this);
+            };
         }
 
         public void ApplyLinearImpulse(Vector3 val)
@@ -77,6 +88,29 @@ namespace Kokoro2.Engine.Physics
             BEPUutilities.Vector3 loc_ = loc;
             BEPUutilities.Vector3 imp = val;
             physEntity.ApplyImpulse(loc_, imp);
+        }
+
+        public bool RayCast(Vector3 origin, Vector3 direction, out float distance, out Vector3 normal)
+        {
+            ulong[] e;
+            float[] dists;
+            Vector3[] norms;
+
+            bool res = ParentSpace.RayCast(origin, direction, out dists, out norms, out e);
+
+            distance = 0;
+            normal = -direction;
+
+            for (int i = 0; i < e.Length; i++)
+            {
+                if (e[i] == ID)
+                {
+                    distance = dists[i];
+                    normal = norms[i];
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

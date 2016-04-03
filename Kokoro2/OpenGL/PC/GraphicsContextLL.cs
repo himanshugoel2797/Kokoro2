@@ -54,7 +54,7 @@ namespace Kokoro2.OpenGL.PC
             GL.LineWidth(2);
 
 #if DEBUG
-                Console.WriteLine(GL.GetString(StringName.Renderer));
+            Console.WriteLine(GL.GetString(StringName.Renderer));
 #endif
         }
 
@@ -62,7 +62,7 @@ namespace Kokoro2.OpenGL.PC
         {
             //TODO Implement Resize handler
             SetViewport(new Math.Vector4(0, 0, Window.ClientSize.Width, Window.ClientSize.Height));
-            if(Window.ClientSize.Width != 0 && Window.ClientSize.Height != 0)(this as Engine.GraphicsContext)?.WindowResized?.Invoke(this as Engine.GraphicsContext);
+            if (Window.ClientSize.Width != 0 && Window.ClientSize.Height != 0) (this as Engine.GraphicsContext)?.WindowResized?.Invoke(this as Engine.GraphicsContext);
             InitializeMSAA(0);
         }
 
@@ -94,7 +94,7 @@ namespace Kokoro2.OpenGL.PC
             throw new NotImplementedException();
         }
 
-        static void Draw(Engine.DrawMode dm, uint first, uint count, uint baseVertex)
+        protected static void Draw(Engine.DrawMode dm, uint first, uint count, uint baseVertex)
         {
 
             if (transformEnabled)

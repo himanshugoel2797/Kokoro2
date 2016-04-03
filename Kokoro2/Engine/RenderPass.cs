@@ -15,11 +15,12 @@ namespace Kokoro2.Engine
         public ShaderProgram Shader;
         public Texture Diffuse;
 
-        private static FullScreenQuad quad = new FullScreenQuad();
+        private FullScreenQuad quad;
 
         public RenderPass(int width, int height, PixelComponentType pf, GraphicsContext context)
         {
             RenderTarget = new FrameBuffer(width, height, pf, context);
+            quad = new FullScreenQuad(context);
         }
 
         public void Clear(GraphicsContext context, float r, float g, float b, float a)

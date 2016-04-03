@@ -97,6 +97,12 @@ namespace Kokoro2.OpenGL.PC
             GL.BindVertexArray(0);
         }
 
+        public VertexArrayLL(int bufferCount, Kokoro2.Engine.UpdateMode updateMode, Kokoro2.Engine.BufferUse[] bufferUses, int[] elementCount, Engine.GraphicsContext c) :
+            this(bufferCount, 0, updateMode, bufferUses, elementCount, c)
+        {
+
+        }
+
         //Bind the VAO
         public void Bind()
         {

@@ -23,7 +23,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
         public TextureBlurFilter(int width, int height, PixelComponentType pct, GraphicsContext context)
         {
-            fsq = new FullScreenQuad();
+            fsq = new FullScreenQuad(context);
             horizontal = new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("BlurHorizontal", context));
             vertical = new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("BlurVertical", context));
 

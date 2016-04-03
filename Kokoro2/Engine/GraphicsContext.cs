@@ -382,7 +382,10 @@ namespace Kokoro2.Engine
             CurrentShader.Apply(this);
 
             //Bind the geometry
-            //Draw
+            g.Buffer.Bind();
+            GraphicsContextLL.Draw(r.DrawMode, 0, (uint)g.PrimitiveCount, 0);
+            g.Buffer.UnBind();
+
 
             CurrentShader.Cleanup(this);
         }
@@ -424,9 +427,14 @@ namespace Kokoro2.Engine
         public Action<GraphicsContext> Initialize { get; set; }
 
         /// <summary>
-        /// The Resource Manager handler - Use for Async resource loading
+        /// The Resource Manager handler - Use for startup resource loading
         /// </summary>
-        public Action<GraphicsContext> ResourceManager { get; set; }
+        public Action<GraphicsContext> ResourceLoader { get; set; }
+
+        /// <summary>
+        /// The Asynchronous Resource Manager handler - Use to stream/load textures and meshes on a separate thread
+        /// </summary>
+        public Action<GraphicsContext> AsyncResourceLoader { get; set; }
 
         /// <summary>
         /// The Resize event handler - Use to resize anything that depends on the window information
@@ -494,24 +502,27 @@ namespace Kokoro2.Engine
                 });
             });
 
+            OpenTK.GameWindow resourceWindow = null;
             ResourceManagerThread = new Thread(() =>
             {
                 //Create a new GL context and use it to load resources on the side for sharing
-                var resourceWindow = new OpenTK.GameWindow();
                 resourceWindow.MakeCurrent();
                 GameLooper(16, (a, b) =>
                 {
-                    ResourceManager?.Invoke(this);
+                    AsyncResourceLoader?.Invoke(this);
                 });
             });
 
-            bool tmpCtrl = false;
+            bool tmpCtrl = false, prevFrameDone = true;
             RenderThread = new Thread(() =>
             {
                 GameLooper(tpf, (a, b) =>
                 {
+                    while (!prevFrameDone) Thread.Sleep(1);
+                    prevFrameDone = false;
                     ViewportControl.BeginInvoke(new MethodInvoker(() =>
                     {
+                        prevFrameDone = false;
                         if (inited)
                         {
                             if (!tmpCtrl)
@@ -521,12 +532,13 @@ namespace Kokoro2.Engine
                                 tmpCtrl = true;
                             }
 
-                            if (ResourceManager != null) ResourceManager(this);
-                            ResourceManager = null;
+                            ResourceLoader?.Invoke(this);
+                            ResourceLoader = null;
 
                             Window_RenderFrame(0);
                             Render(a, b);
                         }
+                        prevFrameDone = true;
 
                     }));
                 });
@@ -549,10 +561,12 @@ namespace Kokoro2.Engine
             Initialize += tmp;
             Initialize += (GraphicsContext c) =>
             {
-
+                resourceWindow = new OpenTK.GameWindow();
+                resourceWindow.Context.MakeCurrent(null);
+                Window.MakeCurrent();
                 //Spawn threads for each: Update, Physics, Animation, Render
                 UpdateThread.Start();
-                //TODO ResourceManagerThread.Start();
+                ResourceManagerThread.Start();
             };
 
             RenderThread.Start();

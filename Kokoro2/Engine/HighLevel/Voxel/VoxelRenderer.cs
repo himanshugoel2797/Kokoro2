@@ -26,7 +26,7 @@ namespace Kokoro2.Engine.HighLevel.Voxel
         internal List<float> UVs = new List<float>();
         internal List<uint> Indices = new List<uint>();
 
-        public VoxelRenderer(int side, VoxelCollection VoxelInfo)
+        public VoxelRenderer(int side, VoxelCollection VoxelInfo, GraphicsContext c) : base(c)
         {
             allocSize = side * side * side * 56;
             voxelInfo = VoxelInfo;

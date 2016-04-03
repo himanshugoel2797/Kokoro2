@@ -24,7 +24,7 @@ namespace Kokoro2.Engine.HighLevel
         public Vector4 ForeColor;
         public Vector2 Scale;
 
-        public Font(string familyName, float size, Vector4 textColor)
+        public Font(string familyName, float size, Vector4 textColor, GraphicsContext c)
         {
             ForeColor = textColor;
             fontCache = new Dictionary<string, Texture>();
@@ -32,12 +32,12 @@ namespace Kokoro2.Engine.HighLevel
 
             if (box == null)
             {
-                box = new Quad(0, 0, 1, 1);
+                box = new Quad(0, 0, 1, 1, c);
                 //TODO Fix box.Materials[0].Shader = ShaderLib.GBufferShader.Create();
             }
         }
 
-        public Font(string font, float size)
+        public Font(string font, float size, GraphicsContext c)
         {
             ForeColor = Vector4.One;
             fontCache = new Dictionary<string, Texture>();
@@ -48,7 +48,7 @@ namespace Kokoro2.Engine.HighLevel
             fnt = new System.Drawing.Font(fonts.Families[fonts.Families.Length - 1].Name, size);
             if (box == null)
             {
-                box = new Quad(0, 0, 1, 1);
+                box = new Quad(0, 0, 1, 1, c);
                 //TODO Fix box.Materials[0].Shader = ShaderLib.UVOffsetShader.Create();
             }
         }
