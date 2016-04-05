@@ -70,7 +70,7 @@ namespace Kokoro2.Engine
         /// <param name="height">The Height of the FrameBuffer RenderTarget</param>
         /// <param name="pct">The PixelComponentType of the FrameBuffer RenderTarget</param>
         /// <param name="context">The current GraphicsContext</param>
-        public FrameBuffer(int width, int height, PixelComponentType pct, GraphicsContext context)
+        public FrameBuffer(int width, int height, PixelComponentType pct, GraphicsContext context, bool createDepthBuffer = true)
         {
             ParentContext = context;
             ParentContext.Disposing += Dispose;
@@ -85,7 +85,7 @@ namespace Kokoro2.Engine
             base.Generate();
 
             //Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
-            Add("DepthBuffer", new FrameBufferTexture(width, height, PixelFormat.Depth, PixelComponentType.D32, PixelType.Float, context), FrameBufferAttachments.DepthAttachment, context); //Attach the depth buffer to the framebuffer
+            if (createDepthBuffer) Add("DepthBuffer", new FrameBufferTexture(width, height, PixelFormat.Depth, PixelComponentType.D32, PixelType.Float, context), FrameBufferAttachments.DepthAttachment, context); //Attach the depth buffer to the framebuffer
 
             base.CheckError();
 

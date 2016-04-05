@@ -40,33 +40,43 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         private ShaderProgram avgSceneShader;
         private FullScreenQuad avgSceneFSQ;
 
+        private InstanceBuffer giLightInstanceData;
+        private Sphere giLightPrim;
+        private ShaderProgram giShader;
+
         public Texture EnvironmentMap { get; set; }
+        public DirectionalLight GILight { get; set; }   //The light that sources the global illumination data
 
         public LightPass(int width, int height, GraphicsContext c)
         {
             outShader = new ShaderProgram(c, VertexShader.Load("LightShadowBloom", c), FragmentShader.Load("LightShadowBloom", c));
             avgSceneShader = new ShaderProgram(c, VertexShader.Load("FrameBuffer", c), FragmentShader.Load("FrameBuffer", c));
             dLightShader = new ShaderProgram(c, VertexShader.Load("DirectionalLight", c), FragmentShader.Load("DirectionalLight", c));
+            pLightShader = new ShaderProgram(c, VertexShader.Load("PointLight", c), FragmentShader.Load("PointLight", c));
+            giShader = new ShaderProgram(c, VertexShader.Load("RSM", c), FragmentShader.Load("RSM", c));
 
             outFSQ = new FullScreenQuad(c);
             outFSQ.RenderInfo.PushShader(outShader);
 
-            pLightPrim = new Sphere(1, 10, c);
+            pLightPrim = new Sphere(1, 20, c);
             pLightPrim.RenderInfo.PushShader(pLightShader);
 
             dLightPrim = new FullScreenQuad(c);
             dLightPrim.RenderInfo.PushShader(dLightShader);
 
+            giLightPrim = new Sphere(1, 20, c);
+            giLightPrim.RenderInfo.PushShader(giShader);
+
             dlights = new List<DirectionalLight>();
             plights = new List<PointLight>();
             idMap = new Dictionary<int, Tuple<int, int>>();
 
-            lightBuffer = new FrameBuffer(width, height, PixelComponentType.D32, c);
+            lightBuffer = new FrameBuffer(width, height, PixelComponentType.D32, c, false);
             lightBuffer.Add("Lit", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
             lightBuffer.Add("Bloom", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment1, c);
 
             bloomPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA16f, c);
-            bloomPass.BlurRadius = 0.0025f * 960 / width;
+            bloomPass.BlurRadius = 0.0015f * 960 / width;
             shadowPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA8, c);
             shadowPass.BlurRadius = 0.0025f * 960 / width;
 
@@ -117,15 +127,24 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
         public void ApplyLights(GBuffer g, GraphicsContext c)
         {
+            lightBuffer.Add("DepthBuffer", (FrameBufferTexture)g["DepthBuffer"], FrameBufferAttachments.DepthAttachment, c);
             lightBuffer.Bind(c);
+
+            c.DepthWrite = false;
+            c.Blend = true;
+            c.Blending = new BlendFunc()
+            {
+                Src = BlendingFactor.One,
+                Dst = BlendingFactor.One
+            };
+            c.DepthFunction = DepthFunc.Always;
+
             c.ClearColor(0, 0, 0, 0);
-            c.ClearDepth();
 
             dLightShader["colorMap"] = g["Color"];
             dLightShader["normData"] = g["Normal"];
             dLightShader["specularData"] = g["Specular"];
             dLightShader["worldData"] = g["WorldPos"];
-            dLightShader["eyePos"] = c.Camera.Position;
             dLightShader["envMap"] = EnvironmentMap;
 
             //First apply all directional lights
@@ -136,18 +155,58 @@ namespace Kokoro2.Engine.HighLevel.Rendering
                 c.Draw(dLightPrim);
             }
 
-            /*
             var p = c.FaceCulling;
-            c.FaceCulling = CullMode.Front;
+            c.FaceCulling = CullMode.Back;
+            c.DepthFunction = DepthFunc.LEqual;
+
+            //Perform the RSM pass
+            giShader["ShadowMap"] = GILight.GetShadowMap();
+            giShader["sWVP"] = GILight.ShadowSpace;
+            giShader["ReflectiveColMap"] = GILight.GetColors();
+            giShader["ReflectivePosMap"] = GILight.GetPositions();
+            //c.DrawInstanced(giLightPrim, giLightInstanceData, giLightInstanceData.Length / 4);
+
+
+            pLightShader["colorMap"] = g["Color"];
+            pLightShader["normData"] = g["Normal"];
+            pLightShader["specularData"] = g["Specular"];
+            pLightShader["worldData"] = g["WorldPos"];
+            pLightShader["envMap"] = EnvironmentMap;
+
+            List<int> redoVolums = new List<int>(); //Volumes to redo because we're inside them
+
             //Now apply all point lights
             for (int i = 0; i < plights.Count; i++)
             {
-                pLightPrim.World = Matrix4.Scale(plights[i].MaxDistance) * Matrix4.CreateTranslation(plights[i].Position);
-                pLightPrim.Draw(c);
-            }
-            c.FaceCulling = p;
-            */
+                if ((c.Camera.Position - plights[i].Position).LengthSquared <= plights[i].MaxDistance * plights[i].MaxDistance)
+                {
+                    redoVolums.Add(i);
+                    continue;
+                }
+                pLightShader["lColor"] = new Vector4(plights[i].LightColor, plights[i].Attenuation);
+                pLightShader["lPos"] = plights[i].Position;
 
+                pLightPrim.RenderInfo.World = Matrix4.Scale(plights[i].MaxDistance) * Matrix4.CreateTranslation(plights[i].Position);
+                c.Draw(pLightPrim);
+            }
+
+            c.DepthFunction = DepthFunc.GEqual;
+            c.FaceCulling = CullMode.Front;
+
+            for(int i0 = 0; i0 < redoVolums.Count; i0++)
+            {
+                int i = redoVolums[i0];
+                pLightShader["lColor"] = new Vector4(plights[i].LightColor, plights[i].Attenuation);
+                pLightShader["lPos"] = plights[i].Position;
+
+                pLightPrim.RenderInfo.World = Matrix4.Scale(plights[i].MaxDistance) * Matrix4.CreateTranslation(plights[i].Position);
+                c.Draw(pLightPrim);
+            }
+
+            c.DepthFunction = DepthFunc.LEqual;
+            c.Blend = false;
+            c.FaceCulling = p;
+            c.DepthWrite = true;
             lightBuffer.UnBind(c);
 
             avgSceneColor.Bind(c);

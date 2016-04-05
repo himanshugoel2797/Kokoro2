@@ -382,6 +382,7 @@ namespace Kokoro2.Engine
             CurrentShader["EyePos"] = Camera.Position;
             CurrentShader["EyeDir"] = Camera.Direction;
             CurrentShader["Fcoef"] = 2.0f / (float)System.Math.Log(ZFar + 1.0, 2);
+            CurrentShader["ScreenSize"] = WindowSize;
 
             if (r.Material.AlbedoMap != null) CurrentShader["AlbedoMap"] = r.Material.AlbedoMap;
             if (r.Material.GlossinessMap != null) CurrentShader["GlossinessMap"] = r.Material.GlossinessMap;
@@ -404,6 +405,39 @@ namespace Kokoro2.Engine
         public void Draw(Model m)
         {
             Draw(m.RenderInfo, m.GeometryInfo);
+        }
+
+        public void DrawInstanced(RenderInfo r, GeometryInfo g, InstanceBuffer b, int instanceCount)
+        {
+            var CurrentShader = r.Shader;
+            CurrentShader["ZNear"] = ZNear;
+            CurrentShader["ZFar"] = ZFar;
+            CurrentShader["EyePos"] = Camera.Position;
+            CurrentShader["EyeDir"] = Camera.Direction;
+            CurrentShader["Fcoef"] = 2.0f / (float)System.Math.Log(ZFar + 1.0, 2);
+            CurrentShader["ScreenSize"] = WindowSize;
+
+            if (r.Material.AlbedoMap != null) CurrentShader["AlbedoMap"] = r.Material.AlbedoMap;
+            if (r.Material.GlossinessMap != null) CurrentShader["GlossinessMap"] = r.Material.GlossinessMap;
+            if (r.Material.SpecularMap != null) CurrentShader["SpecularMap"] = r.Material.SpecularMap;
+            else if (r.Material.AlbedoMap != null) CurrentShader["SpecularMap"] = r.Material.AlbedoMap;
+            CurrentShader["World"] = r.World;
+            CurrentShader["View"] = View;
+            CurrentShader["Projection"] = Projection;
+            CurrentShader.Apply(this);
+
+            //Bind the geometry
+            g.Buffer.Bind();
+            GraphicsContextLL.DrawInstanced(r.DrawMode, 0, (uint)g.PrimitiveCount, 0, instanceCount);
+            g.Buffer.UnBind();
+
+
+            CurrentShader.Cleanup(this);
+        }
+
+        public void DrawInstanced(Model m, InstanceBuffer b, int instanceCount)
+        {
+            DrawInstanced(m.RenderInfo, m.GeometryInfo, b, instanceCount);
         }
 
         //TODO implement overloads with multiple RenderInfo objects and one GeometryInfo object and vice versa

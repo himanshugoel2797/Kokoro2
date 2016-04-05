@@ -155,6 +155,7 @@
     <Compile Include="Engine\Input\Key.cs" />
     <Compile Include="Engine\Input\Keyboard.cs" />
     <Compile Include="Engine\Input\Mouse.cs" />
+    <Compile Include="Engine\InstanceBuffer.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\Model.cs" />
     <Compile Include="Engine\ObjectAllocTracker.cs" />

@@ -12,7 +12,7 @@ uniform sampler2D specularData;
 uniform sampler2D worldData;
 uniform sampler2D envMap;
 uniform vec3 lDir;
-uniform vec4 lColor;
+uniform vec3 lColor;
 uniform vec3 EyePos;
 float rand(vec4 seed4)
 {
@@ -63,16 +63,18 @@ float kelemen(vec3 l, vec3 v, vec3 h, vec3 n, float nDotL, float nDotV, float vD
 
 vec4 cooktorr(vec3 n, vec3 v, vec3 l, float f0, vec4 spec, vec4 dif)
 {
-    vec3 m = normalize(l + v);
+    vec3 h = normalize(l + v);
     float nDotV = max(0.0, dot(n, v));
     float nDotL = max(0.0, dot(n, l));
-    float vDotH = max(0.0, dot(v, m));
-    float roughness = beckmann_NDF(n, m, spec.a * spec.a);
-    float fresnel = fresnel_schlick(f0, m, v, vDotH);
-    float geometric = kelemen(l, v, m, n, nDotL, nDotV, vDotH);
+    float vDotH = max(0.0, dot(v, h));
+    
+	float roughness = ggx(n, h, spec.a);
+    float fresnel = fresnel_schlick(f0, h, v, vDotH);
+    float geometric = kelemen(l, v, h, n, nDotL, nDotV, vDotH);
+
     float rs = fresnel * roughness * geometric/(3.14159 * nDotV * nDotL);
     rs = max(0.0, rs);
-    return spec * rs + dif * (1 - f0);
+    return spec * rs + dif * nDotL;
 }
 
 
@@ -83,20 +85,20 @@ void main(){
     vec4 dif = texture2D(colorMap, UV);
     vec4 spec = texture2D(specularData, UV);
     vec3 worldCoord = texture2D(worldData, UV).rgb;
-    float f0 = 0.818;
+    const float f0 = 1;
     vec3 l = normalize(-lDir);
     vec3 v = EyePos - worldCoord;
-    v = normalize(v);
+    v = normalize(-v);
     vec3 r = reflect( v, n );
     float m = 2. * sqrt( 
         pow( r.x, 2. ) + 
         pow( r.y, 2. ) + 
         pow( r.z + 1., 2. ) 
     );
+
     vec2 vN = r.xy / m + .5;
-    spec.rgb = texture2D(envMap, vN).rgb;
-    lit = cooktorr(n, v, l, f0, spec, dif);
-    //lit.rgb = v;
+    lit = vec4(lColor.rgb, 1) * cooktorr(n, v, l, f0, spec, dif);
+
 	const vec3 fac = vec3(0.299, 0.587, 0.114);
     float lum = dot(fac, lit.rgb);
     bloom = mix(0.0, 1.0, 1.0 - step(0.8, lum)) * lit;

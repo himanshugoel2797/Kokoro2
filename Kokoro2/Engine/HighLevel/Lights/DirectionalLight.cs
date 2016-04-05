@@ -28,8 +28,8 @@ namespace Kokoro2.Engine.HighLevel.Lights
 
             Vector3 sz = ShadowBoxSize.Max - ShadowBoxSize.Min;
             Vector3 sbL = new Vector3(ShadowBoxLocation.Y, ShadowBoxLocation.X, ShadowBoxLocation.Z);
-            //p = Matrix4.CreateOrthographicOffCenter(ShadowBoxSize.Min.X, ShadowBoxSize.Max.X, ShadowBoxSize.Min.Y, ShadowBoxSize.Max.Y, -ShadowBoxSize.Max.Z, -ShadowBoxSize.Min.Z);
-            p = Matrix4.CreateOrthographic(400, 400, -200, 200);
+            p = Matrix4.CreateOrthographic(sz.Z, sz.X, -sz.Y, sz.Y);
+            //p = Matrix4.CreateOrthographic(-400, -400, -200, 200);
 
             Matrix4 v = Matrix4.LookAt(ShadowBoxLocation + Direction, ShadowBoxLocation, Vector3.UnitX);
             v = Matrix4.LookAt(Vector3.Zero + ShadowBoxLocation, Direction + ShadowBoxLocation, Vector3.UnitX);

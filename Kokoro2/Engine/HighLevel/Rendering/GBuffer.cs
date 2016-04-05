@@ -25,7 +25,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
             //Create the GBuffer texture targets
             buffer.Add("Shadow", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
-            buffer.Add("WorldPos", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.UInt1010102, context), FrameBufferAttachments.ColorAttachment1, context);
+            buffer.Add("WorldPos", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
             buffer.Add("Normal", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment2, context);
             buffer.Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment3, context);
             buffer.Add("Specular", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment4, context);

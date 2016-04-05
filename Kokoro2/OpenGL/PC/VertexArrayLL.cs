@@ -10,8 +10,8 @@ namespace Kokoro2.OpenGL.PC
 {
     public class VertexArrayLL : Engine.IEngineObject
     {
-        GPUBufferLL[] buffers;
-        int[] elementCount;
+        List<GPUBufferLL> buffers;
+        List<int> elementCount;
         Kokoro2.Engine.BufferUse[] bufferUses;
 
         GPUBufferLL ibo;
@@ -33,7 +33,7 @@ namespace Kokoro2.OpenGL.PC
         {
             get
             {
-                return buffers.Length;
+                return buffers.Count;
             }
         }
 
@@ -49,7 +49,7 @@ namespace Kokoro2.OpenGL.PC
 
         public void PostFence()
         {
-            for (int i = 0; i < buffers.Length; i++)
+            for (int i = 0; i < buffers.Count; i++)
             {
                 buffers[i].PostFence();
             }
@@ -60,14 +60,16 @@ namespace Kokoro2.OpenGL.PC
             ParentContext = c;
             ParentContext.Disposing += Dispose;
 
+            if (bufferSize == 0) bufferSize = 1;
+
             //Generate all GPUBuffers
-            buffers = new GPUBufferLL[bufferCount];
+            buffers = new List<GPUBufferLL>(bufferCount);
             for (int i = 0; i < bufferCount; i++)
             {
-                buffers[i] = new GPUBufferLL(updateMode, bufferUses[i], bufferSize * elementCount[i] * 8, c);  //NOTE: bufferSize no longer refers to the number of bytes of data, but the number of elements in total
+                buffers.Add(new GPUBufferLL(updateMode, bufferUses[i], bufferSize * elementCount[i] * 8, c));  //NOTE: bufferSize no longer refers to the number of bytes of data, but the number of elements in total
             }
 
-            this.elementCount = elementCount;
+            this.elementCount = new List<int>(elementCount);
             this.bufferUses = bufferUses;
 
             ID = ParentContext.EngineObjects.RegisterObject(GL.GenVertexArray());
@@ -103,11 +105,27 @@ namespace Kokoro2.OpenGL.PC
 
         }
 
+        public void AddInstanceBuffer(GPUBufferLL buf, int elementCount, int divisor, int stride, int offset, Engine.GraphicsContext c)
+        {
+            int loc = buffers.Count;
+            buffers.Add(buf);
+            this.elementCount.Add(elementCount);
+
+            GL.BindVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
+            GL.EnableVertexAttribArray(loc);
+            buf.Bind();
+            GL.VertexAttribPointer(loc, elementCount, VertexAttribPointerType.Float, false, stride, offset);
+            GL.VertexAttribDivisor(loc, divisor);
+
+            GL.EnableVertexAttribArray(0);
+            GL.BindVertexArray(0);
+        }
+
         //Bind the VAO
         public void Bind()
         {
             GL.BindVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
-            int bufferCount = elementCount.Length;
+            int bufferCount = elementCount.Count;
 
             if (bufferUses[0] == Engine.BufferUse.Index)
             {
@@ -146,7 +164,7 @@ namespace Kokoro2.OpenGL.PC
             if (ID != 0)
             {
                 //Mark all owned GPUBuffers to be erased as well
-                for (int i = 0; i < buffers.Length; i++)
+                for (int i = 0; i < buffers.Count; i++)
                 {
                     buffers[i].Dispose();
                 }
@@ -158,7 +176,7 @@ namespace Kokoro2.OpenGL.PC
 
         public void ResetAll()
         {
-            for (int i = 0; i < buffers.Length; i++)
+            for (int i = 0; i < buffers.Count; i++)
             {
                 buffers[i].FreeAll();
             }

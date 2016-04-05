@@ -16,7 +16,7 @@ uniform sampler2D AlbedoMap;
 uniform sampler2D SpecularMap;
 uniform sampler2D GlossinessMap;
 uniform sampler2DShadow ShadowMap;
-uniform sampler2D ReflectiveNormMap;
+uniform sampler2D ReflectiveColMap;
 uniform sampler2D ReflectivePosMap;
 
 in float flogz;
@@ -41,10 +41,10 @@ void main(){
     vec3 shad = shadowCoord.xyz / shadowCoord.w;
     shad = 0.5 * shad + 0.5;
     //int index = int(rand(16 * vec4(gl_FragCoord.xyy, i))) % 4;
-    vis -= 0.2 * (1.0 - texture(ShadowMap, vec3(shad.xy + poissonDisk[0] * 0.0014, shad.z), 0.001));
-    vis -= 0.2 * (1.0 - texture(ShadowMap, vec3(shad.xy  + poissonDisk[1] * 0.0014, shad.z), 0.001));
-    vis -= 0.2 * (1.0 - texture(ShadowMap, vec3(shad.xy  + poissonDisk[2] * 0.0014, shad.z), 0.001));
-    vis -= 0.2 * (1.0 - texture(ShadowMap, vec3(shad.xy  + poissonDisk[3] * 0.0014, shad.z), 0.001));
+    vis -= 0.2 * (1.0 - texture(ShadowMap, vec3(shad.xy + poissonDisk[0] * 0.0014, shad.z), 0.0001));
+    vis -= 0.2 * (1.0 - texture(ShadowMap, vec3(shad.xy  + poissonDisk[1] * 0.0014, shad.z), 0.0001));
+    vis -= 0.2 * (1.0 - texture(ShadowMap, vec3(shad.xy  + poissonDisk[2] * 0.0014, shad.z), 0.0001));
+    vis -= 0.2 * (1.0 - texture(ShadowMap, vec3(shad.xy  + poissonDisk[3] * 0.0014, shad.z), 0.0001));
 
     vis = mix(vis, 1.0, step(0.5, vis));
 	//vis = step(0.5, vis);

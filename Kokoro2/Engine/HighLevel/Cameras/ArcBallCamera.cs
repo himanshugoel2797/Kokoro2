@@ -20,7 +20,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         {
             get; set;
         } = 100.0f;
-        public Vector3 EyePos { get; set; }
+        public Vector3 TargetPosition { get; set; }
         public bool Pannable { get; set; }
 
         float leftrightRot = MathHelper.PiOver2;
@@ -59,10 +59,10 @@ namespace Kokoro2.Engine.HighLevel.Cameras
             {
                 if (Pannable && Keyboard.IsKeyPressed(Key.LControl))
                 {
-                    Vector3 right = Vector3.Cross(Vector3.Normalize(EyePos), Up);
+                    Vector3 right = Vector3.Cross(Vector3.Normalize(Position), Up);
                     right.Normalize();
-                    if (System.Math.Abs(mousePos.X - Mouse.MousePos.X) > 0) Position -= right * (float)MathHelper.DegreesToRadians(moveSpeed * (mousePos.X - Mouse.MousePos.X) * interval / 10000f);
-                    if (System.Math.Abs(mousePos.Y - Mouse.MousePos.Y) > 0) Position -= Up * (float)MathHelper.DegreesToRadians(moveSpeed * Context.WindowSize.X / Context.WindowSize.Y * (mousePos.Y - Mouse.MousePos.Y) * interval / 10000f);
+                    if (System.Math.Abs(mousePos.X - Mouse.MousePos.X) > 0) TargetPosition -= right * (float)MathHelper.DegreesToRadians(moveSpeed * (mousePos.X - Mouse.MousePos.X) * interval / 10000f);
+                    if (System.Math.Abs(mousePos.Y - Mouse.MousePos.Y) > 0) TargetPosition -= Up * (float)MathHelper.DegreesToRadians(moveSpeed * Context.WindowSize.X / Context.WindowSize.Y * (mousePos.Y - Mouse.MousePos.Y) * interval / 10000f);
 
                 }
                 else {
@@ -78,7 +78,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
             Radius += Mouse.ScrollDelta * (float)System.Math.Sqrt(Radius) * ZoomSpeed;
             if (Pannable && Radius < 0.1f)
             {
-                Position += Vector3.Normalize(EyePos) * Mouse.ScrollDelta;
+                TargetPosition += Vector3.Normalize(Position) * Mouse.ScrollDelta;
             }
             if (Radius < 0.1f) Radius = 0.1f;
 
@@ -94,11 +94,11 @@ namespace Kokoro2.Engine.HighLevel.Cameras
             float cos_LR_ = (float)System.Math.Cos(leftrightRot);
 
 
-            EyePos = new Vector3(Radius * sin_LR * sin_Up, Radius * cos_Up, Radius * cos_LR * sin_Up);
+            Position = new Vector3(Radius * sin_LR * sin_Up, Radius * cos_Up, Radius * cos_LR * sin_Up);
 
             Up = new Vector3(sin_LR_ * sin_Up_, cos_Up_, cos_LR_ * sin_Up_);
 
-            View = Matrix4.LookAt(EyePos + Position, Position, Up);
+            View = Matrix4.LookAt(Position + TargetPosition, TargetPosition, Up);
 
             base.Update(interval, Context);
         }

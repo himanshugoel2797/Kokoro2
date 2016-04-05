@@ -7,6 +7,7 @@ layout(location = 2) in vec2 vertexUV;
 
 out vec3 norm;
 out vec3 pos;
+out vec2 UV;
 
 //Uniforms
 uniform mat4 sWVP;
@@ -20,4 +21,6 @@ void main()
 	gl_Position = sWVP * World * vec4(position, 1);
 	pos = (World * vec4(position, 1)).xyz;
 	norm = (World * vec4(normal, 0)).xyz;
+
+	UV = vertexUV;
 }

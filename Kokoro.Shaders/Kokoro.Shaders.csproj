@@ -47,6 +47,8 @@
     <EmbeddedResource Include="Shadowed\vertex.glsl" />
     <EmbeddedResource Include="LightShadowBloom\fragment.glsl" />
     <EmbeddedResource Include="LightShadowBloom\vertex.glsl" />
+    <EmbeddedResource Include="PointLight\fragment.glsl" />
+    <EmbeddedResource Include="PointLight\vertex.glsl" />
     <None Include="Fur\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -62,6 +64,8 @@
     <EmbeddedResource Include="LoD\vertex.glsl" />
     <EmbeddedResource Include="ShadowMap\fragment.glsl" />
     <EmbeddedResource Include="ShadowMap\vertex.glsl" />
+    <EmbeddedResource Include="RSM\fragment.glsl" />
+    <EmbeddedResource Include="RSM\vertex.glsl" />
     <None Include="Radiosity PassB\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

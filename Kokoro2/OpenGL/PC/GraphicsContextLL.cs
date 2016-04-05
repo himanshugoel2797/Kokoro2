@@ -111,7 +111,36 @@ namespace Kokoro2.OpenGL.PC
             }
 
             //GL.DrawElementsInstancedBaseVertex((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)), 1, (int)baseVertex);
-            GL.DrawElementsBaseVertex((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)), (int)baseVertex);
+            //GL.DrawElementsBaseVertex((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)), (int)baseVertex);
+            GL.DrawElements((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)));
+
+            if (transformEnabled)
+            {
+                GL.EndTransformFeedback();
+                GL.Flush();
+            }
+        }
+
+
+        protected static void DrawInstanced(Engine.DrawMode dm, uint first, uint count, uint baseVertex, int instanceCount)
+        {
+
+            if (transformEnabled)
+            {
+                GL.BeginTransformFeedback(TransformFeedbackPrimitiveType.Triangles);
+            }
+
+            if (dm == Engine.DrawMode.Points)
+            {
+                GL.Enable(EnableCap.PointSprite);
+                //GL.Enable((EnableCap)(int)OpenTK.Graphics.OpenGL.EnableCap.PointSmooth);
+                GL.Enable(EnableCap.ProgramPointSize);
+            }
+
+            //GL.DrawElementsInstancedBaseVertex((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)), 1, (int)baseVertex);
+            //GL.DrawElementsBaseVertex((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)), (int)baseVertex);
+            //GL.DrawElements((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)));
+            GL.DrawElementsInstanced((PrimitiveType)(int)EnumConverters.EDrawMode(dm), (int)count, DrawElementsType.UnsignedInt, (IntPtr)(first * sizeof(uint)), instanceCount);
 
             if (transformEnabled)
             {

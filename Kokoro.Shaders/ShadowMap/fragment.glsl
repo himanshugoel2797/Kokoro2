@@ -2,14 +2,17 @@
 
 in vec3 norm;
 in vec3 pos;
+in vec2 UV;
 
-layout(location = 0) out vec4 normMap;
+layout(location = 0) out vec4 colMap;
 layout(location = 1) out vec4 posMap;
+
+uniform sampler2D AlbedoMap;
 
 void main()
 {
-	normMap.rgb = 0.5 * normalize(norm) + 0.5;
+	colMap.rgb = texture2D(AlbedoMap, UV).rgb;
 	posMap.rgb = pos;
 
-	normMap.a = posMap.a = 1;
+	colMap.a = posMap.a = 1;
 }

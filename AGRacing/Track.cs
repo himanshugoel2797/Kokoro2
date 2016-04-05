@@ -82,13 +82,47 @@ namespace AGRacing
             {
                 lights = new LightPass((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
                 lights.AddLight(sun);
+                {
+                    Random rng = new Random();
+                    for (int i = 0; i < 500; i++)
+                    {
+                        float x = rng.Next(0, 15) / 15f;
+                        float y = rng.Next(0, 25) / 25f;
+                        float z = rng.Next(0, 5) / 5f;
+
+                        var pLight = new PointLight(context);
+                        pLight.LightColor = new Vector3(x, y, z);
+                        pLight.Attenuation = 0.01f;
+                        pLight.Position = new Vector3(rng.Next(-200, 200), rng.Next(-100, 100), rng.Next(-200, 200));
+                        lights.AddLight(pLight);
+                        lights.GILight = sun;
+                    }
+                }
+
                 lights.EnvironmentMap = new Texture("Resources/Proc/Tex/envMap.jpg", true, con);
                 gbuf = new GBuffer((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
             };
 
             lights = new LightPass((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
             lights.AddLight(sun);
+            lights.GILight = sun;
             lights.EnvironmentMap = new Texture("Resources/Proc/Tex/envMap.jpg", true, context);
+
+            {
+                Random rng = new Random();
+                for (int i = 0; i < 500; i++)
+                {
+                    float x = rng.Next(0, 15) / 15f;
+                    float y = rng.Next(0, 25) / 25f;
+                    float z = rng.Next(0, 5) / 5f;
+
+                    var pLight = new PointLight(context);
+                    pLight.LightColor = new Vector3(x, y, z);
+                    pLight.Attenuation = 0.01f;
+                    pLight.Position = new Vector3(rng.Next(-200, 200), rng.Next(-100, 100), rng.Next(-200, 200));
+                    lights.AddLight(pLight);
+                }
+            }
 
             gbuf = new GBuffer((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
             fsq = new FullScreenQuad(context);
@@ -195,7 +229,7 @@ namespace AGRacing
             context.ClearDepth();
             trackModel.Shader["ShadowMap"] = sun.GetShadowMap();
             trackModel.Shader["sWVP"] = sun.ShadowSpace;
-            trackModel.Shader["ReflectiveNormMap"] = sun.GetNormals();
+            trackModel.Shader["ReflectiveColMap"] = sun.GetColors();
             trackModel.Shader["ReflectivePosMap"] = sun.GetPositions();
             context.Draw(trackModel);
 
@@ -205,7 +239,7 @@ namespace AGRacing
                 {
                     ships[i].Shader["ShadowMap"] = sun.GetShadowMap();
                     ships[i].Shader["sWVP"] = sun.ShadowSpace;
-                    ships[i].Shader["ReflectiveNormMap"] = sun.GetNormals();
+                    ships[i].Shader["ReflectiveColMap"] = sun.GetColors();
                     ships[i].Shader["ReflectivePosMap"] = sun.GetPositions();
                     ships[i].Draw(context);
                 }
@@ -216,7 +250,7 @@ namespace AGRacing
 
 #if DEBUG
             context.Wireframe = true;
-            context.Draw(collisionVis);
+            //context.Draw(collisionVis);
             context.Wireframe = false;
 #endif
         }
