@@ -30,12 +30,12 @@ namespace Kokoro2.OpenGL.PC
 
         protected void Bind()
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, ParentContext.EngineObjects[ID, this.GetType()]);
+            BindingManager.BindFramebuffer(ParentContext.EngineObjects[ID, this.GetType()]);
         }
 
         protected void Unbind()
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            BindingManager.UnbindFramebuffer();
         }
 
         protected void DrawBuffers(Kokoro2.Engine.FrameBufferAttachments[] attachments)
@@ -68,6 +68,12 @@ namespace Kokoro2.OpenGL.PC
             GL.DeleteFramebuffer(ParentContext.EngineObjects[ID, this.GetType()]);
             ParentContext.EngineObjects.UnregisterObject(ID);
             ID = 0;
+        }
+
+        protected void BindTexture(Engine.FrameBufferAttachments texUnit, Engine.Texture t)
+        {
+            FramebufferAttachment attach = EnumConverters.EFrameBufferAttachment(texUnit);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attach, TextureTarget.Texture2D, ParentContext.EngineObjects[t.ID, t.GetType()], 0);
         }
 
         protected void CheckError()

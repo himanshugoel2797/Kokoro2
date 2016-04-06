@@ -14,8 +14,14 @@ namespace Kokoro2.OpenGL.PC
 {
     public class TextureLL : Engine.IEngineObject
     {
-        protected int width;
-        protected int height;
+        internal TextureTarget texTarget;
+        internal OpenTK.Graphics.OpenGL4.PixelFormat format;
+
+        public int Width { get; internal set; }
+        public int Height { get; internal set; }
+        public int Depth { get; internal set; }
+        public int LevelCount { get; internal set; }
+
 
         public ulong ID
         {
@@ -29,6 +35,7 @@ namespace Kokoro2.OpenGL.PC
 
         protected void SetFilterMode(Engine.TextureFilter filter)
         {
+            BindTexture(0);
             if (filter == Engine.TextureFilter.Linear)
             {
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
@@ -39,103 +46,48 @@ namespace Kokoro2.OpenGL.PC
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
                 GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             }
+            UnBindTexture(0);
         }
 
-        protected void Create(int src, int layer, Engine.PixelComponentType pfI)
+        protected void SetData(Engine.ITextureSource src)
         {
-            int id = GL.GenTexture();
-            GL.TextureView(id, TextureTarget.Texture2D, src, EnumConverters.EPixelComponentType(pfI), 0, 0, layer, 1);
-            ID = ParentContext.EngineObjects.RegisterObject(id);
-        }
+            ID = ParentContext.EngineObjects.RegisterObject(GL.GenTexture());
 
-        protected void Create(int width, int height, Kokoro2.Engine.PixelComponentType pfI, Kokoro2.Engine.PixelFormat pf, Kokoro2.Engine.PixelType type, bool multisample = false, int sampleCount = 1)
-        {
-            this.width = width;
-            this.height = height;
-
-            int id = GL.GenTexture();
-
-            GL.BindTexture(TextureTarget.Texture2D, id);
-
-            if (!multisample)
+            BindingManager.BindTexture(0, EnumConverters.ETextureTarget(src.GetTextureTarget()), ParentContext.EngineObjects[ID, this.GetType()]);
+            switch (src.GetDimensions())
             {
-                //if (pfI != Engine.PixelComponentType.D32S8 && pfI != Engine.PixelComponentType.D32 && pfI != Engine.PixelComponentType.D24S8)
-                //{
-                //    GL.TexStorage2D(TextureTarget2d.Texture2D, 1, (SizedInternalFormat)EnumConverters.EPixelComponentType(pfI), width, height);
-                //    GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, EnumConverters.EPixelFormat(pf), EnumConverters.EPixelType(type), (IntPtr)0);
-                //}else
-                {
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, EnumConverters.EPixelComponentType(pfI), width, height, 0, EnumConverters.EPixelFormat(pf), EnumConverters.EPixelType(type), (IntPtr)0);
-                }
-            }
-            else
-            {
-                GL.TexStorage2DMultisample(TextureTargetMultisample2d.Texture2DMultisample, sampleCount, (SizedInternalFormat)EnumConverters.EPixelComponentType(pfI), width, height, false);
+                case 1:
+                    GL.TexImage1D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), src.GetPixelData());
+                    break;
+                case 2:
+                    GL.TexImage2D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), src.GetPixelData());
+                    break;
+                case 3:
+                    GL.TexImage3D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), src.GetDepth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), src.GetPixelData());
+                    break;
             }
 
-            // We haven't uploaded mipmaps, so disable mipmapping (otherwise the texture will not appear).
-            // On newer video cards, we can use GL.GenerateMipmaps() or GL.Ext.GenerateMipmaps() to create
-            // mipmaps automatically. In that case, use TextureMinFilter.LinearMipmapLinear to enable them.
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            //GL.GenerateMipmap((GenerateMipmapTarget)EnumConverters.ETextureTarget(src.GetTextureTarget()));
+            BindingManager.UnbindTexture(0, EnumConverters.ETextureTarget(src.GetTextureTarget()));
 
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            this.Width = src.GetWidth();
+            this.Height = src.GetHeight();
+            this.Depth = src.GetDepth();
+            this.LevelCount = src.GetLevels();
 
-            ID = ParentContext.EngineObjects.RegisterObject(id);
-        }
-
-        protected void Create(Image img, bool srgb)
-        {
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, id);
-
-            Bitmap bmp = new Bitmap(img);
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-            this.width = bmp.Width;
-            this.height = bmp.Height;
-
-            BitmapData bmp_data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            /*GL.TexStorage2D(TextureTarget2d.Texture2D, 1, SizedInternalFormat.Rgba8, bmp_data.Width, bmp_data.Height);
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, bmp_data.Width, bmp_data.Height, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-            */
-            GL.TexImage2D(TextureTarget.Texture2D, 0, srgb ? PixelInternalFormat.Srgb8Alpha8 : PixelInternalFormat.Rgba8, width, height, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
-
-            bmp.UnlockBits(bmp_data);
-            bmp.Dispose();
-
-            // We haven't uploaded mipmaps, so disable mipmapping (otherwise the texture will not appear).
-            // On newer video cards, we can use GL.GenerateMipmaps() or GL.Ext.GenerateMipmaps() to create
-            // mipmaps automatically. In that case, use TextureMinFilter.LinearMipmapLinear to enable them.
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            ID = ParentContext.EngineObjects.RegisterObject(id);
-        }
-
-        protected void Create(string filename, bool srgb)
-        {
-            Bitmap bmp = new Bitmap(filename);
-            Create(bmp, srgb);
-            bmp.Dispose();
+            this.format = EnumConverters.EPixelFormat(src.GetFormat());
+            this.internalformat = EnumConverters.EPixelComponentType(src.GetInternalFormat());
+            this.texTarget = EnumConverters.ETextureTarget(src.GetTextureTarget());
         }
 
         protected void BindTexture(int texUnit)
         {
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            GL.BindTexture(TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
+            BindingManager.BindTexture(texUnit, TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
         }
 
         protected static void UnBindTexture(int texUnit)
         {
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
+            BindingManager.UnbindTexture(texUnit, TextureTarget.Texture2D);
         }
 
         protected void Delete()
@@ -150,18 +102,14 @@ namespace Kokoro2.OpenGL.PC
 
         protected void SetCompare(bool a)
         {
+            BindTexture(0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)(a ? TextureCompareMode.CompareRefToTexture : TextureCompareMode.None));
-        }
-
-        protected void BindToFBuffer(Engine.FrameBufferAttachments texUnit)
-        {
-            FramebufferAttachment attach = EnumConverters.EFrameBufferAttachment(texUnit);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attach, TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()], 0);
+            UnBindTexture(0);
         }
 
         protected Bitmap FetchTextureData()
         {
-            GL.BindTexture(TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
+            BindTexture(0);
             int width, height;
             GL.GetTexLevelParameter(TextureTarget.Texture2D, 0, GetTextureParameter.TextureWidth, out width);
             GL.GetTexLevelParameter(TextureTarget.Texture2D, 0, GetTextureParameter.TextureHeight, out height);
@@ -170,7 +118,7 @@ namespace Kokoro2.OpenGL.PC
             GL.GetTexImage(TextureTarget.Texture2D, 0, OpenTK.Graphics.OpenGL4.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
             bmp.UnlockBits(data);
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
+            UnBindTexture(0);
             return bmp;
         }
 
@@ -182,18 +130,21 @@ namespace Kokoro2.OpenGL.PC
 
         protected void SetWrapX(bool mode)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
+            BindTexture(0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
+            UnBindTexture(0);
         }
 
         protected void SetWrapY(bool mode)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
+            BindTexture(0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
+            UnBindTexture(0);
         }
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
+        private PixelInternalFormat internalformat;
 
         protected virtual void Dispose(bool disposing)
         {

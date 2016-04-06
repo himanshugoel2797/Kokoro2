@@ -69,14 +69,17 @@ namespace Akane.Graphics
             Size = new Vector2(img.Width, img.Height);
 
             if (buffer == null)
-                buffer = new FrameBuffer(512, 512, PixelComponentType.RGBA8, manager.context);
-
+            {
+                buffer = new FrameBuffer(512, 512, manager.context);
+                buffer.Add("DepthBuffer", DepthTextureSource.Create(512, 512, PixelComponentType.D32, manager.context), FrameBufferAttachments.DepthAttachment, manager.context);
+                buffer.Add("Color", FramebufferTextureSource.Create(512, 512, 0, PixelComponentType.RGBA8, PixelType.Float, manager.context), FrameBufferAttachments.ColorAttachment0, manager.context);
+            }
             //buffer.Bind(manager.context);
 
             //Draw sprite
             spriteQuad.RenderInfo.World = Matrix4.Scale(manager.AspectRatio * 2 * Scale.X, Scale.Y, 1) * Matrix4.CreateTranslation(Position.X * manager.AspectRatio * 2 * 0.25f, -Position.Y * 0.25f, 0);
 
-            spriteShader["TexSize"] = spriteImg.Size;
+            spriteShader["TexSize"] = new Vector2(spriteImg.Width, spriteImg.Height);
             spriteShader["TexPos"] = new Vector2(img.X, img.Y);
             spriteShader["SpriteSize"] = Size;
             spriteShader["AlbedoMap"] = spriteImg;
@@ -128,7 +131,7 @@ namespace Akane.Graphics
                             case "TextureAtlas":
                                 string tmpImg = doc["imagePath"];
                                 if (!Path.IsPathRooted(tmpImg)) tmpImg = Path.Combine(Path.GetDirectoryName(spritePath), tmpImg);
-                                spriteImg = new Texture(tmpImg, true, a.context);
+                                spriteImg = ImageTextureSource.Create(tmpImg, 0, true, a.context);
                                 break;
                             case "sprite":
                                 Frames[doc["n"]] = new FrameData()

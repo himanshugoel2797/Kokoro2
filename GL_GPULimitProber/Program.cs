@@ -15,7 +15,7 @@ namespace GL_GPULimitProber
         static void Main(string[] args)
         {
             results = new Dictionary<string, string>();
-            GameWindow win = new GameWindow();
+            GameWindow win = new GameWindow(100, 100, OpenTK.Graphics.GraphicsMode.Default, "Title", GameWindowFlags.Default, DisplayDevice.Default, 4, 5, OpenTK.Graphics.GraphicsContextFlags.Debug);
             win.UpdateFrame += win_UpdateFrame;
             win.Run();
             foreach(KeyValuePair<string,string> s in results)
@@ -117,7 +117,7 @@ namespace GL_GPULimitProber
                 Fetch(GetPName.MaxVertexUniformComponents);
                 Fetch(GetPName.MaxVertexUniformVectors);
                 Fetch(GetPName.MaxVertexVaryingComponents);
-                Fetch(GetPName.MaxViewportDims);
+                //Fetch(GetPName.MaxViewportDims);
                 Fetch(GetPName.MaxViewports);
 
                 ((GameWindow)sender).Exit();

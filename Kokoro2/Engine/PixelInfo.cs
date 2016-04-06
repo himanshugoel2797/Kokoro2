@@ -18,7 +18,7 @@ namespace Kokoro2.Engine
 
     public enum PixelType
     {
-        UByte332, UInt1010102, UInt248, UInt8888, UShort4444, UShort5551, Float, HalfFloat
+        UByte332, UInt1010102, UInt248, UInt8888, UShort4444, UShort5551, Float, HalfFloat, UnsignedByte
     }
 
     public enum DepthFunc
@@ -66,5 +66,19 @@ namespace Kokoro2.Engine
         /// A sound source
         /// </summary>
         SoundSource
+    }
+
+    public enum TextureTarget
+    {
+        Texture2D = 1,
+        TextureCubeMap,
+        TextureBuffer,
+        TextureCubeMapNegativeX,
+        TextureCubeMapPositiveX,
+        TextureCubeMapNegativeY,
+        TextureCubeMapPositiveY,
+        TextureCubeMapNegativeZ,
+        TextureCubeMapPositiveZ,
+
     }
 }

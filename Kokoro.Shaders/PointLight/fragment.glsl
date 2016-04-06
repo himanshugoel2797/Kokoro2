@@ -29,7 +29,7 @@ void main(){
     v = normalize(-v);
 
 	float dist = distance(worldCoord, lPos.xyz);
-	dist += 0.001f;
+	//dist += 0.001f;
 
     
 	
@@ -39,13 +39,13 @@ void main(){
     vec4 spec = texture2D(specularData, uv_coord);
     const float f0 = 1;
 
-	float attenuation = max(0, dot(n, l)) / (lColor.a * dist * dist);
+	float attenuation = max(0, dot(n, l)) / (lColor.a * (dist + 1) * (dist + 1));
 	lit = attenuation * vec4(lColor.rgb, 1);
 
 	const vec3 fac = vec3(0.299, 0.587, 0.114);
     float lum = dot(fac, lit.rgb);
     bloom = mix(0.0, 1.0, 1.0 - step(0.8, lum)) * lit;
-
+	bloom = vec4(0);
     gl_FragDepth = Fcoef * 0.5 * log2(flogz);
 }
 

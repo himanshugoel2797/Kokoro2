@@ -47,10 +47,10 @@ namespace Kokoro2.OpenGL.PC
             if (updateMode == UpdateMode.Dynamic)
             {
                 //Setup persistent mapping if this is a dynamic buffer
-                GL.BindBuffer(target, staticID);
+                Bind();
                 GL.BufferStorage(target, (IntPtr)(memSize), IntPtr.Zero, flags);
                 mappedPtr = GL.MapBuffer(target, BufferAccess.WriteOnly);
-                GL.BindBuffer(target, 0);
+                UnBind();
             }
         }
 
@@ -61,12 +61,12 @@ namespace Kokoro2.OpenGL.PC
 
         public void Bind(BufferTarget target)
         {
-            GL.BindBuffer(target, ParentContext.EngineObjects[ID, this.GetType()]);
+            BindingManager.BindBuffer(target, ParentContext.EngineObjects[ID, this.GetType()]);
         }
 
         public void UnBind()
         {
-            GL.BindBuffer(target, 0);
+            BindingManager.UnbindBuffer(target);
         }
 
         public void BindForTransformFeedback(int bindingIndex)
@@ -179,10 +179,10 @@ namespace Kokoro2.OpenGL.PC
             else if (updateMode == UpdateMode.Static)
             {
                 #region Buffer Data
-                GL.BindBuffer(target, ParentContext.EngineObjects[ID, this.GetType()]);
+                Bind();
                 if (offset == 0) GL.BufferData(target, (IntPtr)((length == -1) ? data.Length : length), data, BufferUsageHint.StaticDraw);
                 else GL.BufferSubData(target, (IntPtr)(offset), (IntPtr)((length == -1) ? data.Length : length), data);
-                GL.BindBuffer(target, 0);
+                UnBind();
                 #endregion
             }
         }
@@ -208,10 +208,10 @@ namespace Kokoro2.OpenGL.PC
             else if (updateMode == UpdateMode.Static)
             {
                 #region Buffer Data
-                GL.BindBuffer(target, ParentContext.EngineObjects[ID, this.GetType()]);
+                Bind();
                 if (offset == 0) GL.BufferData(target, (IntPtr)((length == -1) ? Marshal.SizeOf(data) : length), getBytes(data), BufferUsageHint.StaticDraw);
                 else GL.BufferSubData(target, (IntPtr)(offset), (IntPtr)((length == -1) ? Marshal.SizeOf(data) : length), getBytes(data));
-                GL.BindBuffer(target, 0);
+                UnBind();
                 #endregion
             }
         }
@@ -277,9 +277,9 @@ namespace Kokoro2.OpenGL.PC
                         //GL.UnmapBuffer(BufferTarget.ArrayBuffer);
                         GL.DeleteBuffer(ParentContext.EngineObjects[ID, this.GetType()]);
                     }
-                    GL.DeleteSync(syncObj);
                 }
 
+                GL.DeleteSync(syncObj);
                 // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
                 // TODO: set large fields to null.
 

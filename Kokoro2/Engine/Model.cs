@@ -42,7 +42,7 @@ namespace Kokoro2.Engine
         public RenderInfo RenderInfo;
         public GeometryInfo GeometryInfo;
 
-        private VertexArrayLL Buffer { get { return GeometryInfo.Buffer; } set { GeometryInfo.Buffer = value; } }
+        protected VertexArrayLL Buffer { get { return GeometryInfo.Buffer; } set { GeometryInfo.Buffer = value; } }
 
 
         protected void SetUVs(float[] uvs, int index)

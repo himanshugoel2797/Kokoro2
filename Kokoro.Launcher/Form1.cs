@@ -30,6 +30,7 @@ namespace Kokoro.Launcher
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             context.Stop();
+            context.Dispose();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)

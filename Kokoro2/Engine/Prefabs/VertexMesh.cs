@@ -93,6 +93,7 @@ namespace Kokoro2.Engine.Prefabs
 
             animatedMesh = animated;
 
+            Buffer.Bind();
             for (int i = 0; i < tmp.Mesh.Length; i++)
             {
                 SetIndices(tmp.Mesh[i].indices, i);
@@ -102,6 +103,7 @@ namespace Kokoro2.Engine.Prefabs
 
                 if (tmp.Mesh[i].isLine) DrawMode = DrawMode.Lines;
             }
+            Buffer.UnBind();
 
             Bound = new BoundingBox()
             {

@@ -67,6 +67,7 @@ namespace Kokoro2.OpenGL.PC
         #region Buffer object state
         public static void BindBuffer(BufferTarget target, int id)
         {
+            if (vertexArrays.Count == 0 || vertexArrays.Peek() == 0) throw new Exception("Cannot bind buffer without a Vertex Array bound");
             if (target == BufferTarget.TransformFeedbackBuffer) throw new Exception("Incorrect Function Called, Use Overload for TransformFeedbackBuffers");
             if (boundBuffers[target][0].Count == 0) boundBuffers[target][0].Push(0);
 
@@ -84,6 +85,7 @@ namespace Kokoro2.OpenGL.PC
         #region Uniform buffer object state
         public static void BindBuffer(BufferTarget target, int id, int index, IntPtr off, IntPtr size)
         {
+            if (vertexArrays.Count == 0 || vertexArrays.Peek() == 0) throw new Exception("Cannot bind buffer without a Vertex Array bound");
             if (target != BufferTarget.TransformFeedbackBuffer && target != BufferTarget.UniformBuffer) throw new Exception("Incorrect Function Called, Use other Overload");
             if (boundBuffers[target][index].Count == 0) boundBuffers[target][index].Push(0);
 
@@ -101,6 +103,7 @@ namespace Kokoro2.OpenGL.PC
         #region Texture state
         public static void BindTexture(int index, TextureTarget target, int id)
         {
+            
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             if (boundTextures[index][target].Count == 0) boundTextures[index][target].Push(0);
 
@@ -145,18 +148,6 @@ namespace Kokoro2.OpenGL.PC
             BindFramebuffer(0);
             //framebuffers.Pop();
             //BindFramebuffer(framebuffers.Pop());
-        }
-        #endregion
-
-        #region Viewport State
-        static Vector4 viewport;
-        public static void SetViewport(int x, int y, int width, int height)
-        {
-            viewport.X = x;
-            viewport.Y = y;
-            viewport.Z = width;
-            viewport.W = height;
-            GL.Viewport(x, y, width, height);
         }
         #endregion
     }

@@ -41,7 +41,7 @@ namespace AGRacing.Test.TrackLoadTest
 
                 sp = new Sphere(10, 10, context);
                 sp.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("Default", context), FragmentShader.Load("Default", context)));
-                sp.Material.AlbedoMap = new Texture("Resources/Proc/Tex/track_tex.png", false, context);
+                sp.Material.AlbedoMap = ImageTextureSource.Create("Resources/Proc/Tex/track_tex.png", 0, true, context);
                 sp.RenderInfo.World = Matrix4.CreateTranslation(Vector3.UnitY * -0.75f + Vector3.UnitX * -0.25f);
 
                 context.DepthWrite = true;
@@ -54,7 +54,7 @@ namespace AGRacing.Test.TrackLoadTest
                 //(context.Camera as ArcBallCamera).Pannable = true;
                 //context.Wireframe = true;
 
-                
+
 
                 ResourcesLoaded = true;
             }

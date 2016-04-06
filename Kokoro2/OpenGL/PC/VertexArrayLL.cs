@@ -11,10 +11,8 @@ namespace Kokoro2.OpenGL.PC
     public class VertexArrayLL : Engine.IEngineObject
     {
         List<GPUBufferLL> buffers;
-        List<int> elementCount;
+        List<int> elementCount, divisor, stride, offset;
         Kokoro2.Engine.BufferUse[] bufferUses;
-
-        GPUBufferLL ibo;
 
         /// <summary>
         /// Allows access of the underlying GPU buffers
@@ -60,6 +58,9 @@ namespace Kokoro2.OpenGL.PC
             ParentContext = c;
             ParentContext.Disposing += Dispose;
 
+            ID = ParentContext.EngineObjects.RegisterObject(GL.GenVertexArray());
+            BindingManager.BindVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
+
             if (bufferSize == 0) bufferSize = 1;
 
             //Generate all GPUBuffers
@@ -70,33 +71,19 @@ namespace Kokoro2.OpenGL.PC
             }
 
             this.elementCount = new List<int>(elementCount);
+            this.divisor = new List<int>();
+            this.offset = new List<int>();
+            this.stride = new List<int>();
             this.bufferUses = bufferUses;
-
-            ID = ParentContext.EngineObjects.RegisterObject(GL.GenVertexArray());
-            GL.BindVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
-
-            if (bufferUses[0] == Engine.BufferUse.Index)
-            {
-                ibo = buffers[0];
-                ibo.Bind();
-                bufferCount--;
-            }
 
             for (int j = 0; j < bufferCount; j++)
             {
-                int i = j;
-                if (bufferUses[0] == Engine.BufferUse.Index)
-                {
-                    i = j + 1;
-                }
-                GL.EnableVertexAttribArray(j);
-                buffers[i].Bind();
-                GL.VertexAttribPointer(j, elementCount[i], VertexAttribPointerType.Float, false, 0, 0);
-                GL.VertexAttribDivisor(j, 0);
-
+                divisor.Add(0);
+                offset.Add(0);
+                stride.Add(0);
             }
             GL.EnableVertexAttribArray(0);
-            GL.BindVertexArray(0);
+            BindingManager.UnbindVertexArray();
         }
 
         public VertexArrayLL(int bufferCount, Kokoro2.Engine.UpdateMode updateMode, Kokoro2.Engine.BufferUse[] bufferUses, int[] elementCount, Engine.GraphicsContext c) :
@@ -111,52 +98,54 @@ namespace Kokoro2.OpenGL.PC
             buffers.Add(buf);
             this.elementCount.Add(elementCount);
 
-            GL.BindVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
+            Bind();
             GL.EnableVertexAttribArray(loc);
             buf.Bind();
             GL.VertexAttribPointer(loc, elementCount, VertexAttribPointerType.Float, false, stride, offset);
             GL.VertexAttribDivisor(loc, divisor);
 
+            this.divisor.Add(divisor);
+            this.stride.Add(stride);
+            this.offset.Add(offset);
+
             GL.EnableVertexAttribArray(0);
-            GL.BindVertexArray(0);
+            UnBind();
         }
 
         //Bind the VAO
         public void Bind()
         {
-            GL.BindVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
+            BindingManager.BindVertexArray(ParentContext.EngineObjects[ID, this.GetType()]);
             int bufferCount = elementCount.Count;
 
-            if (bufferUses[0] == Engine.BufferUse.Index)
+            int j = 0;
+            for (int i = 0; i < elementCount.Count; i++)
             {
-                ibo = buffers[0];
-                ibo.Bind();
-                bufferCount--;
-            }
-
-            for (int j = 0; j < bufferCount; j++)
-            {
-                int i = j;
-                if (bufferUses[0] == Engine.BufferUse.Index)
+                if (bufferUses[i] == Engine.BufferUse.Index)
                 {
-                    i++;
+                    buffers[i].Bind();
+                    continue;
                 }
-                GL.EnableVertexAttribArray(j);
-                buffers[i].Bind();
-                GL.VertexAttribPointer(j, elementCount[i], VertexAttribPointerType.Float, false, 0, 0);
-                GL.VertexAttribDivisor(j, 0);
+                else {
 
+                    GL.EnableVertexAttribArray(j);
+                    buffers[i].Bind();
+                    GL.VertexAttribPointer(j, elementCount[i], VertexAttribPointerType.Float, false, stride[i], offset[i]);
+                    GL.VertexAttribDivisor(j, divisor[i]);
+                    j++;
+                }
             }
-
-            if (ibo != null) ibo.Bind();
-
         }
 
         //Unbind the VAO
         public void UnBind()
         {
-            GL.BindVertexArray(0);
-            if (ibo != null) ibo.UnBind();
+            for (int j = 0; j < elementCount.Count; j++)
+            {
+                buffers[j].UnBind();
+            }
+
+            BindingManager.UnbindVertexArray();
         }
 
         public void Dispose()

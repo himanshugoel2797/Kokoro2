@@ -34,25 +34,16 @@ namespace Kokoro2.Engine
     /// </summary>
     public class Texture : TextureLL, IDisposable
     {
-        private static readonly object locker = new object();
-        private string file;
-        bool srgba;
 
         private static Dictionary<string, ulong> loadedImages = new Dictionary<string, ulong>();
         private static Dictionary<string, int> refCounts = new Dictionary<string, int>();
-
-        public Vector2 Size
-        {
-            get
-            {
-                return new Vector2(base.width, base.height);
-            }
-        }
+        static bool loaded = false;
 
         public TextureFilter FilterMode
         {
             set
             {
+                if (!loaded) throw new InvalidOperationException();
                 SetFilterMode(value);
             }
         }
@@ -61,6 +52,7 @@ namespace Kokoro2.Engine
         {
             set
             {
+                if (!loaded) throw new InvalidOperationException();
                 SetCompare(value);
             }
         }
@@ -69,6 +61,7 @@ namespace Kokoro2.Engine
         {
             set
             {
+                if (!loaded) throw new InvalidOperationException();
                 SetWrapX(value);
             }
         }
@@ -77,65 +70,28 @@ namespace Kokoro2.Engine
         {
             set
             {
+                if (!loaded) throw new InvalidOperationException();
                 SetWrapY(value);
             }
         }
 
-        public Texture(int width, int height, PixelFormat pf, PixelComponentType pct, PixelType pixelType, GraphicsContext c)
+
+        public Texture(GraphicsContext c)
         {
             ParentContext = c;
-            c.Disposing += Dispose;
-            lock (locker)
-            {
-                base.Create(width, height, pct, pf, pixelType);
-                ObjectAllocTracker.NewCreated(this, " { " + pf.ToString() + ", " + pct.ToString() + ", " + pixelType.ToString() + "}");
-            }
-        }
-        public Texture(string filename, bool srgba, GraphicsContext c)
-        {
-            ParentContext = c;
-            c.Disposing += Dispose;
-            file = filename;
-            //TODO make this write to a texture array where the ID returned is the layer, additionally maintain a GPU buffer with the normalized sizes and offsets of the textures in their respective layers
-            lock (locker)
-            {
-                if (loadedImages.ContainsKey(filename))
-                {
-                    ID = loadedImages[filename];
-                    refCounts[filename]++;
-                }
-                else
-                {
-                    base.Create(filename, srgba);
-                    loadedImages[filename] = ID;
-                    refCounts[filename] = 1;
-                    ObjectAllocTracker.NewCreated(this, filename);
-                }
-            }
         }
 
-        public Texture(ulong id, GraphicsContext c)
+        public new void SetData(ITextureSource src)
         {
-            ParentContext = c;
-            c.Disposing += Dispose;
-
-            lock (locker)
-            {
-                this.ID = id;
-                ObjectAllocTracker.NewCreated(this, " Duplicate");
-            }
+            loaded = true;
+            ParentContext.Disposing += Dispose;
+            base.SetData(src);
+            FilterMode = TextureFilter.Linear;
+            Compare = false;
+            WrapX = true;
+            WrapY = true;
         }
-        public Texture(Image img, bool srgba, GraphicsContext c)
-        {
-            ParentContext = c;
-            c.Disposing += Dispose;
 
-            lock (locker)
-            {
-                base.Create(img, srgba);
-                ObjectAllocTracker.NewCreated(this, "IMAGE" + ID);
-            }
-        }
 #if DEBUG
         ~Texture()
         {
@@ -145,28 +101,29 @@ namespace Kokoro2.Engine
 
         public Bitmap ToBMP()
         {
+            if (!loaded) throw new InvalidOperationException();
             return base.FetchTextureData();
         }
 
         public virtual void Bind(int texUnit)
         {
             //load the texture if it wasn't loaded before
+            if (!loaded) throw new InvalidOperationException();
             base.BindTexture(texUnit);
         }
 
         public static void UnBind(int texUnit)
         {
+            if (!loaded) throw new InvalidOperationException();
             UnBindTexture(texUnit);
         }
 
         public new void Dispose()
         {
-            if (!string.IsNullOrWhiteSpace(file))
+            if (loaded)
             {
-                if (refCounts[file] == 1) base.Dispose();
-                else refCounts[file]--;
+                base.Dispose();
             }
-            else base.Dispose();
         }
 
     }

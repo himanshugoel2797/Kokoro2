@@ -27,6 +27,7 @@ namespace Kokoro2.Engine.Prefabs
 
             this.DrawMode = DrawMode.Triangles;
 
+            Buffer.Bind();
             SetIndices(new uint[] { 3, 2, 0, 0, 2, 1 }, 0);
             SetUVs(new float[] {
                 0,1,
@@ -41,6 +42,7 @@ namespace Kokoro2.Engine.Prefabs
                 1, -1,0.5f,
                 -1, -1,0.5f
             }, 0);
+            Buffer.UnBind();
         }
     }
 }

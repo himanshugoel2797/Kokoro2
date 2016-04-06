@@ -153,6 +153,7 @@ namespace Kokoro2.Engine.Prefabs
                 }
             }
 
+            Buffer.Bind();
             SetIndices(indices.ToArray(), 0);
             SetUVs(uvs.ToArray(), 0);
             SetVertices(verts.ToArray(), 0);
@@ -162,6 +163,7 @@ namespace Kokoro2.Engine.Prefabs
                 Max = new Vector3(maxX, maxY, maxZ),
                 Min = new Vector3(minX, minY, minZ)
             };
+            Buffer.UnBind();
         }
     }
 }

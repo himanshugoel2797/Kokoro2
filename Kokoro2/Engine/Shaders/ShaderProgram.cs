@@ -35,7 +35,7 @@ namespace Kokoro2.Engine.Shaders
         /// </summary>
         /// <param name="shaders">The shaders</param>
         /// <param name="transformVars">The transform feedback attributes</param>
-        public ShaderProgram(GraphicsContext c, string[] transformVars, params Shader[] shaders) : base(c, shaders, transformVars) { }
+        public ShaderProgram(GraphicsContext c, string[] transformVars, params Shader[] shaders) : base(c, transformVars, shaders) { }
 
 
         /// <summary>
@@ -79,8 +79,6 @@ namespace Kokoro2.Engine.Shaders
                 else if (t == typeof(double)) SetShaderFloat(name, (float)(double)value);
                 else if (t == typeof(int)) SetShaderFloat(name, (float)(int)value);
                 else if (t == typeof(Texture)) SetTexture(name, (Texture)value);
-                else if (t == typeof(FrameBufferTexture)) SetTexture(name, (Texture)value);
-                else if (t == typeof(CubeMapTexture)) SetCubeMapTexture(name, (CubeMapTexture)value);
                 else throw new Exception("Unknown type " + name);
             }
         }
@@ -128,11 +126,6 @@ namespace Kokoro2.Engine.Shaders
         public void SetTexture(string name, Texture tex)
         {
             base.aSetTexture(name, tex);
-        }
-
-        public void SetCubeMapTexture(string name, CubeMapTexture tex)
-        {
-            base.aSetCubeMapTexture(name, tex);
         }
     }
 

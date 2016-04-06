@@ -17,9 +17,9 @@ namespace Kokoro2.Engine
 
         private FullScreenQuad quad;
 
-        public RenderPass(int width, int height, PixelComponentType pf, GraphicsContext context)
+        public RenderPass(int width, int height, GraphicsContext context)
         {
-            RenderTarget = new FrameBuffer(width, height, pf, context);
+            RenderTarget = new FrameBuffer(width, height, context);
             quad = new FullScreenQuad(context);
         }
 

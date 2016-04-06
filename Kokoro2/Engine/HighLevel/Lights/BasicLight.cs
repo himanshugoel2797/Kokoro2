@@ -54,9 +54,10 @@ namespace Kokoro2.Engine.HighLevel.Lights
             if (CastShadows)
             {
                 if (shadowBuffer != null) shadowBuffer.Dispose();
-                shadowBuffer = new FrameBuffer(ShadowResolution, ShadowResolution, PixelComponentType.D32, context);
-                shadowBuffer.Add("Normals", new FrameBufferTexture(ShadowResolution, ShadowResolution, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
-                shadowBuffer.Add("Positions", new FrameBufferTexture(ShadowResolution, ShadowResolution, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
+                shadowBuffer = new FrameBuffer(ShadowResolution, ShadowResolution, context);
+                shadowBuffer.Add("Normals", FramebufferTextureSource.Create(ShadowResolution, ShadowResolution, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+                shadowBuffer.Add("Positions", FramebufferTextureSource.Create(ShadowResolution, ShadowResolution, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
+                shadowBuffer.Add("DepthBuffer", DepthTextureSource.Create(ShadowResolution, ShadowResolution, PixelComponentType.D32, context), FrameBufferAttachments.DepthAttachment, context);
                 shadowBuffer["DepthBuffer"].FilterMode = TextureFilter.Linear;
                 shadowBuffer["DepthBuffer"].Compare = true;
                 shadowBuffer["DepthBuffer"].WrapX = false;
@@ -95,17 +96,17 @@ namespace Kokoro2.Engine.HighLevel.Lights
             }
         }
 
-        public FrameBufferTexture GetShadowMap()
+        public Texture GetShadowMap()
         {
             return shadowBuffer["DepthBuffer"];
         }
 
-        public FrameBufferTexture GetColors()
+        public Texture GetColors()
         {
             return shadowBuffer["Normals"];
         }
 
-        public FrameBufferTexture GetPositions()
+        public Texture GetPositions()
         {
             return shadowBuffer["Positions"];
         }

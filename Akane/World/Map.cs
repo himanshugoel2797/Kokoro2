@@ -44,8 +44,10 @@ namespace Akane.World
                     tileMapPhaseA["HeightMap"].Dispose();
                     tileMapPhaseA.Dispose();
                 }
-                tileMapPhaseA = new FrameBuffer((int)((value.X + 2) * TileSize.X), (int)((value.Y + 2) * TileSize.Y), PixelComponentType.RGBA8, manager.context);
-                tileMapPhaseA.Add("HeightMap", new FrameBufferTexture((int)((value.X + 2) * TileSize.X), (int)((value.Y + 2) * TileSize.Y), PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, manager.context), FrameBufferAttachments.ColorAttachment1, manager.context);
+                tileMapPhaseA = new FrameBuffer((int)((value.X + 2) * TileSize.X), (int)((value.Y + 2) * TileSize.Y), manager.context);
+                tileMapPhaseA.Add("DepthBuffer", DepthTextureSource.Create(tileMapPhaseA.Width, tileMapPhaseA.Height, PixelComponentType.D32, manager.context), FrameBufferAttachments.DepthAttachment, manager.context);
+                tileMapPhaseA.Add("Color", FramebufferTextureSource.Create(tileMapPhaseA.Width, tileMapPhaseA.Height, 0, PixelComponentType.RGBA8, PixelType.Float, manager.context), FrameBufferAttachments.ColorAttachment0, manager.context);
+                tileMapPhaseA.Add("HeightMap", FramebufferTextureSource.Create(tileMapPhaseA.Width, tileMapPhaseA.Height, 0, PixelComponentType.RGBA8, PixelType.Float, manager.context), FrameBufferAttachments.ColorAttachment1, manager.context);
             }
         }
         public Vector2 ViewportOffset;
@@ -75,7 +77,9 @@ namespace Akane.World
             Matrix4 projBackup = akane.context.Projection;
 
             //Each pixel is one tile
-            FrameBuffer renderTarget = new FrameBuffer(map.Width, map.Height, PixelComponentType.RGBA16f, akane.context);
+            FrameBuffer renderTarget = new FrameBuffer(map.Width, map.Height, akane.context);
+            renderTarget.Add("DepthBuffer", DepthTextureSource.Create(renderTarget.Width, renderTarget.Height, PixelComponentType.D32, akane.context), FrameBufferAttachments.DepthAttachment, akane.context);
+            renderTarget.Add("Color", FramebufferTextureSource.Create(renderTarget.Width, renderTarget.Height, 0, PixelComponentType.RGBA16f, PixelType.Float, akane.context), FrameBufferAttachments.ColorAttachment0, akane.context);
             Model tileRenderer = new FullScreenQuad(akane.context);
             tileRenderer.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, new VertexShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context), new FragmentShader(Shaders.ShaderLibrary.LoadFile("Shaders/TileLayer"), manager.context)));
 
@@ -109,7 +113,7 @@ namespace Akane.World
                 MaxGID_onLayer.Add(maxGid);
                 MinGID_onLayer.Add(minGid);
                 TileLayers.Add(renderTarget["Color"]);
-                if (i < map.Layers.Count - 1) renderTarget.Add("Color", new FrameBufferTexture(map.Width, map.Height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, manager.context), FrameBufferAttachments.ColorAttachment0, akane.context);    //Add a new texture to the framebuffer
+                if (i < map.Layers.Count - 1) renderTarget.Add("Color", FramebufferTextureSource.Create(map.Width, map.Height, 0, PixelComponentType.RGBA16f, PixelType.Float, manager.context), FrameBufferAttachments.ColorAttachment0, akane.context);    //Add a new texture to the framebuffer
             }
 
             //Restore the backed up matrix
@@ -170,7 +174,9 @@ namespace Akane.World
         //Load resources and apply their transparencies
         private void LoadResources(AkaneManager manager)
         {
-            FrameBuffer tileSetTmpBuffer = new FrameBuffer((int)map.Tilesets[0].Image.Width, (int)map.Tilesets[0].Image.Height, PixelComponentType.RGBA8, manager.context);
+            FrameBuffer tileSetTmpBuffer = new FrameBuffer((int)map.Tilesets[0].Image.Width, (int)map.Tilesets[0].Image.Height, manager.context);
+            tileSetTmpBuffer.Add("DepthBuffer", DepthTextureSource.Create(tileSetTmpBuffer.Width, tileSetTmpBuffer.Height, PixelComponentType.D32, manager.context), FrameBufferAttachments.DepthAttachment, manager.context);
+            tileSetTmpBuffer.Add("Color", FramebufferTextureSource.Create(tileSetTmpBuffer.Width, tileSetTmpBuffer.Height, 0, PixelComponentType.RGBA8, PixelType.Float, manager.context), FrameBufferAttachments.ColorAttachment0, manager.context);
             FullScreenQuad quad = new FullScreenQuad(manager.context);
             quad.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(manager.context, VertexShader.Load("Shaders/TransparentColor", manager.context), FragmentShader.Load("Shaders/TransparentColor", manager.context)));
 
@@ -185,7 +191,7 @@ namespace Akane.World
                     MinMaxTileset.Add(new Vector2(t.FirstGid, CalculateFinalGID(t.FirstGid, (int)t.Image.Width, (int)t.Image.Height, t.TileWidth, t.TileHeight)));
 
                     manager.context.ClearColor(0, 0, 0, 0);
-                    quad.Material.AlbedoMap = new Texture(t.Image.Source, true, manager.context);
+                    quad.Material.AlbedoMap = ImageTextureSource.Create(t.Image.Source, 0, true, manager.context);
                     quad.Shader["TransparentColor"] = new Vector3(t.Image.Trans.R / 255f, t.Image.Trans.G / 255f, t.Image.Trans.B / 255f);
 
                     manager.context.Draw(quad);
@@ -193,7 +199,7 @@ namespace Akane.World
                     TextureAtlases.Add(tileSetTmpBuffer["Color"]);
                     if (i < map.Tilesets.Count - 1)
                         tileSetTmpBuffer.Add("Color",
-new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i + 1].Image.Height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, manager.context)
+FramebufferTextureSource.Create((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i + 1].Image.Height, 0, PixelComponentType.RGBA8, PixelType.Float, manager.context)
 , FrameBufferAttachments.ColorAttachment0, manager.context);
                     //if (i < map.Tilesets.Count - 1) tileSetTmpBuffer = new FrameBuffer((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i + 1].Image.Height, PixelComponentType.RGBA8, manager.context);
 
@@ -201,7 +207,7 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
 
                     if (t.Properties.ContainsKey("HeightMap"))
                     {
-                        HeightMaps.Add(new Texture(t.Properties["HeightMap"], false, manager.context));
+                        HeightMaps.Add(ImageTextureSource.Create(t.Properties["HeightMap"], 0, false, manager.context));
                     }
                     else
                     {
@@ -229,7 +235,7 @@ new FrameBufferTexture((int)map.Tilesets[i + 1].Image.Width, (int)map.Tilesets[i
                         quad.RenderInfo.Shader["maxLayer"] = (float)(TileLayers.Count - 1);
                         quad.RenderInfo.Shader["TileIDs"] = TileLayers[layer];
                         quad.RenderInfo.Shader["maxGid"] = (float)MaxGID_onLayer[layer];
-                        quad.RenderInfo.Shader["textureSize"] = TextureAtlases[i].Size;
+                        quad.RenderInfo.Shader["textureSize"] = new Vector2(TextureAtlases[i].Width, TextureAtlases[i].Height);
                         quad.RenderInfo.Shader["mapSize"] = TilesCount;
                         quad.RenderInfo.Shader["tileSize"] = new Vector2(TileSize.X, TileSize.Y);
                         quad.RenderInfo.Shader["viewportTileRes"] = new Vector2(ViewportTileResolution.X + 2, ViewportTileResolution.Y + 2);

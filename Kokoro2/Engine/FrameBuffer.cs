@@ -51,15 +51,21 @@ namespace Kokoro2.Engine
     public class FrameBuffer : FrameBufferLL, IDisposable
     {
         /// <summary>
-        /// The resolution of the framebuffer
+        /// The Width of the framebuffer
         /// </summary>
-        public Vector2 Size { get; internal set; }
+        public int Width { get; private set; }
+
+        /// <summary>
+        /// The Height of the framebuffer
+        /// </summary>
+        public int Height { get; private set; }
+
         /// <summary>
         /// The IDs of the associated RenderTargets
         /// </summary>
         public List<string> RenderTargets { get; set; }
 
-        private Dictionary<string, FrameBufferTexture> fbufTextures;
+        private Dictionary<string, Texture> fbufTextures;
         private Dictionary<string, int> fbufAttachmentsIDs;
         private Dictionary<string, FrameBufferAttachments> attachments;
 
@@ -70,23 +76,20 @@ namespace Kokoro2.Engine
         /// <param name="height">The Height of the FrameBuffer RenderTarget</param>
         /// <param name="pct">The PixelComponentType of the FrameBuffer RenderTarget</param>
         /// <param name="context">The current GraphicsContext</param>
-        public FrameBuffer(int width, int height, PixelComponentType pct, GraphicsContext context, bool createDepthBuffer = true)
+        public FrameBuffer(int width, int height, GraphicsContext context)
         {
             ParentContext = context;
             ParentContext.Disposing += Dispose;
 
             RenderTargets = new List<string>();
-            fbufTextures = new Dictionary<string, FrameBufferTexture>();
+            fbufTextures = new Dictionary<string, Texture>();
             fbufAttachmentsIDs = new Dictionary<string, int>();
             attachments = new Dictionary<string, FrameBufferAttachments>();
 
-            Size = new Vector2(width, height);
+            Width = width;
+            Height = height;
 
             base.Generate();
-
-            //Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, pct, PixelType.Float), FrameBufferAttachments.ColorAttachment0, context);
-            if (createDepthBuffer) Add("DepthBuffer", new FrameBufferTexture(width, height, PixelFormat.Depth, PixelComponentType.D32, PixelType.Float, context), FrameBufferAttachments.DepthAttachment, context); //Attach the depth buffer to the framebuffer
-
             base.CheckError();
 
             Kokoro2.Engine.ObjectAllocTracker.NewCreated(this, "Framebuffer");
@@ -99,10 +102,9 @@ namespace Kokoro2.Engine
         /// <param name="fbufTex">The FrameBufferTexture to set as the RenderTarget</param>
         /// <param name="attachment">The FrameBufferAttachment to attach it to</param>
         /// <param name="context">The current GraphicsContext</param>
-        public void Add(string id, FrameBufferTexture fbufTex, FrameBufferAttachments attachment, GraphicsContext context)
+        public void Add(string id, Texture fbufTex, FrameBufferAttachments attachment, GraphicsContext context)
         {
-            if (context.ID != ParentContext.ID) throw new ContextSharingViolationException();
-            if (fbufTex.Size != this.Size) throw new Exception("The dimensions of the FrameBufferTexture must be the same as the dimensions of the FrameBuffer");
+            if (fbufTex.Width != this.Width && fbufTex.Height != this.Height) throw new Exception("The dimensions of the FrameBufferTexture must be the same as the dimensions of the FrameBuffer");
 
             base.Bind();
 
@@ -117,7 +119,7 @@ namespace Kokoro2.Engine
                 else attachments[id] = attachment;
             }
 
-            fbufTex.BindToFrameBuffer(attachment);
+            base.BindTexture(attachment, fbufTex);
             base.DrawBuffers(attachments.Values.ToArray());
             base.CheckError();
 
@@ -129,7 +131,7 @@ namespace Kokoro2.Engine
         /// </summary>
         /// <param name="key">The ID of the RenderTarget</param>
         /// <returns>The RenderTarget</returns>
-        public FrameBufferTexture this[string key]
+        public Texture this[string key]
         {
             get
             {
@@ -159,12 +161,10 @@ namespace Kokoro2.Engine
         /// <param name="context">The current GraphicsContext</param>
         public void Bind(GraphicsContext context)
         {
-            if (context.ID != ParentContext.ID) throw new ContextSharingViolationException();
-
             base.Bind();
             base.DrawBuffers(attachments.Values.ToArray());
             currentFBUF = this;
-            context.Viewport = new Vector4(0, 0, Size.X, Size.Y);
+            context.Viewport = new Vector4(0, 0, Width, Height);
         }
 
         /// <summary>
@@ -191,8 +191,6 @@ namespace Kokoro2.Engine
         /// </summary>
         public void UnBind(GraphicsContext context)
         {
-            if (context.ID != ParentContext.ID) throw new ContextSharingViolationException();
-
             base.Unbind();
             context.Viewport = new Vector4(0, 0, context.WindowSize.X, context.WindowSize.Y);
         }

@@ -122,12 +122,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Engine\ContextSharingViolationException.cs" />
-    <Compile Include="Engine\CubeMapTexture.cs" />
+    <Compile Include="Engine\BitmapTextureSource.cs" />
+    <Compile Include="Engine\CubeMapTextureSource.cs" />
+    <Compile Include="Engine\DepthTextureSource.cs" />
     <Compile Include="Engine\EngineObjectManager.cs" />
     <Compile Include="Engine\ErrorLogger.cs" />
     <Compile Include="Engine\FrameBuffer.cs" />
-    <Compile Include="Engine\FrameBufferTexture.cs" />
+    <Compile Include="Engine\FramebufferTextureSource.cs" />
     <Compile Include="Engine\GeometryInfo.cs" />
     <Compile Include="Engine\GraphicsContext.cs" />
     <Compile Include="Engine\HighLevel\Cameras\Camera.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Engine\Input\Keyboard.cs" />
     <Compile Include="Engine\Input\Mouse.cs" />
     <Compile Include="Engine\InstanceBuffer.cs" />
+    <Compile Include="Engine\ITextureSource.cs" />
     <Compile Include="Engine\Material.cs" />
     <Compile Include="Engine\Model.cs" />
     <Compile Include="Engine\ObjectAllocTracker.cs" />
@@ -190,7 +192,6 @@
     <Compile Include="Math\PlaneIntersectionType.cs" />
     <Compile Include="Math\Vector2I.cs" />
     <Compile Include="OpenGL\PC\BindingManager.cs" />
-    <Compile Include="OpenGL\PC\CubeMapTextureLL.cs" />
     <Compile Include="Physics\BEPUBody.cs" />
     <Compile Include="Engine\Physics\PhysicsWorld.cs" />
     <Compile Include="Engine\Shaders\Shader.cs" />
@@ -260,7 +261,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -71,9 +71,9 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             plights = new List<PointLight>();
             idMap = new Dictionary<int, Tuple<int, int>>();
 
-            lightBuffer = new FrameBuffer(width, height, PixelComponentType.D32, c, false);
-            lightBuffer.Add("Lit", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
-            lightBuffer.Add("Bloom", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment1, c);
+            lightBuffer = new FrameBuffer(width, height, c);
+            lightBuffer.Add("Lit", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
+            lightBuffer.Add("Bloom", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment1, c);
 
             bloomPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA16f, c);
             bloomPass.BlurRadius = 0.0015f * 960 / width;
@@ -82,8 +82,9 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
             avgSceneFSQ = new FullScreenQuad(c);
             avgSceneFSQ.RenderInfo.PushShader(avgSceneShader);
-            avgSceneColor = new FrameBuffer(1, 1, PixelComponentType.RGBA8, c);
-            avgSceneColor.Add("AvgColor", new FrameBufferTexture(1, 1, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
+            avgSceneColor = new FrameBuffer(1, 1, c);
+            avgSceneColor.Add("AvgColor", FramebufferTextureSource.Create(1, 1, 0, PixelComponentType.RGBA8, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
+            avgSceneColor.Add("DepthBuffer", DepthTextureSource.Create(1, 1, PixelComponentType.D32, c), FrameBufferAttachments.DepthAttachment, c);
         }
 
         public int AddLight(PointLight l)
@@ -127,7 +128,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
         public void ApplyLights(GBuffer g, GraphicsContext c)
         {
-            lightBuffer.Add("DepthBuffer", (FrameBufferTexture)g["DepthBuffer"], FrameBufferAttachments.DepthAttachment, c);
+            lightBuffer.Add("DepthBuffer", g["DepthBuffer"], FrameBufferAttachments.DepthAttachment, c);
             lightBuffer.Bind(c);
 
             c.DepthWrite = false;
@@ -193,7 +194,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             c.DepthFunction = DepthFunc.GEqual;
             c.FaceCulling = CullMode.Front;
 
-            for(int i0 = 0; i0 < redoVolums.Count; i0++)
+            for (int i0 = 0; i0 < redoVolums.Count; i0++)
             {
                 int i = redoVolums[i0];
                 pLightShader["lColor"] = new Vector4(plights[i].LightColor, plights[i].Attenuation);

@@ -21,20 +21,21 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
         public GBuffer(int width, int height, GraphicsContext context)
         {
-            buffer = new FrameBuffer(width, height, PixelComponentType.RGBA16f, context);
+            buffer = new FrameBuffer(width, height, context);
 
             //Create the GBuffer texture targets
-            buffer.Add("Shadow", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
-            buffer.Add("WorldPos", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
-            buffer.Add("Normal", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment2, context);
-            buffer.Add("Color", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment3, context);
-            buffer.Add("Specular", new FrameBufferTexture(width, height, PixelFormat.BGRA, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment4, context);
+            buffer.Add("Shadow", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+            buffer.Add("WorldPos", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
+            buffer.Add("Normal", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment2, context);
+            buffer.Add("Color", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment3, context);
+            buffer.Add("Specular", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment4, context);
+            buffer.Add("DepthBuffer", DepthTextureSource.Create(width, height, PixelComponentType.D32, context), FrameBufferAttachments.DepthAttachment, context);
 
             //TODO setup the new GBufferShader
             GBufferShader = new ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context));
         }
 
-        public void Add(string name, FrameBufferTexture tex, FrameBufferAttachments attachment, GraphicsContext context)
+        public void Add(string name, Texture tex, FrameBufferAttachments attachment, GraphicsContext context)
         {
             buffer.Add(name, tex, attachment, context);
         }

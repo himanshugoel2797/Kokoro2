@@ -42,8 +42,8 @@ namespace AGRacing
             if (parts.Length != 4) throw new ArgumentException();
             Name = parts[1];
             trackModel = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false, context);
-            trackModel.Material.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true, context);
-            trackModel.Material.GlossinessMap = new Texture("Resources/Proc/Tex/" + parts[3], false, context);
+            trackModel.Material.AlbedoMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2], 0, true, context);
+            trackModel.Material.GlossinessMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[3], 0, false, context);
             trackModel.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context)));
 
 #if DEBUG
@@ -51,7 +51,7 @@ namespace AGRacing
             //collisionVis.World = Matrix4.CreateTranslation(225, -55, -50);
             collisionVis = new VertexMesh("Resources/Proc/Track_Path/" + parts[0] + "_col.ko", false, context);
 
-            collisionVis.Material.AlbedoMap = new Texture("Resources/Proc/Tex/" + parts[2], true, context);
+            collisionVis.Material.AlbedoMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2], 0, true, context);
             collisionVis.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(context, VertexShader.Load("Default", context), FragmentShader.Load("Default", context)));
 
 #endif
@@ -92,21 +92,21 @@ namespace AGRacing
 
                         var pLight = new PointLight(context);
                         pLight.LightColor = new Vector3(x, y, z);
-                        pLight.Attenuation = 0.01f;
+                        pLight.Attenuation = 0.5f;
                         pLight.Position = new Vector3(rng.Next(-200, 200), rng.Next(-100, 100), rng.Next(-200, 200));
                         lights.AddLight(pLight);
                         lights.GILight = sun;
                     }
                 }
 
-                lights.EnvironmentMap = new Texture("Resources/Proc/Tex/envMap.jpg", true, con);
+                lights.EnvironmentMap = ImageTextureSource.Create("Resources/Proc/Tex/envMap.jpg", 0, true, con);
                 gbuf = new GBuffer((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
             };
 
             lights = new LightPass((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
             lights.AddLight(sun);
             lights.GILight = sun;
-            lights.EnvironmentMap = new Texture("Resources/Proc/Tex/envMap.jpg", true, context);
+            lights.EnvironmentMap = ImageTextureSource.Create("Resources/Proc/Tex/envMap.jpg", 0, true, context);
 
             {
                 Random rng = new Random();
@@ -118,7 +118,7 @@ namespace AGRacing
 
                     var pLight = new PointLight(context);
                     pLight.LightColor = new Vector3(x, y, z);
-                    pLight.Attenuation = 0.01f;
+                    pLight.Attenuation = 0.4f;
                     pLight.Position = new Vector3(rng.Next(-200, 200), rng.Next(-100, 100), rng.Next(-200, 200));
                     lights.AddLight(pLight);
                 }

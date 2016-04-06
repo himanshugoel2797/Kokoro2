@@ -51,6 +51,7 @@ namespace Kokoro2.OpenGL.PC
             //Depth Test is always enabled, it's a matter of what the depth function is
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.LineSmooth);
+            GL.Disable(EnableCap.MultisampleSgis);
             //GL.Enable(EnableCap.DepthClamp);
             GL.LineWidth(2);
 

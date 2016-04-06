@@ -68,6 +68,7 @@ namespace Kokoro2.OpenGL
             else if (type == Engine.PixelType.UShort5551) return OpenTK.Graphics.OpenGL4.PixelType.UnsignedShort5551;
             else if (type == Engine.PixelType.Float) return PixelType.Float;
             else if (type == Engine.PixelType.HalfFloat) return PixelType.HalfFloat;
+            else if (type == Engine.PixelType.UnsignedByte) return PixelType.UnsignedByte;
 
             return OpenTK.Graphics.OpenGL4.PixelType.UnsignedInt8888;   //This will never be called, it avoids compiler errors
         }
@@ -149,6 +150,21 @@ namespace Kokoro2.OpenGL
             else if (use == Engine.BufferUse.Indirect) return BufferTarget.DrawIndirectBuffer;
 
             return BufferTarget.ArrayBuffer;    //Flow should never reach this
+        }
+
+        public static TextureTarget ETextureTarget(Kokoro2.Engine.TextureTarget targ)
+        {
+            if (targ == Engine.TextureTarget.Texture2D) return TextureTarget.Texture2D;
+            else if (targ == Engine.TextureTarget.TextureBuffer) return TextureTarget.TextureBuffer;
+            else if (targ == Engine.TextureTarget.TextureCubeMap) return TextureTarget.TextureCubeMap;
+            else if (targ == Engine.TextureTarget.TextureCubeMapNegativeX) return TextureTarget.TextureCubeMapNegativeX;
+            else if (targ == Engine.TextureTarget.TextureCubeMapNegativeY) return TextureTarget.TextureCubeMapNegativeY;
+            else if (targ == Engine.TextureTarget.TextureCubeMapNegativeZ) return TextureTarget.TextureCubeMapNegativeZ;
+            else if (targ == Engine.TextureTarget.TextureCubeMapPositiveX) return TextureTarget.TextureCubeMapPositiveX;
+            else if (targ == Engine.TextureTarget.TextureCubeMapPositiveY) return TextureTarget.TextureCubeMapPositiveY;
+            else if (targ == Engine.TextureTarget.TextureCubeMapPositiveZ) return TextureTarget.TextureCubeMapPositiveZ;
+
+            return TextureTarget.Texture2D;
         }
     }
 }
