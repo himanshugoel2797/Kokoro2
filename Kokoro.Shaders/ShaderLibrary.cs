@@ -33,6 +33,8 @@ namespace Kokoro2.Shaders
                 "Shadowed/fragment.glsl",
                 "DirectionalLight/vertex.glsl",
                 "DirectionalLight/fragment.glsl",
+                "SSR/vertex.glsl",
+                "SSR/fragment.glsl",
                 "PointLight/vertex.glsl",
                 "PointLight/fragment.glsl",
                 "RSM/vertex.glsl",

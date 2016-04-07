@@ -72,14 +72,15 @@ namespace AGRacing
             collisionMesh = new MobileMesh(verts, indices, sc, MobileMesh.Solidity.Clockwise);
             phys.AddEntity(collisionMesh);
 
-            sun = new DirectionalLight(context, -Vector3.UnitY * 1.0f + -Vector3.UnitX * 0f);
-            sun.ShadowResolution = 2048;
+            sun = new DirectionalLight(context, -Vector3.UnitY * 0.25f + -Vector3.UnitX * 0.75f);
+            sun.ShadowResolution = 1024;
             sun.CastShadows = true;
             sun.InitializeShadowBuffer(context);
             sun.ShadowBoxSize = new BoundingBox(trackModel.Bound.Min, trackModel.Bound.Max);
 
             context.WindowResized += (con) =>
             {
+                //TODO implement light dispose stuff to close up the memory leak we have here
                 lights = new LightPass((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
                 lights.AddLight(sun);
                 {

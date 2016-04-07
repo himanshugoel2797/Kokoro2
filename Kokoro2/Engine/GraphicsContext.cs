@@ -424,6 +424,8 @@ namespace Kokoro2.Engine
             CurrentShader["World"] = r.World;
             CurrentShader["View"] = View;
             CurrentShader["Projection"] = Projection;
+            CurrentShader["InvView"] = Matrix4.Invert(View);
+            CurrentShader["InvProjection"] = Matrix4.Invert(Projection);
             CurrentShader.Apply(this);
 
             //Bind the geometry

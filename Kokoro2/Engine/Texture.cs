@@ -37,7 +37,7 @@ namespace Kokoro2.Engine
 
         private static Dictionary<string, ulong> loadedImages = new Dictionary<string, ulong>();
         private static Dictionary<string, int> refCounts = new Dictionary<string, int>();
-        static bool loaded = false;
+        bool loaded = false;
 
         public TextureFilter FilterMode
         {
@@ -81,6 +81,11 @@ namespace Kokoro2.Engine
             ParentContext = c;
         }
 
+        public new void UpdateMipMaps()
+        {
+            base.UpdateMipMaps();
+        }
+
         public new void SetData(ITextureSource src)
         {
             loaded = true;
@@ -112,7 +117,7 @@ namespace Kokoro2.Engine
             base.BindTexture(texUnit);
         }
 
-        public static void UnBind(int texUnit)
+        public void UnBind(int texUnit)
         {
             if (!loaded) throw new InvalidOperationException();
             UnBindTexture(texUnit);

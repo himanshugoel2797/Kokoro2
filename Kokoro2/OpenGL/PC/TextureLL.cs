@@ -16,6 +16,7 @@ namespace Kokoro2.OpenGL.PC
     {
         internal TextureTarget texTarget;
         internal OpenTK.Graphics.OpenGL4.PixelFormat format;
+        private bool isBufferTex = false, mipmapsPopulated = false;
 
         public int Width { get; internal set; }
         public int Height { get; internal set; }
@@ -38,13 +39,15 @@ namespace Kokoro2.OpenGL.PC
             BindTexture(0);
             if (filter == Engine.TextureFilter.Linear)
             {
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                if (LevelCount != 0 && mipmapsPopulated) GL.TexParameter(texTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+                else GL.TexParameter(texTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                GL.TexParameter(texTarget, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             }
             else
             {
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                if (LevelCount != 0 && mipmapsPopulated) GL.TexParameter(texTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.NearestMipmapNearest);
+                else GL.TexParameter(texTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                GL.TexParameter(texTarget, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             }
             UnBindTexture(0);
         }
@@ -53,41 +56,64 @@ namespace Kokoro2.OpenGL.PC
         {
             ID = ParentContext.EngineObjects.RegisterObject(GL.GenTexture());
 
+            var ptr = src.GetPixelData();
+
             BindingManager.BindTexture(0, EnumConverters.ETextureTarget(src.GetTextureTarget()), ParentContext.EngineObjects[ID, this.GetType()]);
             switch (src.GetDimensions())
             {
                 case 1:
-                    GL.TexImage1D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), src.GetPixelData());
+                    GL.TexImage1D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), ptr);
                     break;
                 case 2:
-                    GL.TexImage2D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), src.GetPixelData());
+                    GL.TexImage2D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), ptr);
                     break;
                 case 3:
-                    GL.TexImage3D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), src.GetDepth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), src.GetPixelData());
+                    GL.TexImage3D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), src.GetDepth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), ptr);
+                    break;
+                case 4:
+                    GL.TexBuffer((TextureBufferTarget)EnumConverters.ETextureTarget(src.GetTextureTarget()), EnumConverters.ESizedInternalFormat(src.GetInternalFormat()), src.GetLevels());
+                    isBufferTex = true;
                     break;
             }
 
-            //GL.GenerateMipmap((GenerateMipmapTarget)EnumConverters.ETextureTarget(src.GetTextureTarget()));
+            if (src.GetLevels() == -1) GL.GenerateMipmap((GenerateMipmapTarget)EnumConverters.ETextureTarget(src.GetTextureTarget()));
             BindingManager.UnbindTexture(0, EnumConverters.ETextureTarget(src.GetTextureTarget()));
 
-            this.Width = src.GetWidth();
-            this.Height = src.GetHeight();
-            this.Depth = src.GetDepth();
-            this.LevelCount = src.GetLevels();
+            if (ptr == IntPtr.Zero) mipmapsPopulated = false;
 
-            this.format = EnumConverters.EPixelFormat(src.GetFormat());
-            this.internalformat = EnumConverters.EPixelComponentType(src.GetInternalFormat());
-            this.texTarget = EnumConverters.ETextureTarget(src.GetTextureTarget());
+            if (!isBufferTex)
+            {
+                this.Width = src.GetWidth();
+                this.Height = src.GetHeight();
+                this.Depth = src.GetDepth();
+                this.LevelCount = src.GetLevels();
+
+                this.format = EnumConverters.EPixelFormat(src.GetFormat());
+                this.internalformat = EnumConverters.EPixelComponentType(src.GetInternalFormat());
+                this.texTarget = EnumConverters.ETextureTarget(src.GetTextureTarget());
+            }
+        }
+
+        protected void UpdateMipMaps()
+        {
+            if (LevelCount != 0)
+            {
+                BindingManager.BindTexture(0, texTarget, ParentContext.EngineObjects[ID, this.GetType()]);
+                GL.GenerateMipmap((GenerateMipmapTarget)texTarget);
+                BindingManager.UnbindTexture(0, texTarget);
+
+                mipmapsPopulated = true;
+            }
         }
 
         protected void BindTexture(int texUnit)
         {
-            BindingManager.BindTexture(texUnit, TextureTarget.Texture2D, ParentContext.EngineObjects[ID, this.GetType()]);
+            BindingManager.BindTexture(texUnit, texTarget, ParentContext.EngineObjects[ID, this.GetType()]);
         }
 
-        protected static void UnBindTexture(int texUnit)
+        protected void UnBindTexture(int texUnit)
         {
-            BindingManager.UnbindTexture(texUnit, TextureTarget.Texture2D);
+            BindingManager.UnbindTexture(texUnit, texTarget);
         }
 
         protected void Delete()
@@ -102,13 +128,15 @@ namespace Kokoro2.OpenGL.PC
 
         protected void SetCompare(bool a)
         {
+            if (isBufferTex) return;
             BindTexture(0);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)(a ? TextureCompareMode.CompareRefToTexture : TextureCompareMode.None));
+            GL.TexParameter(texTarget, TextureParameterName.TextureCompareMode, (int)(a ? TextureCompareMode.CompareRefToTexture : TextureCompareMode.None));
             UnBindTexture(0);
         }
 
         protected Bitmap FetchTextureData()
         {
+            if (isBufferTex) return null;
             BindTexture(0);
             int width, height;
             GL.GetTexLevelParameter(TextureTarget.Texture2D, 0, GetTextureParameter.TextureWidth, out width);
@@ -122,23 +150,20 @@ namespace Kokoro2.OpenGL.PC
             return bmp;
         }
 
-        protected static void UnBindFromFBuffer(int texUnit)
-        {
-            FramebufferAttachment attach = (FramebufferAttachment)texUnit;
-            GL.FramebufferTexture(FramebufferTarget.Framebuffer, attach, 0, 0);
-        }
-
         protected void SetWrapX(bool mode)
         {
+            if (isBufferTex) return;
             BindTexture(0);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
+            GL.TexParameter(texTarget, TextureParameterName.TextureWrapS, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
             UnBindTexture(0);
         }
 
         protected void SetWrapY(bool mode)
         {
+            if (isBufferTex) return;
+
             BindTexture(0);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
+            GL.TexParameter(texTarget, TextureParameterName.TextureWrapT, (int)(mode ? TextureWrapMode.Repeat : TextureWrapMode.ClampToEdge));
             UnBindTexture(0);
         }
 

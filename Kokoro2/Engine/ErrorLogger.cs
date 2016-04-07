@@ -74,6 +74,7 @@ namespace Kokoro2.Engine
 
             NewMessage?.Invoke(d);
             ErrorMessage?.Invoke(d);
+            Console.WriteLine(message);
         }
 
         /// <summary>

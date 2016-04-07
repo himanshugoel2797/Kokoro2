@@ -166,5 +166,14 @@ namespace Kokoro2.OpenGL
 
             return TextureTarget.Texture2D;
         }
+
+        public static SizedInternalFormat ESizedInternalFormat(Kokoro2.Engine.PixelComponentType t)
+        {
+            if (t == Engine.PixelComponentType.RGBA16f) return SizedInternalFormat.Rgba16f;
+            else if (t == Engine.PixelComponentType.RGBA32f) return SizedInternalFormat.Rgba32f;
+            else if (t == Engine.PixelComponentType.RGBA8) return SizedInternalFormat.Rgba8;
+
+            return SizedInternalFormat.Rgba8;
+        }
     }
 }

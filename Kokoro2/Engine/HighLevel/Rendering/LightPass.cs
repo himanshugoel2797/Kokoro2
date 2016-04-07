@@ -23,6 +23,10 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
         FrameBuffer lightBuffer;
 
+        private FrameBuffer ssrBuffer;
+        private FullScreenQuad ssrFSQ;
+        private ShaderProgram ssrShader;
+
         private static Sphere pLightPrim;
         private static ShaderProgram pLightShader;
 
@@ -54,6 +58,10 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             dLightShader = new ShaderProgram(c, VertexShader.Load("DirectionalLight", c), FragmentShader.Load("DirectionalLight", c));
             pLightShader = new ShaderProgram(c, VertexShader.Load("PointLight", c), FragmentShader.Load("PointLight", c));
             giShader = new ShaderProgram(c, VertexShader.Load("RSM", c), FragmentShader.Load("RSM", c));
+            ssrShader = new ShaderProgram(c, VertexShader.Load("SSR", c), FragmentShader.Load("SSR", c));
+
+            ssrFSQ = new FullScreenQuad(c);
+            ssrFSQ.RenderInfo.PushShader(ssrShader);
 
             outFSQ = new FullScreenQuad(c);
             outFSQ.RenderInfo.PushShader(outShader);
@@ -74,6 +82,10 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             lightBuffer = new FrameBuffer(width, height, c);
             lightBuffer.Add("Lit", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
             lightBuffer.Add("Bloom", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment1, c);
+
+            ssrBuffer = new FrameBuffer(width, height, c);
+            ssrBuffer.Add("SSR", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA8, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
+
 
             bloomPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA16f, c);
             bloomPass.BlurRadius = 0.0015f * 960 / width;
@@ -128,6 +140,22 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
         public void ApplyLights(GBuffer g, GraphicsContext c)
         {
+            ssrShader["worldData"] = g["WorldPos"];
+            ssrShader["normData"] = g["Normal"];
+            ssrShader["depthMap"] = g["DepthBuffer"];
+            ssrShader["colorMap"] = g["Color"];
+            g["Color"].WrapX = false;
+            g["Color"].WrapY = false;
+            g["Normal"].WrapX = false;
+            g["Normal"].WrapY = false;
+            g["Color"].FilterMode = TextureFilter.Linear;
+            g["Normal"].FilterMode = TextureFilter.Linear;
+
+            ssrBuffer.Bind(c);
+            c.Draw(ssrFSQ);
+            ssrBuffer.UnBind(c);
+
+
             lightBuffer.Add("DepthBuffer", g["DepthBuffer"], FrameBufferAttachments.DepthAttachment, c);
             lightBuffer.Bind(c);
 
@@ -144,9 +172,9 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
             dLightShader["colorMap"] = g["Color"];
             dLightShader["normData"] = g["Normal"];
-            dLightShader["specularData"] = g["Specular"];
             dLightShader["worldData"] = g["WorldPos"];
             dLightShader["envMap"] = EnvironmentMap;
+            dLightShader["ssrMap"] = ssrBuffer["SSR"];
 
             //First apply all directional lights
             for (int i = 0; i < dlights.Count; i++)
@@ -160,17 +188,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             c.FaceCulling = CullMode.Back;
             c.DepthFunction = DepthFunc.LEqual;
 
-            //Perform the RSM pass
-            giShader["ShadowMap"] = GILight.GetShadowMap();
-            giShader["sWVP"] = GILight.ShadowSpace;
-            giShader["ReflectiveColMap"] = GILight.GetColors();
-            giShader["ReflectivePosMap"] = GILight.GetPositions();
-            //c.DrawInstanced(giLightPrim, giLightInstanceData, giLightInstanceData.Length / 4);
-
-
             pLightShader["colorMap"] = g["Color"];
             pLightShader["normData"] = g["Normal"];
-            pLightShader["specularData"] = g["Specular"];
             pLightShader["worldData"] = g["WorldPos"];
             pLightShader["envMap"] = EnvironmentMap;
 
@@ -225,8 +244,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             outShader["DiffuseMap"] = g["Color"];
             outShader["LitMap"] = lightBuffer["Lit"];
             outShader["BloomMap"] = lightBuffer["Bloom"];
-            //outShader["BloomMap"] = bloomPass.ApplyBlur(b0, c);
-            outShader["ShadowMap"] = shadowPass.ApplyBlur(g["Shadow"], c);
+            outShader["SSRMap"] = ssrBuffer["SSR"];
+            outShader["ShadowMap"] = shadowPass.ApplyBlur(g["WorldPos"], c);
             outShader["AvgColor"] = avgSceneColor["AvgColor"];
             c.Draw(outFSQ);
 

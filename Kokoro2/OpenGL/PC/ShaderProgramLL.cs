@@ -199,7 +199,7 @@ namespace Kokoro2.OpenGL.PC
                 {
                     case VarType.Texture:
                         //GL.ProgramUniform1(context.EngineObjects[ID, this.GetType()], variables[i].pos, 0);
-                        Texture.UnBind(variables[i].metadata);
+                        (variables[i].obj as Texture)?.UnBind(variables[i].metadata);
                         break;
                     default:
                         break;

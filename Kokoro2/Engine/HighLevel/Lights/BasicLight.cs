@@ -58,8 +58,8 @@ namespace Kokoro2.Engine.HighLevel.Lights
                 shadowBuffer.Add("Normals", FramebufferTextureSource.Create(ShadowResolution, ShadowResolution, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
                 shadowBuffer.Add("Positions", FramebufferTextureSource.Create(ShadowResolution, ShadowResolution, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
                 shadowBuffer.Add("DepthBuffer", DepthTextureSource.Create(ShadowResolution, ShadowResolution, PixelComponentType.D32, context), FrameBufferAttachments.DepthAttachment, context);
-                shadowBuffer["DepthBuffer"].FilterMode = TextureFilter.Linear;
-                shadowBuffer["DepthBuffer"].Compare = true;
+                shadowBuffer["DepthBuffer"].FilterMode = TextureFilter.Nearest;
+                shadowBuffer["DepthBuffer"].Compare = false;
                 shadowBuffer["DepthBuffer"].WrapX = false;
                 shadowBuffer["DepthBuffer"].WrapY = false;
             }

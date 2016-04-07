@@ -24,11 +24,9 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             buffer = new FrameBuffer(width, height, context);
 
             //Create the GBuffer texture targets
-            buffer.Add("Shadow", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
-            buffer.Add("WorldPos", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
-            buffer.Add("Normal", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment2, context);
-            buffer.Add("Color", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment3, context);
-            buffer.Add("Specular", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment4, context);
+            buffer.Add("WorldPos", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+            buffer.Add("Normal", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
+            buffer.Add("Color", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment2, context);
             buffer.Add("DepthBuffer", DepthTextureSource.Create(width, height, PixelComponentType.D32, context), FrameBufferAttachments.DepthAttachment, context);
 
             //TODO setup the new GBufferShader
@@ -58,8 +56,6 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment0);
             buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment1);
             buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment2);
-            buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment3);
-            buffer.SetBlendFunc(func, FrameBufferAttachments.ColorAttachment4);
         }
 
         public void UnBind(GraphicsContext context)

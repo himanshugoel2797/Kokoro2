@@ -99,7 +99,7 @@ namespace Kokoro.EssencePainter.Editor
                     }
                 }
 
-                q = new Sphere(10, 20, context);
+                q = new Sphere(10, 50, context);
                 q.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context)));
                 q.Material.AlbedoMap = q.Material.GlossinessMap = q.Material.SpecularMap = ImageTextureSource.Create("Resources/envMap.jpg", 0, true, context);
 

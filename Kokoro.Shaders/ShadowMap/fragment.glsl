@@ -11,8 +11,6 @@ uniform sampler2D AlbedoMap;
 
 void main()
 {
-	colMap.rgb = texture2D(AlbedoMap, UV).rgb;
-	posMap.rgb = pos;
-
-	colMap.a = posMap.a = 1;
+	colMap = texture2D(AlbedoMap, UV);
+	posMap = vec4(pos, gl_FragCoord.z * gl_FragCoord.z);
 }

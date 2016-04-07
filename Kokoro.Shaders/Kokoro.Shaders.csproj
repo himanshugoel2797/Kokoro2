@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -49,6 +50,10 @@
     <EmbeddedResource Include="LightShadowBloom\vertex.glsl" />
     <EmbeddedResource Include="PointLight\fragment.glsl" />
     <EmbeddedResource Include="PointLight\vertex.glsl" />
+    <EmbeddedResource Include="SSR\fragment.glsl" />
+    <EmbeddedResource Include="SSR\vertex.glsl" />
+    <EmbeddedResource Include="PBRPreProcess\fragment.glsl" />
+    <EmbeddedResource Include="PBRPreProcess\vertex.glsl" />
     <None Include="Fur\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
