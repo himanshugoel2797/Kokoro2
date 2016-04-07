@@ -9,13 +9,12 @@ layout(location = 1) out vec4 bloom;
 uniform sampler2D colorMap;
 uniform sampler2D normData;
 uniform sampler2D worldData;
-uniform sampler2D envMap;
 uniform sampler2D ssrMap;
+uniform sampler2D preCalc;
 
 uniform vec3 lDir;
 uniform vec3 lColor;
 uniform vec3 EyePos;
-uniform mat4 InvView;
 
 
 float rand(vec4 seed4)
@@ -80,8 +79,32 @@ float geometric_schlick(vec3 n, vec3 v, float k, float nDotV)
 float geometric_smith_schlick(vec3 l, vec3 v, vec3 h, vec3 n, float r, float nDotL, float nDotV, float vDotH)
 {
 	float k = r * 0.797884;
-	return geometric_schlick(n, l, k, nDotV) * geometric_schlick(n, v, k, nDotV);
+	return geometric_schlick(n, l, k, nDotL) * geometric_schlick(n, v, k, nDotV);
 }
+
+
+//Precalculated fetches
+float p_ggx(vec3 n, vec3 m, float a)
+{
+    return texture2D(preCalc, vec2((dot(n, m) + 1) * 0.5, a)).r;
+}
+
+float p_fresnel_schlick(float f0,	vec3 h, vec3 v, float vDotH)
+{
+	return texture2D(preCalc, vec2((vDotH + 1) * 0.5, f0)).g;
+}
+
+float p_geometric_schlick(vec3 n, vec3 v, float k, float nDotV)
+{
+	return texture2D(preCalc, vec2((nDotV + 1) * 0.5, k)).b;
+}
+
+float p_geometric_smith_schlick(vec3 l, vec3 v, vec3 h, vec3 n, float r, float nDotL, float nDotV, float vDotH)
+{
+	float k = r * 0.797884;
+	return p_geometric_schlick(n, l, k, nDotL) * p_geometric_schlick(n, v, k, nDotV);
+}
+
 
 vec4 cooktorr(vec3 n, vec3 v, vec3 l, float f0, float r, vec4 spec, vec4 dif)
 {
@@ -97,7 +120,7 @@ vec4 cooktorr(vec3 n, vec3 v, vec3 l, float f0, float r, vec4 spec, vec4 dif)
     float rs = fresnel * roughness * geometric/(3.14159 * nDotV * nDotL);
     //rs = max(0.0, rs);
 	//return vec4(vec3(rs), 1.0);
-    return vec4(spec * rs + dif * nDotL);
+    return vec4(spec * rs + dif * fresnel);
 }
 
 

@@ -31,10 +31,11 @@ float geometric_schlick(vec3 n, vec3 v, float k, float nDotV)
 }
 
 void main(){
-    //ggx: x = [0, 1], y = [0, 1]
-	map.r = ggx(UV.x, UV.y);
-	map.g = fresnel_schlick(UV.x, vec3(0), vec3(0), UV.y);
-	map.b = geometric_schlick(vec3(0), vec3(0), UV.x, UV.y);
+	//UV.x = [-1, 1], UV.y = [0, 1]
+
+	map.r = ggx(2 * UV.x - 1, UV.y);
+	map.g = fresnel_schlick(UV.y, vec3(0), vec3(0), 2 * UV.x - 1);
+	map.b = geometric_schlick(vec3(0), vec3(0), UV.y, 2 * UV.x - 1);
 	map.a = 1;
 }
 

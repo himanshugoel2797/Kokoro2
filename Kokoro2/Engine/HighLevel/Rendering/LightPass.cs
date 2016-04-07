@@ -97,6 +97,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             avgSceneColor = new FrameBuffer(1, 1, c);
             avgSceneColor.Add("AvgColor", FramebufferTextureSource.Create(1, 1, 0, PixelComponentType.RGBA8, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
             avgSceneColor.Add("DepthBuffer", DepthTextureSource.Create(1, 1, PixelComponentType.D32, c), FrameBufferAttachments.DepthAttachment, c);
+
+            //Precalculate PBR data
         }
 
         public int AddLight(PointLight l)
@@ -140,6 +142,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
         public void ApplyLights(GBuffer g, GraphicsContext c)
         {
+            if (preCalcQuad == null) Precalculate(c);
             ssrShader["worldData"] = g["WorldPos"];
             ssrShader["normData"] = g["Normal"];
             ssrShader["depthMap"] = g["DepthBuffer"];
@@ -175,6 +178,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             dLightShader["worldData"] = g["WorldPos"];
             dLightShader["envMap"] = EnvironmentMap;
             dLightShader["ssrMap"] = ssrBuffer["SSR"];
+            dLightShader["preCalc"] = preCalcBuffer["PreCalc"];
 
             //First apply all directional lights
             for (int i = 0; i < dlights.Count; i++)
@@ -250,6 +254,30 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             c.Draw(outFSQ);
 
         }
+
+        #region PBR Precalculation
+        private static FullScreenQuad preCalcQuad;
+        private static ShaderProgram preCalcShader;
+        private static FrameBuffer preCalcBuffer;
+
+        public static void Precalculate(GraphicsContext c)
+        {
+            preCalcQuad = new FullScreenQuad(c);
+            preCalcShader = new ShaderProgram(c, VertexShader.Load("PBRPreProcess", c), FragmentShader.Load("PBRPreProcess", c));
+            preCalcBuffer = new FrameBuffer(512, 512, c);
+            preCalcBuffer.Add("PreCalc", FramebufferTextureSource.Create(preCalcBuffer.Width, preCalcBuffer.Height, 0, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
+
+            preCalcQuad.RenderInfo.PushShader(preCalcShader);
+            preCalcBuffer.Bind(c);
+            c.Draw(preCalcQuad);
+            preCalcBuffer.UnBind(c);
+
+            preCalcBuffer["PreCalc"].FilterMode = TextureFilter.Linear;
+            preCalcBuffer["PreCalc"].WrapX = false;
+            preCalcBuffer["PreCalc"].WrapY = false;
+        }
+
+        #endregion
 
     }
 }

@@ -39,6 +39,8 @@ namespace Kokoro2.Shaders
                 "PointLight/fragment.glsl",
                 "RSM/vertex.glsl",
                 "RSM/fragment.glsl",
+                "PBRPreProcess/vertex.glsl",
+                "PBRPreProcess/fragment.glsl",
                 "LightShadowBloom/vertex.glsl",
                 "LightShadowBloom/fragment.glsl"
             };
