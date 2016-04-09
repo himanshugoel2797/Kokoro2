@@ -42,7 +42,7 @@ namespace AGRacing
                 for (int i = 0; i < lns.Length; i++)
                 {
                     var tmp = lns[i].Split(',');
-                    if (tmp.Length != 4)
+                    if (tmp.Length != 6)
                         throw new Exception("Tracks.txt is corrupt!");
 
                     TrackData.Add(tmp[1], lns[i]);

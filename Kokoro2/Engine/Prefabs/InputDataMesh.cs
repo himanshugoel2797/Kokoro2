@@ -43,10 +43,12 @@ namespace Kokoro2.Engine.Prefabs
 
             if (Indices.Count != 0)
             {
+                Buffer.Bind();
                 base.UpdateIndices(Indices.ToArray(), 0);
                 base.UpdateVertices(vertices, 0);
                 if (UVs != null) base.UpdateUVs(UVs, 0);
                 if (norms != null) base.UpdateNormals(norms, 0);
+                Buffer.UnBind();
             }
             IndexCount = Indices.Count;
             if (IndexCount > allocSize) throw new OverflowException();

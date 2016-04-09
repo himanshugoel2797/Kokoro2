@@ -25,6 +25,12 @@ vec3 decode (vec2 enc)
     return vec3(scth.y*scphi.x, scth.x*scphi.x, scphi.y);
 }
 
+float rand(vec4 seed4)
+{
+    float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
+    return fract(sin(dot_product) * 43758.5453);
+}
+
 void main(){
     vec3 n = decode(texture2D(normData, UV).xy);
     n = normalize(n);

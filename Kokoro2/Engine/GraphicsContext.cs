@@ -383,14 +383,19 @@ namespace Kokoro2.Engine
             CurrentShader["EyeDir"] = Camera.Direction;
             CurrentShader["Fcoef"] = 2.0f / (float)System.Math.Log(ZFar + 1.0, 2);
             CurrentShader["ScreenSize"] = WindowSize;
+            if(r.Material.AlbedoMap != null)CurrentShader["AlbedoTextureSize"] = new Vector2(r.Material.AlbedoMap.Width, r.Material.AlbedoMap.Height);
 
             if (r.Material.AlbedoMap != null) CurrentShader["AlbedoMap"] = r.Material.AlbedoMap;
-            if (r.Material.GlossinessMap != null) CurrentShader["GlossinessMap"] = r.Material.GlossinessMap;
+            if (r.Material.RoughnessMap != null) CurrentShader["GlossinessMap"] = r.Material.RoughnessMap;
             if (r.Material.SpecularMap != null) CurrentShader["SpecularMap"] = r.Material.SpecularMap;
-            else if (r.Material.AlbedoMap != null) CurrentShader["SpecularMap"] = r.Material.AlbedoMap;
+            if (r.Material.NormalMap != null) CurrentShader["NormalMap"] = r.Material.NormalMap;
+            if (r.Material.PackedMap != null) CurrentShader["PackedMap"] = r.Material.PackedMap;
+
             CurrentShader["World"] = r.World;
             CurrentShader["View"] = View;
             CurrentShader["Projection"] = Projection;
+            CurrentShader["InvView"] = Matrix4.Invert(View);
+            CurrentShader["InvProjection"] = Matrix4.Invert(Projection);
             CurrentShader.Apply(this);
 
             //Bind the geometry
@@ -416,11 +421,14 @@ namespace Kokoro2.Engine
             CurrentShader["EyeDir"] = Camera.Direction;
             CurrentShader["Fcoef"] = 2.0f / (float)System.Math.Log(ZFar + 1.0, 2);
             CurrentShader["ScreenSize"] = WindowSize;
+            CurrentShader["AlbedoTextureSize"] = new Vector2(r.Material.AlbedoMap.Width, r.Material.AlbedoMap.Height);
 
             if (r.Material.AlbedoMap != null) CurrentShader["AlbedoMap"] = r.Material.AlbedoMap;
-            if (r.Material.GlossinessMap != null) CurrentShader["GlossinessMap"] = r.Material.GlossinessMap;
+            if (r.Material.RoughnessMap != null) CurrentShader["GlossinessMap"] = r.Material.RoughnessMap;
             if (r.Material.SpecularMap != null) CurrentShader["SpecularMap"] = r.Material.SpecularMap;
-            else if (r.Material.AlbedoMap != null) CurrentShader["SpecularMap"] = r.Material.AlbedoMap;
+            if (r.Material.NormalMap != null) CurrentShader["NormalMap"] = r.Material.NormalMap;
+            if (r.Material.PackedMap != null) CurrentShader["PackedMap"] = r.Material.PackedMap;
+
             CurrentShader["World"] = r.World;
             CurrentShader["View"] = View;
             CurrentShader["Projection"] = Projection;

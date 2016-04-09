@@ -30,6 +30,10 @@ namespace AGRacing
         DirectionalLight sun;
         LightPass lights;
 
+        FullScreenQuad fsq2;
+        ShaderProgram atmosphereShader;
+        FrameBuffer sky;
+
 #if DEBUG
         Model collisionVis;
 #endif
@@ -39,12 +43,15 @@ namespace AGRacing
         public Track(string infoLine, GraphicsContext context)
         {
             string[] parts = infoLine.Split(',');
-            if (parts.Length != 4) throw new ArgumentException();
+            if (parts.Length != 6) throw new ArgumentException();
             Name = parts[1];
             trackModel = new VertexMesh("Resources/Proc/Track_Vis/" + parts[0] + ".ko", false, context);
             trackModel.Material.AlbedoMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2], 0, true, context);
-            trackModel.Material.GlossinessMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[3], 0, false, context);
-            trackModel.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context)));
+            trackModel.Material.RoughnessMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[3], 0, false, context);
+            trackModel.Material.SpecularMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[4], 0, false, context);
+            trackModel.Material.NormalMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[5], 0, false, context);
+            trackModel.Material.PackedMap = Material.PackTextures(trackModel.Material, context);
+            trackModel.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(context, VertexShader.Load("ShadowedPacked", context), FragmentShader.Load("ShadowedPacked", context)));
 
 #if DEBUG
             //collisionVis = new Kokoro2.Engine.Prefabs.Box(100, 100, 100);
@@ -83,22 +90,6 @@ namespace AGRacing
                 //TODO implement light dispose stuff to close up the memory leak we have here
                 lights = new LightPass((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
                 lights.AddLight(sun);
-                {
-                    Random rng = new Random();
-                    for (int i = 0; i < 500; i++)
-                    {
-                        float x = rng.Next(0, 15) / 15f;
-                        float y = rng.Next(0, 25) / 25f;
-                        float z = rng.Next(0, 5) / 5f;
-
-                        var pLight = new PointLight(context);
-                        pLight.LightColor = new Vector3(x, y, z);
-                        pLight.Attenuation = 0.5f;
-                        pLight.Position = new Vector3(rng.Next(-200, 200), rng.Next(-100, 100), rng.Next(-200, 200));
-                        lights.AddLight(pLight);
-                        lights.GILight = sun;
-                    }
-                }
 
                 lights.EnvironmentMap = ImageTextureSource.Create("Resources/Proc/Tex/envMap.jpg", 0, true, con);
                 gbuf = new GBuffer((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
@@ -109,25 +100,16 @@ namespace AGRacing
             lights.GILight = sun;
             lights.EnvironmentMap = ImageTextureSource.Create("Resources/Proc/Tex/envMap.jpg", 0, true, context);
 
-            {
-                Random rng = new Random();
-                for (int i = 0; i < 500; i++)
-                {
-                    float x = rng.Next(0, 15) / 15f;
-                    float y = rng.Next(0, 25) / 25f;
-                    float z = rng.Next(0, 5) / 5f;
-
-                    var pLight = new PointLight(context);
-                    pLight.LightColor = new Vector3(x, y, z);
-                    pLight.Attenuation = 0.4f;
-                    pLight.Position = new Vector3(rng.Next(-200, 200), rng.Next(-100, 100), rng.Next(-200, 200));
-                    lights.AddLight(pLight);
-                }
-            }
-
             gbuf = new GBuffer((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
             fsq = new FullScreenQuad(context);
             fsq.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("FrameBuffer", context), FragmentShader.Load("FrameBuffer", context)));
+
+            sky = new FrameBuffer(960, 540, context);
+            sky.Add("Color", FramebufferTextureSource.Create(sky.Width, sky.Height, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+            fsq2 = new FullScreenQuad(context);
+            atmosphereShader = new ShaderProgram(context, VertexShader.Load("Atmosphere", context), FragmentShader.Load("Atmosphere", context));
+            fsq2.RenderInfo.PushShader(atmosphereShader);
+            atmosphereShader["uSunPos"] = -sun.Direction;
         }
 
         #region Ideal Race Line Controls 
@@ -225,6 +207,10 @@ namespace AGRacing
             sun.EndShadowPass(context);
             context.FaceCulling = CullMode.Back;
 
+            //sky.Bind(context);
+            //context.Draw(fsq2);
+            //sky.UnBind(context);
+
             gbuf.Bind(context);
             context.ClearColor(0, 0, 0, 0);
             context.ClearDepth();
@@ -245,6 +231,8 @@ namespace AGRacing
                     ships[i].Draw(context);
                 }
             }
+            context.Draw(fsq2);
+
             gbuf.UnBind(context);
 
             lights.ApplyLights(gbuf, context);

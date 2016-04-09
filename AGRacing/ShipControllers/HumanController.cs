@@ -30,7 +30,7 @@ namespace AGRacing.ShipControllers
 
             if (Kokoro2.Engine.Input.Keyboard.IsKeyPressed(Kokoro2.Engine.Input.Key.W))
             {
-                target.ChangeVelocity(target.PhysicalFront * 70f);
+                target.ChangeVelocity(target.PhysicalFront * 100f);
             }
 
             if (Kokoro2.Engine.Input.Keyboard.IsKeyPressed(Kokoro2.Engine.Input.Key.A))

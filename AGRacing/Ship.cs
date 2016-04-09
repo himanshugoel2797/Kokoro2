@@ -69,7 +69,8 @@ namespace AGRacing
             Mesh = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false, c);
 
             Mesh.Material.AlbedoMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2] + "tex.png",0, true, c);
-            Mesh.Material.GlossinessMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2] + "roughness.png", 0, false, c);
+            Mesh.Material.RoughnessMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2] + "roughness.png", 0, false, c);
+            Mesh.Material.SpecularMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2] + "spec.png", 0, false, c);
             Mesh.RenderInfo.PushShader(new ShaderProgram(c, VertexShader.Load("Shadowed", c), FragmentShader.Load("Shadowed", c)));
 
             if (parts.Length > 3)

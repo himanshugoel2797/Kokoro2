@@ -54,6 +54,16 @@
     <EmbeddedResource Include="SSR\vertex.glsl" />
     <EmbeddedResource Include="PBRPreProcess\fragment.glsl" />
     <EmbeddedResource Include="PBRPreProcess\vertex.glsl" />
+    <EmbeddedResource Include="PackGlossRoughNorm\fragment.glsl" />
+    <EmbeddedResource Include="PackGlossRoughNorm\vertex.glsl" />
+    <EmbeddedResource Include="BlurVertical\vertex.glsl" />
+    <EmbeddedResource Include="BlurHorizontal\vertex.glsl" />
+    <EmbeddedResource Include="Atmosphere\fragment.glsl">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Atmosphere\vertex.glsl" />
+    <EmbeddedResource Include="SimpleParticleSystem\fragment.glsl" />
+    <EmbeddedResource Include="SimpleParticleSystem\vertex.glsl" />
     <None Include="Fur\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -105,6 +115,12 @@
     </None>
     <EmbeddedResource Include="DirectionalLight\fragment.glsl" />
     <EmbeddedResource Include="DirectionalLight\vertex.glsl" />
+    <EmbeddedResource Include="ShadowedPacked\fragment.glsl" />
+    <EmbeddedResource Include="ShadowedPacked\vertex.glsl" />
+    <EmbeddedResource Include="ParticleRenderer\fragment.glsl" />
+    <EmbeddedResource Include="ParticleRenderer\vertex.glsl" />
+    <EmbeddedResource Include="ParticleSystemInitializer\fragment.glsl" />
+    <EmbeddedResource Include="ParticleSystemInitializer\vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ShaderLibrary.cs" />

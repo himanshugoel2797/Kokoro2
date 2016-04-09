@@ -101,7 +101,7 @@ namespace Kokoro.EssencePainter.Editor
 
                 q = new Sphere(10, 50, context);
                 q.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context)));
-                q.Material.AlbedoMap = q.Material.GlossinessMap = q.Material.SpecularMap = ImageTextureSource.Create("Resources/envMap.jpg", 0, true, context);
+                q.Material.AlbedoMap = q.Material.RoughnessMap = q.Material.SpecularMap = ImageTextureSource.Create("Resources/envMap.jpg", 0, true, context);
 
                 ResourcesLoaded = true;
             }
@@ -125,7 +125,7 @@ namespace Kokoro.EssencePainter.Editor
                 {
                     mesh = new VertexMesh(meshPath, false, context);
                     mesh.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context)));
-                    mesh.Material.AlbedoMap = mesh.Material.GlossinessMap = mesh.Material.SpecularMap = ImageTextureSource.Create("Resources/uv.png", 0, true, context);
+                    mesh.Material.AlbedoMap = mesh.Material.RoughnessMap = mesh.Material.SpecularMap = ImageTextureSource.Create("Resources/uv.png", 0, true, context);
                     sun.ShadowBoxSize = mesh.Bound;
                     meshLoaded = true;
                 }

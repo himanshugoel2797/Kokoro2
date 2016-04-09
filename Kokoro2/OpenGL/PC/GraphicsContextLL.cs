@@ -52,6 +52,7 @@ namespace Kokoro2.OpenGL.PC
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.LineSmooth);
             GL.Disable(EnableCap.MultisampleSgis);
+            GL.Enable(EnableCap.FramebufferSrgb);
             //GL.Enable(EnableCap.DepthClamp);
             GL.LineWidth(2);
 

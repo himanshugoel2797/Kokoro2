@@ -30,14 +30,14 @@ vec2 encode (vec3 n)
 void main(){
     vec3 shad = shadowCoord.xyz / shadowCoord.w;
     shad = 0.5 * shad + 0.5;
-    float s_moment = texture2D(ReflectivePosMap, shad.xy).a;
     float f_moment = texture2D(ShadowMap, shad.xy).r;
+    float s_moment = f_moment * f_moment;//texture2D(ReflectivePosMap, shad.xy).a;
     float vis = s_moment / (s_moment + (gl_FragCoord.z - f_moment) * (gl_FragCoord.z - f_moment));
     vis = pow(vis, 3);
     vec3 v = normalize(worldCoord - EyePos);
     normDat.rg = encode(normalize(norm));
     normDat.b = texture2D(SpecularMap, UV).r;
-	normDat.a = texture2D(GlossinessMap, UV).g;
+	normDat.a = texture2D(GlossinessMap, UV).r;
     worldPos.rgb = worldCoord;
     worldPos.a = vis;
     color = texture2D(AlbedoMap, UV);

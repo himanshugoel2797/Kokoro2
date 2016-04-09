@@ -39,15 +39,15 @@ namespace Kokoro2.OpenGL.PC
             BindTexture(0);
             if (filter == Engine.TextureFilter.Linear)
             {
+                GL.TexParameter(texTarget, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
                 if (LevelCount != 0 && mipmapsPopulated) GL.TexParameter(texTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
                 else GL.TexParameter(texTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                GL.TexParameter(texTarget, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             }
             else
             {
+                GL.TexParameter(texTarget, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
                 if (LevelCount != 0 && mipmapsPopulated) GL.TexParameter(texTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.NearestMipmapNearest);
                 else GL.TexParameter(texTarget, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.TexParameter(texTarget, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             }
             UnBindTexture(0);
         }
@@ -57,18 +57,21 @@ namespace Kokoro2.OpenGL.PC
             ID = ParentContext.EngineObjects.RegisterObject(GL.GenTexture());
 
             var ptr = src.GetPixelData();
+            int levels = src.GetLevels();
+            int lvlCopy = levels;
+            levels = (levels < 0) ? 0 : levels;
 
             BindingManager.BindTexture(0, EnumConverters.ETextureTarget(src.GetTextureTarget()), ParentContext.EngineObjects[ID, this.GetType()]);
             switch (src.GetDimensions())
             {
                 case 1:
-                    GL.TexImage1D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), ptr);
+                    GL.TexImage1D(EnumConverters.ETextureTarget(src.GetTextureTarget()), levels, EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), ptr);
                     break;
                 case 2:
-                    GL.TexImage2D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), ptr);
+                    GL.TexImage2D(EnumConverters.ETextureTarget(src.GetTextureTarget()), levels, EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), ptr);
                     break;
                 case 3:
-                    GL.TexImage3D(EnumConverters.ETextureTarget(src.GetTextureTarget()), src.GetLevels(), EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), src.GetDepth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), ptr);
+                    GL.TexImage3D(EnumConverters.ETextureTarget(src.GetTextureTarget()), levels, EnumConverters.EPixelComponentType(src.GetInternalFormat()), src.GetWidth(), src.GetHeight(), src.GetDepth(), 0, EnumConverters.EPixelFormat(src.GetFormat()), EnumConverters.EPixelType(src.GetType()), ptr);
                     break;
                 case 4:
                     GL.TexBuffer((TextureBufferTarget)EnumConverters.ETextureTarget(src.GetTextureTarget()), EnumConverters.ESizedInternalFormat(src.GetInternalFormat()), src.GetLevels());
@@ -76,7 +79,7 @@ namespace Kokoro2.OpenGL.PC
                     break;
             }
 
-            if (src.GetLevels() == -1) GL.GenerateMipmap((GenerateMipmapTarget)EnumConverters.ETextureTarget(src.GetTextureTarget()));
+            if (lvlCopy == -1) GL.GenerateMipmap((GenerateMipmapTarget)EnumConverters.ETextureTarget(src.GetTextureTarget()));
             BindingManager.UnbindTexture(0, EnumConverters.ETextureTarget(src.GetTextureTarget()));
 
             if (ptr == IntPtr.Zero) mipmapsPopulated = false;
@@ -86,7 +89,7 @@ namespace Kokoro2.OpenGL.PC
                 this.Width = src.GetWidth();
                 this.Height = src.GetHeight();
                 this.Depth = src.GetDepth();
-                this.LevelCount = src.GetLevels();
+                this.LevelCount = lvlCopy;
 
                 this.format = EnumConverters.EPixelFormat(src.GetFormat());
                 this.internalformat = EnumConverters.EPixelComponentType(src.GetInternalFormat());

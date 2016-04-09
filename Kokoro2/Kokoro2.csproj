@@ -145,6 +145,7 @@
     <Compile Include="Engine\HighLevel\Rendering\GBuffer.cs" />
     <Compile Include="Engine\HighLevel\Rendering\Grass.cs" />
     <Compile Include="Engine\HighLevel\Rendering\LightPass.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\ParticleSystem.cs" />
     <Compile Include="Engine\HighLevel\Rendering\RayCaster.cs" />
     <Compile Include="Engine\HighLevel\Rendering\TextureBlurFilter.cs" />
     <Compile Include="Engine\HighLevel\Rendering\Voxelizer.cs" />

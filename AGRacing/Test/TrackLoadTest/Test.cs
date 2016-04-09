@@ -12,6 +12,7 @@ using Kokoro2.Physics;
 using AGRacing.ShipControllers;
 using System.Diagnostics;
 using Kokoro2.Engine.Prefabs;
+using Kokoro2.Engine.HighLevel.Rendering;
 
 namespace AGRacing.Test.TrackLoadTest
 {
@@ -25,16 +26,28 @@ namespace AGRacing.Test.TrackLoadTest
 
         Ship s1;
         Track track;
-
+        ParticleSystem ps;
         Sphere sp;
+
+
 
         private bool ResourcesLoaded = false;
         public void LoadResources(GraphicsContext context)
         {
             if (!ResourcesLoaded)
             {
-                track = ResourceLoader.LoadTrack("Test Track2", context);
-                s1 = ResourceLoader.LoadShip("Fiel F35", new HumanController(), context);
+                context.DepthWrite = true;
+                context.FaceCulling = CullMode.Back;
+                context.DepthFunction = DepthFunc.LEqual;
+                //context.DepthClamp = true;
+                context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
+                context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
+                context.Camera = new ArcBallCamera(context, Vector3.Zero, Vector3.UnitX);
+                (context.Camera as ArcBallCamera).Pannable = true;
+                //context.Wireframe = true;
+
+                track = ResourceLoader.LoadTrack("Test Track3", context);
+                s1 = ResourceLoader.LoadShip("AG Fiel A", new HumanController(), context);
 
                 track.Reverse = true;
                 track.AddShip(0, s1);
@@ -44,17 +57,8 @@ namespace AGRacing.Test.TrackLoadTest
                 sp.Material.AlbedoMap = ImageTextureSource.Create("Resources/Proc/Tex/track_tex.png", 0, true, context);
                 sp.RenderInfo.World = Matrix4.CreateTranslation(Vector3.UnitY * -0.75f + Vector3.UnitX * -0.25f);
 
-                context.DepthWrite = true;
-                context.FaceCulling = CullMode.Back;
-                context.DepthFunction = DepthFunc.LEqual;
-                //context.DepthClamp = true;
-                context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
-                context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
-                //context.Camera = new ArcBallCamera(context, Vector3.Zero, Vector3.UnitX);
-                //(context.Camera as ArcBallCamera).Pannable = true;
-                //context.Wireframe = true;
 
-
+                ps = new ParticleSystem(256, context);
 
                 ResourcesLoaded = true;
             }
@@ -73,6 +77,8 @@ namespace AGRacing.Test.TrackLoadTest
                 context.Draw(sp);
                 sp.RenderInfo.World = Matrix4.Identity;
                 context.Draw(sp);
+                
+                ps.Draw(context);
                 context.DepthFunction = DepthFunc.LEqual;
                 context.SwapBuffers();
             }
@@ -101,10 +107,10 @@ namespace AGRacing.Test.TrackLoadTest
                     camDist -= turningFactor * 2;
                     if (camDist > 5) camDist = 5;
                     if (camDist < 2) camDist = 2;
-                    camDist *= 1.5f;
+                    camDist *= 1.75f;
 
                     tmpCam.Position = s1.Position - (s1.MovementDirection + s1.PhysicalFront) / 2 * camDist;
-                    tmpCam.Position += Vector3.UnitY * 1.5f;
+                    tmpCam.Position += Vector3.UnitY * 1.75f;
                     tmpCam.Direction = -(tmpCam.Position - s1.Position) + s1.PhysicalFront * 5;
                     tmpCam.Up = s1.prevUp;
                     tmpCam.Position += Vector3.UnitY * 1.0f;

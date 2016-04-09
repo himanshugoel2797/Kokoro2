@@ -10,7 +10,6 @@ uniform sampler2D BloomMap;
 uniform sampler2D ShadowMap;
 uniform sampler2D DiffuseMap;
 uniform sampler2D AvgColor;
-
 vec3 Uncharted2Tonemap(vec3 x)
 {
     const float A = 0.15;
@@ -24,21 +23,12 @@ vec3 Uncharted2Tonemap(vec3 x)
 
 
 
+
 void main(){
-    color = (texture2D(LitMap, UV) + texture2D(BloomMap, UV)) * texture2D(ShadowMap, UV).a;
-    //color.rgb = (texture(DiffuseMap, UV).rgb + texture(LitMap, UV).rgb);
+    color = (texture(DiffuseMap, UV) + texture(LitMap, UV) + texture(BloomMap, UV)) * mix(1.0, 0.5, texture(ShadowMap, UV).a);
+	//color *= 16;  // Hardcoded Exposure Adjustment
+	color = color/(1+color);
 	color.a = 1;
-
-    const float gamma = 2.2;
-    vec3 col = texture2D(AvgColor, vec2(0.5)).rgb;
-	const vec3 fac = vec3(0.299, 0.587, 0.114);
-
-    float lum = dot(col, fac);
-    lum = max(0.4, lum);
-    // Exposure tone mapping
-    vec3 mapped = color.rgb;//Uncharted2Tonemap(color.rgb * lum)/0.2033 ;//Uncharted2Tonemap(vec3(0.9)); ~= 0.2033
-    // Gamma correction 
-    mapped = pow(mapped, vec3(1.0 / gamma));
-    color = vec4(mapped, 1.0);
-	color = texture2D(LitMap, UV);
+    color.rgb = (texture(LitMap, UV).rgb);
 }
+
