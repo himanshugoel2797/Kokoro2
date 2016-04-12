@@ -1,3 +1,1 @@
-﻿track_0,Test Track,track_tex.png,track_roughness.png,track_specular.png,track_normal.jpg
-track_1,Test Track2,track_tex.png,track_roughness.png,track_specular.png,track_normal.jpg
-track_2,Test Track3,track_1_1_tex.png,track_roughness.png,track_specular.png,track_normal.jpg
+﻿Test Track 3,Test Track 3.xml

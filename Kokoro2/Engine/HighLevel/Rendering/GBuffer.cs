@@ -27,6 +27,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             buffer.Add("WorldPos", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
             buffer.Add("Normal", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA8, PixelType.Float, context), FrameBufferAttachments.ColorAttachment1, context);
             buffer.Add("Color", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment2, context);
+            buffer.Add("Bloom", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, context), FrameBufferAttachments.ColorAttachment3, context);
             buffer.Add("DepthBuffer", DepthTextureSource.Create(width, height, PixelComponentType.D32, context), FrameBufferAttachments.DepthAttachment, context);
 
             //TODO setup the new GBufferShader

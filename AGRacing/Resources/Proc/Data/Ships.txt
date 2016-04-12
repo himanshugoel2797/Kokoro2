@@ -1,2 +1,1 @@
-﻿car1_0,Fiel F35,car1_0_,Scale=0.25,RotY=-90,FrontDir=0:0:1
-car1_1,AG Fiel A,car1_1_,Scale=0.5
+﻿Fiel Car A,Fiel Car A.xml

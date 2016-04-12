@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<TextureSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>particle1_1</Name>
+  <File>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\particle1_1.dfc</File>
+  <Width>0</Width>
+  <Height>0</Height>
+  <AlbedoMap>true</AlbedoMap>
+  <ReflectivityMap>true</ReflectivityMap>
+  <RoughnessMap>true</RoughnessMap>
+  <NormalMap>true</NormalMap>
+  <EmissiveMap>true</EmissiveMap>
+  <AlbedoMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\particle.png</AlbedoMapFile>
+  <ReflectivityMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\car1_1_spec.png</ReflectivityMapFile>
+  <RoughnessMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\car1_1_roughness.png</RoughnessMapFile>
+  <NormalMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\car1_1_norm.png</NormalMapFile>
+  <EmissiveMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\car1_1_emit.png</EmissiveMapFile>
+</TextureSet>

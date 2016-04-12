@@ -9,6 +9,7 @@ uniform sampler2D LitMap;
 uniform sampler2D BloomMap;
 uniform sampler2D ShadowMap;
 uniform sampler2D DiffuseMap;
+uniform sampler2D depthBuffer;
 uniform sampler2D AvgColor;
 vec3 Uncharted2Tonemap(vec3 x)
 {
@@ -25,10 +26,10 @@ vec3 Uncharted2Tonemap(vec3 x)
 
 
 void main(){
-    color = (texture(DiffuseMap, UV) + texture(LitMap, UV) + texture(BloomMap, UV)) * mix(1.0, 0.5, texture(ShadowMap, UV).a);
-	//color *= 16;  // Hardcoded Exposure Adjustment
+    color = (texture(LitMap, UV) + texture(BloomMap, UV));// * mix(1.0, 0.5, texture(ShadowMap, UV).a);
+	color *= 1.25;  // Hardcoded Exposure Adjustment
 	color = color/(1+color);
-	color.a = 1;
-    color.rgb = (texture(LitMap, UV).rgb);
+	gl_FragDepth = texture(depthBuffer, UV).r;
+	//color = texture(BloomMap, UV);
 }
 

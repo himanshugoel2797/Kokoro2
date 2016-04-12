@@ -11,14 +11,20 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 {
     public class ParticleSystem
     {
+        public Vector3 EmitterBoxLocation { get; set; }
         public Vector3 EmitterLocation { get; set; }
         public Vector3 EmitterSphereRadius { get; set; }
         public int ParticleCount { get; private set; }
-        public Vector3 Force { get; set; }
+        public Vector3 Impulse { get; set; }
         public float MinMass { get; set; }
         public float MaxMass { get; set; }
-        public Material Material { get; set; }
-
+        public Material Material
+        {
+            get { return particleMesh.Material; }
+            set { particleMesh.Material = value; }
+        }
+        public float BloomFactor { get; set; }
+        public Matrix4 World;
 
         private FrameBuffer particleBufferA, particleBufferB;
         private FrameBuffer currentBuffer, otherBuffer;
@@ -97,17 +103,32 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             currentBuffer.Bind(c);
 
             particleAnimationShader["DeltaTime"] = 0.1f;
-            particleAnimationShader["Impulse"] = new Vector3(0.1f);
+            particleAnimationShader["Impulse"] = Impulse;
             particleAnimationShader["PosData"] = otherBuffer["PosData"];
             particleAnimationShader["dVData"] = otherBuffer["dVData"];
+            particleAnimationShader["EmitterPosition"] = EmitterLocation;
 
             c.Draw(fsq);
 
             currentBuffer.UnBind(c);
-
-            particleRenderer["Source"] = EmitterLocation;
+            var backup = c.FaceCulling;
+            c.FaceCulling = CullMode.Off;
+            c.Blend = true;
+            //c.DepthFunction = DepthFunc.Always;
+            c.Blending = new BlendFunc()
+            {
+                Dst = BlendingFactor.One,
+                Src = BlendingFactor.SrcAlpha
+            };
+            particleRenderer["Source"] = EmitterBoxLocation;
             particleRenderer["PosData"] = otherBuffer["PosData"];
+            particleRenderer["bloomFactor"] = BloomFactor;
+            particleMesh.RenderInfo.World = World;
+            //c.DepthWrite = false;
             c.Draw(particleMesh);
+            //c.DepthWrite = true;
+            c.Blend = false;
+            c.FaceCulling = backup;
         }
 
     }

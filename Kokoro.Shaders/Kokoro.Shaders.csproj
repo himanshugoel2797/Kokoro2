@@ -64,6 +64,8 @@
     <EmbeddedResource Include="Atmosphere\vertex.glsl" />
     <EmbeddedResource Include="SimpleParticleSystem\fragment.glsl" />
     <EmbeddedResource Include="SimpleParticleSystem\vertex.glsl" />
+    <EmbeddedResource Include="FrameBufferToG\fragment.glsl" />
+    <EmbeddedResource Include="FrameBufferToG\vertex.glsl" />
     <None Include="Fur\fragment.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

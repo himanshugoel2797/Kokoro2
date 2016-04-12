@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Editor\EditorScene.cs" />
+    <Compile Include="Editor\PaintAction.cs" />
     <Compile Include="Editor\TextureSet.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -67,6 +68,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextureEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TextureEditorForm.Designer.cs">
+      <DependentUpon>TextureEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TextureManagement.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -83,6 +93,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="TextureEditorForm.resx">
+      <DependentUpon>TextureEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

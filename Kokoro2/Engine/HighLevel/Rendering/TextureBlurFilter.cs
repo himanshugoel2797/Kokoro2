@@ -29,20 +29,20 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
             if (pct != PixelComponentType.RGBA16f && pct != PixelComponentType.RGBA32f)
             {
-                tmpBuffer = new FrameBuffer(width / 2, height / 2, context);
-                tmpBuffer.Add("Hblurred", FramebufferTextureSource.Create(width / 2, height / 2, 0, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+                tmpBuffer = new FrameBuffer(width, height, context);
+                tmpBuffer.Add("Hblurred", FramebufferTextureSource.Create(width, height, 0, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
                 //tmpBuffer.Add("DepthBuffer", DepthTextureSource.Create(width / 2, height / 2, PixelComponentType.D32, context), FrameBufferAttachments.DepthAttachment, context);
                 tmpBuffer["Hblurred"].FilterMode = TextureFilter.Linear;
 
-                resultBuffer = new FrameBuffer(width / 4, height / 4, context);
-                resultBuffer.Add("Vblurred", FramebufferTextureSource.Create(width / 4, height / 4, 0, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+                resultBuffer = new FrameBuffer(width / 2, height / 2, context);
+                resultBuffer.Add("Vblurred", FramebufferTextureSource.Create(width / 2, height / 2, 0, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
                 //resultBuffer.Add("DepthBuffer", DepthTextureSource.Create(width / 4, height / 4, PixelComponentType.D32, context), FrameBufferAttachments.DepthAttachment, context);
                 resultBuffer["Vblurred"].FilterMode = TextureFilter.Linear;
             }
             else
             {
-                tmpBuffer = new FrameBuffer(width / 2, height / 2, context);
-                tmpBuffer.Add("Hblurred", FramebufferTextureSource.Create(width / 2, height / 2, 0, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
+                tmpBuffer = new FrameBuffer(width, height, context);
+                tmpBuffer.Add("Hblurred", FramebufferTextureSource.Create(width, height, 0, pct, PixelType.Float, context), FrameBufferAttachments.ColorAttachment0, context);
                 //tmpBuffer.Add("DepthBuffer", DepthTextureSource.Create(width / 2, height / 2, PixelComponentType.D32, context), FrameBufferAttachments.DepthAttachment, context);
                 tmpBuffer["Hblurred"].FilterMode = TextureFilter.Nearest;
 

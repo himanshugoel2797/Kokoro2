@@ -38,7 +38,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
         /// <param name="Context">The current GraphicsContext</param>
         public override void Update(double interval, GraphicsContext Context)
         {
-            View = Matrix4.LookAt(Position, Position + Direction, Up);
+            View = Matrix4.LookAt(Position - Direction, Position, Up);
             base.Update(interval, Context);
         }
     }

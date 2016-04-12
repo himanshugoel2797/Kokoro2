@@ -25,6 +25,9 @@ namespace Kokoro2.Shaders
                 "FrameBuffer/fragment.glsl",
                 "FrameBuffer/vertex.glsl",
 
+                "FrameBufferToG/fragment.glsl",
+                "FrameBufferToG/vertex.glsl",
+
                 "LoD/fragment.glsl",
                 "LoD/vertex.glsl",
 

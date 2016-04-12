@@ -26,8 +26,6 @@ namespace AGRacing.Test.TrackLoadTest
 
         Ship s1;
         Track track;
-        ParticleSystem ps;
-        Sphere sp;
 
 
 
@@ -41,24 +39,16 @@ namespace AGRacing.Test.TrackLoadTest
                 context.DepthFunction = DepthFunc.LEqual;
                 //context.DepthClamp = true;
                 context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
-                context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
-                context.Camera = new ArcBallCamera(context, Vector3.Zero, Vector3.UnitX);
-                (context.Camera as ArcBallCamera).Pannable = true;
+                //context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
+                //context.Camera = new ArcBallCamera(context, Vector3.Zero, Vector3.UnitX);
+                //(context.Camera as ArcBallCamera).Pannable = true;
                 //context.Wireframe = true;
 
-                track = ResourceLoader.LoadTrack("Test Track3", context);
-                s1 = ResourceLoader.LoadShip("AG Fiel A", new HumanController(), context);
-
-                track.Reverse = true;
+                track = ResourceLoader.LoadTrack("Test Track 3", context);
+                s1 = ResourceLoader.LoadShip("Fiel Car A", new HumanController(), context);
+                
                 track.AddShip(0, s1);
 
-                sp = new Sphere(10, 10, context);
-                sp.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("Default", context), FragmentShader.Load("Default", context)));
-                sp.Material.AlbedoMap = ImageTextureSource.Create("Resources/Proc/Tex/track_tex.png", 0, true, context);
-                sp.RenderInfo.World = Matrix4.CreateTranslation(Vector3.UnitY * -0.75f + Vector3.UnitX * -0.25f);
-
-
-                ps = new ParticleSystem(256, context);
 
                 ResourcesLoaded = true;
             }
@@ -73,12 +63,7 @@ namespace AGRacing.Test.TrackLoadTest
 
                 track.Draw(context);
                 context.DepthFunction = DepthFunc.Always;
-                sp.RenderInfo.World = Matrix4.CreateTranslation(Vector3.UnitY * -75f + Vector3.UnitX * -25f);
-                context.Draw(sp);
-                sp.RenderInfo.World = Matrix4.Identity;
-                context.Draw(sp);
                 
-                ps.Draw(context);
                 context.DepthFunction = DepthFunc.LEqual;
                 context.SwapBuffers();
             }
@@ -100,18 +85,18 @@ namespace AGRacing.Test.TrackLoadTest
                 {
                     int index = s1.findNearestTrackPoint(track);
 
-                    float camDist = 50 - (float)Math.Min(50, Math.Pow(Vector3.Dot(s1.PhysicalFront, s1.Velocity) / (Vector3.Dot(s1.PhysicalFront, s1.MovementDirection) * 100), 4));
+                    float camDist = 50;// - (float)Math.Min(50, Math.Pow(Vector3.Dot(s1.PhysicalFront, s1.Velocity) / (Vector3.Dot(s1.PhysicalFront, s1.MovementDirection) * 100), 4));
                     float turningFactor = (1 - Vector3.Dot(s1.MovementDirection, s1.PhysicalFront));
 
                     camDist /= 10;
                     camDist -= turningFactor * 2;
                     if (camDist > 5) camDist = 5;
                     if (camDist < 2) camDist = 2;
-                    camDist *= 1.75f;
+                    //camDist *= 1.75f;
 
                     tmpCam.Position = s1.Position - (s1.MovementDirection + s1.PhysicalFront) / 2 * camDist;
                     tmpCam.Position += Vector3.UnitY * 1.75f;
-                    tmpCam.Direction = -(tmpCam.Position - s1.Position) + s1.PhysicalFront * 5;
+                    tmpCam.Direction = -(tmpCam.Position - s1.Position) + s1.PhysicalFront;
                     tmpCam.Up = s1.prevUp;
                     tmpCam.Position += Vector3.UnitY * 1.0f;
 

@@ -1,4 +1,5 @@
 ﻿using Kokoro2.Engine;
+using Kokoro2.Engine.HighLevel.Rendering;
 using Kokoro2.Engine.Physics;
 using Kokoro2.Engine.Prefabs;
 using Kokoro2.Engine.Shaders;
@@ -25,7 +26,7 @@ namespace AGRacing
 
     class Ship
     {
-        VertexMesh Mesh;
+        Model Mesh;
         public string Name { get; private set; }
         public Vector3 Position;
         public Vector3 RealFront = -Vector3.UnitZ;
@@ -47,9 +48,7 @@ namespace AGRacing
         private IShipController controller;
         private BaseEntity collisionMesh;
 
-#if DEBUG
-        private Model colVis;
-#endif
+        private ParticleSystem[] ps;
 
         public ShaderProgram Shader
         {
@@ -59,26 +58,24 @@ namespace AGRacing
             }
         }
 
-        public Ship(string infoString, IShipController controller, GraphicsContext c)
+        public Ship(CraftData craft, IShipController controller, GraphicsContext c)
         {
-            string[] parts = infoString.Split(',');
-            if (parts.Length < 3) throw new ArgumentException();
-
-            Name = parts[1];
             this.controller = controller;
-            Mesh = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false, c);
+            Name = craft.Name;
+            Scale = craft.Scale;
+            RealFront = craft.frontDirection;
+            Rotations = craft.rotation;
+            Mass = craft.Mass;
+            Mesh = new VertexMesh(craft.modelFile, false, c);
+            Mesh.Material = Material.Load(craft.textureFile, c);
+            Mesh.RenderInfo.PushShader(new ShaderProgram(c, VertexShader.Load("ShadowedPacked", c), FragmentShader.Load("ShadowedPacked", c)));
 
-            Mesh.Material.AlbedoMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2] + "tex.png",0, true, c);
-            Mesh.Material.RoughnessMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2] + "roughness.png", 0, false, c);
-            Mesh.Material.SpecularMap = ImageTextureSource.Create("Resources/Proc/Tex/" + parts[2] + "spec.png", 0, false, c);
-            Mesh.RenderInfo.PushShader(new ShaderProgram(c, VertexShader.Load("Shadowed", c), FragmentShader.Load("Shadowed", c)));
-
-            if (parts.Length > 3)
+            ps = new ParticleSystem[craft.particleEmitterLocations.Length];
+            for (int i = 0; i < ps.Length; i++)
             {
-                for (int i = 3; i < parts.Length; i++)
-                {
-                    ParseConfigData(parts[i]);
-                }
+                ps[i] = new ParticleSystem(256, c);
+                ps[i].EmitterBoxLocation = craft.particleEmitterLocations[i];
+                ps[i].Material = Material.Load(craft.particleEmitterTextures[i], c);
             }
 
             Vector3 min, max;
@@ -103,15 +100,7 @@ namespace AGRacing
             }
             float sc = 1 * Scale;
 
-            float[] verts = VertexMesh.GetVertices("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false);
-
-            List<BEPUutilities.Vector3> v = new List<BEPUutilities.Vector3>();
-            for (int i = 0; i < verts.Length; i += 3)
-            {
-                v.Add(new BEPUutilities.Vector3(verts[i] * sc, verts[i + 1] * sc, verts[i + 2] * sc));
-            }
-
-            collisionMesh = new Kokoro2.Engine.Physics.Sphere(Position, 0.5f, Mass);
+            collisionMesh = new Kokoro2.Engine.Physics.Sphere(Position, 0.3f, Mass);
             collisionMesh.PositionUpdateMode = PositionUpdateMode.Continuous;
             //collisionMesh = new BEPUphysics.Entities.Prefabs.MobileMesh(v.ToArray(), VertexMesh.GetIndices("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false), BEPUutilities.AffineTransform.Identity, BEPUphysics.CollisionShapes.MobileMeshSolidity.DoubleSided, Mass);
 
@@ -119,27 +108,15 @@ namespace AGRacing
 
             collisionMesh.Orientation = Quaternion.FromAxisAngle(Vector3.UnitX, Rotations.X) * Quaternion.FromAxisAngle(Vector3.UnitY, Rotations.Y) * Quaternion.FromAxisAngle(Vector3.UnitZ, Rotations.Z);
             PhysicalFront = Vector3.TransformVector(RealFront, Matrix4.CreateFromQuaternion(collisionMesh.Orientation));
-
-#if DEBUG
-            colVis = new VertexMesh("Resources/Proc/Car_Vis/" + parts[0] + ".ko", false, c);
-            colVis.RenderInfo.PushShader(new ShaderProgram(c, VertexShader.Load("Shadowed", c), FragmentShader.Load("Shadowed", c)));
-            colVis.Material.AlbedoMap = Mesh.Material.AlbedoMap;
-#endif
         }
 
         public void PushShader(ShaderProgram s)
         {
             Mesh.RenderInfo.PushShader(s);
-#if DEBUG
-            colVis.RenderInfo.PushShader(s);
-#endif
         }
 
         public ShaderProgram PopShader()
         {
-#if DEBUG
-            colVis.RenderInfo.PopShader();
-#endif
             return Mesh.RenderInfo.PopShader();
         }
 
@@ -155,48 +132,12 @@ namespace AGRacing
 
             PhysicalRight = Vector3.Cross(PhysicalFront, Vector3.UnitY);
             PhysicalRight.Normalize();
-#if DEBUG
-            Vector3 axis;
-            float angle;
-            ((Quaternion)collisionMesh.Orientation).ToAxisAngle(out axis, out angle);
-            colVis.RenderInfo.World = Matrix4.Scale(Scale) * Matrix4.CreateFromAxisAngle(axis, angle) * Matrix4.CreateTranslation(collisionMesh.Position);
-#endif
         }
 
         public void GetBounds(out Vector3 min, out Vector3 max)
         {
             min = Mesh.Bound.Min;
             max = Mesh.Bound.Max;
-        }
-
-        private void ParseConfigData(string str)
-        {
-            if (str.StartsWith("Scale"))
-            {
-                Scale = float.Parse(str.Split('=')[1]);
-            }
-            else if (str.StartsWith("RotX"))
-            {
-                Rotations += Vector3.UnitX * (float)(Math.PI * float.Parse(str.Split('=')[1]) / 180f);
-            }
-            else if (str.StartsWith("RotY"))
-            {
-                Rotations += Vector3.UnitY * (float)(Math.PI * float.Parse(str.Split('=')[1]) / 180f);
-            }
-            else if (str.StartsWith("RotZ"))
-            {
-                Rotations += Vector3.UnitZ * (float)(Math.PI * float.Parse(str.Split('=')[1]) / 180f);
-            }
-            else if (str.StartsWith("FrontDir"))
-            {
-                var t = str.Split('=')[1].Split(':');
-                RealFront = new Vector3(float.Parse(t[0]), float.Parse(t[1]), float.Parse(t[2]));
-            }
-            else if (str.StartsWith("Mass"))
-            {
-                Mass = float.Parse(str.Split('=')[1]);
-            }
-
         }
 
         public BaseEntity GetPhysicsEntity()
@@ -208,11 +149,17 @@ namespace AGRacing
         {
             context.Draw(Mesh);
 
+
 #if DEBUG
             context.Wireframe = true;
             //colVis.Draw(context);
             context.Wireframe = false;
 #endif
+        }
+
+        public void DrawEffects(GraphicsContext context)
+        {
+            for (int i = 0; i < ps.Length; i++) ps[i].Draw(context);
         }
 
         public Vector3 GetRayLocation(ShipRayLocations loc)
@@ -410,8 +357,17 @@ namespace AGRacing
             CalcAG(ShipRayLocations.BackRightBottom, t);
             CalcAG(ShipRayLocations.FrontLeftBottom, t);
             CalcAG(ShipRayLocations.FrontRightBottom, t);
-            Mesh.RenderInfo.World = Matrix4.Scale(Scale) * Matrix4.CreateFromQuaternion(Orientation) * Matrix4.CreateFromAxisAngle(PhysicalRight, -0.2f + 0.05f * (float)Math.Sin(c) + angle) * Matrix4.CreateFromAxisAngle(PhysicalFront, tilt) * Matrix4.CreateTranslation(Position);
+            Mesh.RenderInfo.World = Matrix4.Scale(Scale) * Matrix4.CreateFromQuaternion(Orientation) * Matrix4.CreateFromAxisAngle(PhysicalRight, 0.02f + 0.05f * (float)Math.Sin(c) + angle) * Matrix4.CreateFromAxisAngle(PhysicalFront, tilt) * Matrix4.CreateTranslation(Position);
             c += 0.05f;
+
+            for (int i = 0; i < ps.Length; i++)
+            {
+                ps[i].BloomFactor = (float)Math.Log(Velocity.LengthSquared, 100000000) / 0.7f;
+                ps[i].Impulse = -new Vector3(0, 0, 0.02f);
+                //ps.EmitterBoxLocation = (RealFront * -2.38358f + Vector3.UnitY * 0.879f) * Scale;
+                //ps.World = Matrix4.Identity;
+                ps[i].World = Matrix4.CreateFromQuaternion(Orientation) * Matrix4.CreateFromAxisAngle(PhysicalRight, 0.02f + 0.05f * (float)Math.Sin(c) + angle) * Matrix4.CreateFromAxisAngle(PhysicalFront, tilt) * Matrix4.CreateTranslation(Position);// * Matrix4.CreateTranslation(-MovementDirection * 2.38358f + Vector3.UnitY * 0.87935f);// * Mesh.RenderInfo.World;
+            }
 
             Vector3 flat_v = collisionMesh.LinearVelocity;
             flat_v = new Vector3(flat_v.X, 0, flat_v.Z);

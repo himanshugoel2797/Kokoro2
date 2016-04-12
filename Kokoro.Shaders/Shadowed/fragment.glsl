@@ -9,12 +9,14 @@ in vec3 norm;
 layout(location = 0) out vec4 worldPos;
 layout(location = 1) out vec4 normDat;
 layout(location = 2) out vec4 color;
+layout(location = 3) out vec4 bloom;
 // Values that stay constant for the whole mesh.
 uniform sampler2D AlbedoMap;
 uniform sampler2D SpecularMap;
 uniform sampler2D GlossinessMap;
 uniform sampler2D ShadowMap;
 uniform sampler2D ReflectivePosMap;
+uniform sampler2D EmissionMap;
 uniform vec3 EyePos;
 
 uniform mat4 View;
@@ -41,6 +43,7 @@ void main(){
     worldPos.rgb = worldCoord;
     worldPos.a = vis;
     color = texture2D(AlbedoMap, UV);
+	bloom = texture2D(EmissionMap, UV) * 5;
     gl_FragDepth = Fcoef * 0.5 * log2(flogz);
 }
 

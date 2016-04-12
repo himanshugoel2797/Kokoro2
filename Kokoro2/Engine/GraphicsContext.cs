@@ -374,8 +374,17 @@ namespace Kokoro2.Engine
         #endregion
 
         #region Draw
-        public void Draw(RenderInfo r, GeometryInfo g)
+        private Texture emptyTex;
+        private void SetShaderParams(RenderInfo r, GeometryInfo g)
         {
+            if(emptyTex == null)
+            {
+                System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(256, 256);
+                var g2 = System.Drawing.Graphics.FromImage(bmp);
+                g2.FillRectangle(System.Drawing.Brushes.Black, 0, 0, 256, 256);
+                emptyTex = ImageTextureSource.Create(bmp, 0, false, this);
+            }
+
             var CurrentShader = r.Shader;
             CurrentShader["ZNear"] = ZNear;
             CurrentShader["ZFar"] = ZFar;
@@ -383,13 +392,20 @@ namespace Kokoro2.Engine
             CurrentShader["EyeDir"] = Camera.Direction;
             CurrentShader["Fcoef"] = 2.0f / (float)System.Math.Log(ZFar + 1.0, 2);
             CurrentShader["ScreenSize"] = WindowSize;
-            if(r.Material.AlbedoMap != null)CurrentShader["AlbedoTextureSize"] = new Vector2(r.Material.AlbedoMap.Width, r.Material.AlbedoMap.Height);
+            if (r.Material.AlbedoMap != null) CurrentShader["AlbedoTextureSize"] = new Vector2(r.Material.AlbedoMap.Width, r.Material.AlbedoMap.Height);
 
             if (r.Material.AlbedoMap != null) CurrentShader["AlbedoMap"] = r.Material.AlbedoMap;
+            else CurrentShader["AlbedoMap"] = emptyTex;
             if (r.Material.RoughnessMap != null) CurrentShader["GlossinessMap"] = r.Material.RoughnessMap;
+            else CurrentShader["GlossinessMap"] = emptyTex;
             if (r.Material.SpecularMap != null) CurrentShader["SpecularMap"] = r.Material.SpecularMap;
+            else CurrentShader["SpecularMap"] = emptyTex;
             if (r.Material.NormalMap != null) CurrentShader["NormalMap"] = r.Material.NormalMap;
+            else CurrentShader["NormalMap"] = emptyTex;
             if (r.Material.PackedMap != null) CurrentShader["PackedMap"] = r.Material.PackedMap;
+            else CurrentShader["PackedMap"] = emptyTex;
+            if (r.Material.EmissionMap != null) CurrentShader["EmissionMap"] = r.Material.EmissionMap;
+            else CurrentShader["EmissionMap"] = emptyTex;
 
             CurrentShader["World"] = r.World;
             CurrentShader["View"] = View;
@@ -397,6 +413,11 @@ namespace Kokoro2.Engine
             CurrentShader["InvView"] = Matrix4.Invert(View);
             CurrentShader["InvProjection"] = Matrix4.Invert(Projection);
             CurrentShader.Apply(this);
+        }
+
+        public void Draw(RenderInfo r, GeometryInfo g)
+        {
+            SetShaderParams(r, g);
 
             //Bind the geometry
             g.Buffer.Bind();
@@ -404,7 +425,7 @@ namespace Kokoro2.Engine
             g.Buffer.UnBind();
 
 
-            CurrentShader.Cleanup(this);
+            r.Shader.Cleanup(this);
         }
 
         public void Draw(Model m)
@@ -414,27 +435,7 @@ namespace Kokoro2.Engine
 
         public void DrawInstanced(RenderInfo r, GeometryInfo g, InstanceBuffer b, int instanceCount)
         {
-            var CurrentShader = r.Shader;
-            CurrentShader["ZNear"] = ZNear;
-            CurrentShader["ZFar"] = ZFar;
-            CurrentShader["EyePos"] = Camera.Position;
-            CurrentShader["EyeDir"] = Camera.Direction;
-            CurrentShader["Fcoef"] = 2.0f / (float)System.Math.Log(ZFar + 1.0, 2);
-            CurrentShader["ScreenSize"] = WindowSize;
-            CurrentShader["AlbedoTextureSize"] = new Vector2(r.Material.AlbedoMap.Width, r.Material.AlbedoMap.Height);
-
-            if (r.Material.AlbedoMap != null) CurrentShader["AlbedoMap"] = r.Material.AlbedoMap;
-            if (r.Material.RoughnessMap != null) CurrentShader["GlossinessMap"] = r.Material.RoughnessMap;
-            if (r.Material.SpecularMap != null) CurrentShader["SpecularMap"] = r.Material.SpecularMap;
-            if (r.Material.NormalMap != null) CurrentShader["NormalMap"] = r.Material.NormalMap;
-            if (r.Material.PackedMap != null) CurrentShader["PackedMap"] = r.Material.PackedMap;
-
-            CurrentShader["World"] = r.World;
-            CurrentShader["View"] = View;
-            CurrentShader["Projection"] = Projection;
-            CurrentShader["InvView"] = Matrix4.Invert(View);
-            CurrentShader["InvProjection"] = Matrix4.Invert(Projection);
-            CurrentShader.Apply(this);
+            SetShaderParams(r, g);
 
             //Bind the geometry
             g.Buffer.Bind();
@@ -442,7 +443,7 @@ namespace Kokoro2.Engine
             g.Buffer.UnBind();
 
 
-            CurrentShader.Cleanup(this);
+            r.Shader.Cleanup(this);
         }
 
         public void DrawInstanced(Model m, InstanceBuffer b, int instanceCount)
@@ -562,6 +563,7 @@ namespace Kokoro2.Engine
                         Thread.Sleep(1);
                         if (stopGame) return;
                     }
+                    if (!stopGame && UpdateThread.IsAlive == false) UpdateThread.Start();
                     prevFrameDone = false;
                     ViewportControl.BeginInvoke(new MethodInvoker(() =>
                     {
@@ -607,7 +609,7 @@ namespace Kokoro2.Engine
             Initialize += (GraphicsContext c) =>
             {
                 //Spawn threads for each: Update, Physics, Animation, Render
-                UpdateThread.Start();
+                if(!UpdateThread.IsAlive)UpdateThread.Start();
             };
 
             RenderThread.Start();

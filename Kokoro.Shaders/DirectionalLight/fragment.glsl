@@ -4,7 +4,6 @@
 in vec2 UV;
 // Ouput data
 layout(location = 0) out vec4 lit;
-layout(location = 1) out vec4 bloom;
 // Values that stay constant for the whole mesh.
 uniform sampler2D colorMap;
 uniform sampler2D normData;
@@ -85,7 +84,10 @@ vec4 cooktorr(vec3 n, vec3 v, vec3 l, float f0, float r, vec4 spec, vec4 dif)
     return vec4(spec * rs + dif * fresnel);
 }
 
-
+float ggx_t(float vDotH, float nDotV, float r)
+{
+	return 1/(nDotV + sqrt( (nDotV - nDotV * r) * nDotV + r ));
+}
 
 
 
@@ -93,20 +95,26 @@ vec4 cooktorr(vec3 n, vec3 v, vec3 l, float f0, float r, vec4 spec, vec4 dif)
 vec4 o_cooktorr(vec3 n, vec3 v, vec3 l, float f0, float r, vec4 spec, vec4 dif)
 {
     vec3 h = normalize((l + v));
-    float nDotV = dot(n, v);
-    float nDotL = dot(n, l);
-    float vDotH = dot(v, h);
-    float nDotH = dot(n, h);
+    float nDotV = abs(dot(n, v)) + 1e-6;
+    float nDotL = max(0, min(1, dot(n, l)));
+    float vDotH = max(0, min(1, dot(v, h)));
+    float nDotH = max(0, min(1, dot(n, h)));
     float top = r * r;
-    float pA = nDotH * nDotH * (top - 1) + 1;
+    float pA = dot(n, h) * dot(n, h) * (top - 1) + 1;
     float roughness = top/(pA * pA);
-    float fresnel = mix(pow((1 - vDotH), 5), 1, f0);
+    vec4 fresnel = (vec4(1 - f0)) * vec4(pow((1 - vDotH), 5)) + vec4(f0);
     float k = r * 0.797884;
-    float geometric = 1/mix(max(0.000001, nDotV), 1, k) * 1/mix(max(0.0000001, nDotL), 1, k);
-    float rs = fresnel * roughness * geometric * 0.101321184;
-    // 0.101321184 = 1/(PI * PI)
+	//fresnel *= 0.04;
 
-	return vec4(spec * rs + dif * fresnel);
+	float geometric = ggx_t(nDotH, nDotV, r) * ggx_t(nDotL, nDotL, r);
+	geometric = 1 / mix(nDotV, 1, k) * 1/ mix(nDotL, 1, k);
+
+    vec4 rs = spec * fresnel * roughness * geometric * 0.101321184;
+    // 0.101321184 = 1/(PI * PI)
+	//rs = max(vec4(0), rs);
+	//return vec4(roughness);
+	//return spec;
+	return vec4(rs + dif * fresnel);
 }
 
 
@@ -116,7 +124,7 @@ vec4 o_cooktorr(vec3 n, vec3 v, vec3 l, float f0, float r, vec4 spec, vec4 dif)
 void main(){
     vec4 dif = texture2D(colorMap, UV);
     vec3 worldCoord = texture2D(worldData, UV).rgb;
-    vec3 l = -lDir;
+    vec3 l = lDir;
 	
 	float d = texture2D(depthBuffer, UV).r;
 	float d1 = pow(2, 2 * d/Fcoef) - 1.0;
@@ -128,14 +136,7 @@ void main(){
 	//v = (InvView * vec4(v, 1)).xyz;
     //rg = normals, b = specular factor, a = glossiness
     vec3 n = decode(tmp.rg);
-    lit = vec4(lColor.rgb, 1) * o_cooktorr(n, v, l, tmp.b, tmp.a * tmp.a, textureLod(ssrMap, UV, tmp.a * tmp.a * 9), dif);
-    const vec3 fac = vec3(0.299, 0.587, 0.114);
-    float lum = dot(fac, lit.rgb);
-    bloom = step(0.95, lum) * lit;
-    lit.a = 1;
-
-	//lit = vec4(v,  1);
-    //bloom.rgb = vec3(0);
+    lit = vec4(lColor.rgb, 1) * o_cooktorr(n, normalize(worldCoord.xyz - EyePos), l, 1 - tmp.b, tmp.a * tmp.a, textureLod(ssrMap, UV, mix(9, 0, tmp.a * tmp.a)), dif);
 }
 
 

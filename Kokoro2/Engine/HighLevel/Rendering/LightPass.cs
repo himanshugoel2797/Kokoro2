@@ -47,6 +47,10 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         private InstanceBuffer giLightInstanceData;
         private Sphere giLightPrim;
         private ShaderProgram giShader;
+        
+        FullScreenQuad fsq2, skyAddFSQ;
+        ShaderProgram atmosphereShader, skyFSQ, skyFSQGbuffer;
+        FrameBuffer sky;
 
         public Texture EnvironmentMap { get; set; }
         public DirectionalLight GILight { get; set; }   //The light that sources the global illumination data
@@ -81,20 +85,30 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
             lightBuffer = new FrameBuffer(width, height, c);
             lightBuffer.Add("Lit", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
-            lightBuffer.Add("Bloom", FramebufferTextureSource.Create(width, height, 0, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment1, c);
 
-            ssrBuffer = new FrameBuffer(960, 960 * height / width, c);
-            var ssrTex = FramebufferTextureSource.Create(ssrBuffer.Width, ssrBuffer.Height, -1, PixelComponentType.RGBA8, PixelType.Float, c);
+            ssrBuffer = new FrameBuffer(width, height, c);
+            var ssrTex = FramebufferTextureSource.Create(ssrBuffer.Width, ssrBuffer.Height, -1, PixelComponentType.RGBA16f, PixelType.Float, c);
             ssrTex.FilterMode = TextureFilter.Linear;
             ssrBuffer.Add("SSR", ssrTex, FrameBufferAttachments.ColorAttachment0, c);
-            ssrPass = new TextureBlurFilter(ssrBuffer.Width, ssrBuffer.Height, PixelComponentType.RGBA8, c);
+            ssrPass = new TextureBlurFilter(ssrBuffer.Width * 2, ssrBuffer.Height * 2, PixelComponentType.RGBA16f, c);
 
             bloomPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA16f, c);
             bloomPass.BlurRadius = 0.0015f * 960 / width;
-            shadowPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA8, c);
+            shadowPass = new TextureBlurFilter(width/2, height/2, PixelComponentType.RGBA8, c);
             shadowPass.BlurRadius = 0.0025f * 960 / width;
 
             //Precalculate PBR data
+            sky = new FrameBuffer(960, 540, c);
+            sky.Add("Color", FramebufferTextureSource.Create(sky.Width, sky.Height, 0, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
+            fsq2 = new FullScreenQuad(c);
+            atmosphereShader = new ShaderProgram(c, VertexShader.Load("Atmosphere", c), FragmentShader.Load("Atmosphere", c));
+            fsq2.RenderInfo.PushShader(atmosphereShader);
+
+            skyAddFSQ = new FullScreenQuad(c);
+            skyFSQ = new ShaderProgram(c, VertexShader.Load("FrameBuffer", c), FragmentShader.Load("FrameBuffer", c));
+            skyFSQGbuffer = new ShaderProgram(c, VertexShader.Load("FrameBufferToG", c), FragmentShader.Load("FrameBufferToG", c));
+            skyAddFSQ.RenderInfo.PushShader(skyFSQ);
+            skyAddFSQ.Material.AlbedoMap = sky["Color"];
         }
 
         public int AddLight(PointLight l)
@@ -138,11 +152,30 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
         public void ApplyLights(GBuffer g, GraphicsContext c)
         {
+            sky.Bind(c);
+            atmosphereShader["uSunPos"] = -GILight.Direction;
+            c.Draw(fsq2);
+            sky.UnBind(c);
+
+            g.Bind(c);
+            skyAddFSQ.RenderInfo.PushShader(skyFSQGbuffer);
+            c.Draw(skyAddFSQ);
+            skyAddFSQ.RenderInfo.PopShader();
+            g.UnBind(c);
+
+
+            var b1 = bloomPass.ApplyBlur(g["Bloom"], c);
+            for (int i = 0; i < 2; i++)
+            {
+                b1 = bloomPass.ApplyBlur(b1, c);
+            }
+
             if (preCalcQuad == null) Precalculate(c);
             ssrShader["worldData"] = g["WorldPos"];
             ssrShader["normData"] = g["Normal"];
             ssrShader["depthMap"] = g["DepthBuffer"];
             ssrShader["colorMap"] = g["Color"];
+            ssrShader["bloomMap"] = b1;
             g["Color"].WrapX = false;
             g["Color"].WrapY = false;
             g["Normal"].WrapX = false;
@@ -150,25 +183,25 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             g["Color"].FilterMode = TextureFilter.Linear;
             g["Normal"].FilterMode = TextureFilter.Linear;
             g["WorldPos"].FilterMode = TextureFilter.Linear;
+            b1.WrapX = false;
+            b1.WrapY = false;
 
             ssrBuffer.Bind(c);
             c.Draw(ssrFSQ);
             ssrBuffer.UnBind(c);
+
+            var ssrBlurred = ssrPass.ApplyBlur(ssrBuffer["SSR"], c);
+
             ssrBuffer["SSR"].UpdateMipMaps();
             ssrBuffer["SSR"].FilterMode = TextureFilter.Linear;
-
-            Texture blurredReflection = ssrPass.ApplyBlur(ssrBuffer["SSR"], c);
-            for(int i = 0; i < 0; i++)
-            {
-                blurredReflection = ssrPass.ApplyBlur(blurredReflection, c);
-            }
-
 
             lightBuffer.Add("DepthBuffer", g["DepthBuffer"], FrameBufferAttachments.DepthAttachment, c);
             lightBuffer.Bind(c);
 
             c.DepthWrite = false;
-            c.Blend = true;
+
+            c.ClearColor(0, 0, 0, 0);
+
             c.Blending = new BlendFunc()
             {
                 Src = BlendingFactor.One,
@@ -176,7 +209,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             };
             c.DepthFunction = DepthFunc.Always;
 
-            c.ClearColor(0, 0, 0, 0);
+            c.Blend = true;
 
 
             dLightShader["colorMap"] = g["Color"];
@@ -241,21 +274,22 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             lightBuffer.UnBind(c);
 
             var b0 = shadowPass.ApplyBlur(g["WorldPos"], c);
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 0; i++)
             {
                 b0 = shadowPass.ApplyBlur(b0, c);
             }
 
             lightBuffer["Lit"].FilterMode = TextureFilter.Linear;
 
+            
             //Now, blur and blend the shadow map on top of the lighting, then blend in the bloom
-            outShader["DiffuseMap"] = g["Color"];
+            outShader["DiffuseMap"] = g["Normal"];
             outShader["LitMap"] = lightBuffer["Lit"];
-            outShader["BloomMap"] = bloomPass.ApplyBlur(lightBuffer["Bloom"], c);
-            outShader["SSRMap"] = blurredReflection;
+            outShader["BloomMap"] = b1;
             outShader["ShadowMap"] = b0;
+            outShader["depthBuffer"] = g["DepthBuffer"];
             c.Draw(outFSQ);
-
+            c.Draw(skyAddFSQ);
         }
 
         #region PBR Precalculation

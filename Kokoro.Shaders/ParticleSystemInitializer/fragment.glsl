@@ -19,6 +19,6 @@ float rand(vec2 co){
 }
 
 void main(){
-	c_posData = vec4(0);
-	c_dVData = vec4(rand(gl_FragCoord.xy), rand(gl_FragCoord.yz), rand(gl_FragCoord.yx), 1/mix(0.1, 1, rand(vec2(gl_FragCoord.x, UV.y))));	
+	c_posData = vec4(0, 0, 0, -rand(gl_FragCoord.zx));
+	c_dVData = vec4(rand(gl_FragCoord.xy), rand(gl_FragCoord.yz), rand(gl_FragCoord.yx), 0.1 * rand(gl_FragCoord.xz));	
 }

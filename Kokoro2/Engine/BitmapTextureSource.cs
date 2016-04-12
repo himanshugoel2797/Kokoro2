@@ -12,7 +12,17 @@ namespace Kokoro2.Engine
     {
         public static Texture Create(string file, int levels, bool srgba, GraphicsContext c)
         {
-            return Create(Image.FromFile(file), levels, srgba, c);
+            while (true)
+            {
+                try {
+                    var tmp = Image.FromFile(file);
+                    var toRet = Create(tmp, levels, srgba, c);
+                    tmp.Dispose();
+                    return toRet;
+                }catch(Exception err)
+                {
+                }
+            }
         }
 
         public static Texture Create(Image bmp, int levels, bool srgba, GraphicsContext c)
@@ -20,6 +30,7 @@ namespace Kokoro2.Engine
             ImageTextureSource src = new ImageTextureSource(bmp, levels, srgba);
             Texture t = new Texture(c);
             t.SetData(src);
+            src.Dispose();
             return t;
         }
 

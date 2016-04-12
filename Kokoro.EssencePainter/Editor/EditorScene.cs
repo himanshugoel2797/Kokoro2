@@ -11,6 +11,7 @@ using Kokoro2.Engine.HighLevel.Cameras;
 using Kokoro2.Engine.Shaders;
 using Kokoro2.Engine.HighLevel.Rendering;
 using Kokoro2.Engine.HighLevel.Lights;
+using System.Drawing;
 
 namespace Kokoro.EssencePainter.Editor
 {
@@ -23,12 +24,18 @@ namespace Kokoro.EssencePainter.Editor
 
         bool meshLoaded = true;
         string meshPath = "";
+
+        bool textureSetLoaded = true;
+        TextureSet s;
+
         VertexMesh mesh;
         LightPass lights;
         GBuffer g;
         DirectionalLight sun;
         PointLight pLight;
-        Model q;
+        Sphere sphere;
+        Bitmap[] bmps = new Bitmap[10];
+        Texture[] bmpTexs = new Texture[10];
 
         bool ResourcesLoaded = false;
         public void LoadResources(GraphicsContext context)
@@ -54,54 +61,29 @@ namespace Kokoro.EssencePainter.Editor
                     lights.EnvironmentMap = ImageTextureSource.Create("Resources/envMap.jpg", 0, true, context);
                     lights.AddLight(sun);
                     lights.GILight = sun;
-                    Random rng = new Random();
-                    for (int i = 0; i < 500; i++)
-                    {
-                        float x = rng.Next(0, 15) / 15f;
-                        float y = rng.Next(0, 25) / 25f;
-                        float z = rng.Next(0, 5) / 5f;
-
-                        var pLight = new PointLight(context);
-                        pLight.LightColor = new Vector3(x, y, z);
-                        pLight.Attenuation = 0.1f;
-                        pLight.Position = new Vector3(rng.Next(-200, 200), rng.Next(-100, 100), rng.Next(-200, 200));
-                        lights.AddLight(pLight);
-                    }
+                    lights.AddLight(new DirectionalLight(context, Vector3.UnitY));
                     g = new GBuffer((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
                 };
 
+                int w = (int)context.WindowSize.X;
+                int h = (int)context.WindowSize.Y;
 
-                context.Camera.SetProjection(Camera.RecommendedFieldOfView, context.WindowSize.X / context.WindowSize.Y, context.ZNear, context.ZFar);
-                lights = new LightPass((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
+                context.Camera.SetProjection(Camera.RecommendedFieldOfView, (float)w / (float)h, context.ZNear, context.ZFar);
+                g = new GBuffer(w, h, context);
+                lights = new LightPass(w, h, context);
                 lights.EnvironmentMap = ImageTextureSource.Create("Resources/envMap.jpg", 0, true, context);
-                g = new GBuffer((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
 
-                sun = new DirectionalLight(context, -Vector3.UnitY * 0.75f + Vector3.UnitX * 0.25f);
+                sun = new DirectionalLight(context, Vector3.UnitY * -1 + Vector3.UnitX * 0);
                 sun.CastShadows = true;
                 sun.ShadowResolution = 2048;
                 sun.InitializeShadowBuffer(context);
                 lights.AddLight(sun);
                 lights.GILight = sun;
+                lights.AddLight(new DirectionalLight(context, Vector3.UnitY));
 
-                {
-                    Random rng = new Random();
-                    for (int i = 0; i < 500; i++)
-                    {
-                        float x = rng.Next(0, 15) / 15f;
-                        float y = rng.Next(0, 25) / 25f;
-                        float z = rng.Next(0, 5) / 5f;
-
-                        var pLight = new PointLight(context);
-                        pLight.LightColor = new Vector3(x, y, z);
-                        pLight.Attenuation = 0.1f;
-                        pLight.Position = new Vector3(rng.Next(-200, 200), rng.Next(-100, 100), rng.Next(-200, 200));
-                        lights.AddLight(pLight);
-                    }
-                }
-
-                q = new Sphere(10, 50, context);
-                q.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context)));
-                q.Material.AlbedoMap = q.Material.RoughnessMap = q.Material.SpecularMap = ImageTextureSource.Create("Resources/envMap.jpg", 0, true, context);
+                sphere = new Sphere(100, 20, context);
+                sphere.Material.AlbedoMap = ImageTextureSource.Create("Resources/envMap.jpg", 0, true, context);
+                sphere.RenderInfo.PushShader(new ShaderProgram(context, VertexShader.Load("Shadowed", context), FragmentShader.Load("Shadowed", context)));
 
                 ResourcesLoaded = true;
             }
@@ -113,11 +95,19 @@ namespace Kokoro.EssencePainter.Editor
             meshPath = file;
         }
 
+        public void LoadTextureSet(TextureSet s)
+        {
+            this.s = s;
+            textureSetLoaded = false;
+        }
+
+        int j = 0;
         public void Render(double interval, GraphicsContext context)
         {
             if (ResourcesLoaded)
             {
-                context.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                context.Camera.Update(interval, context);
+
                 context.ClearDepth();
 
 
@@ -137,18 +127,50 @@ namespace Kokoro.EssencePainter.Editor
                     context.Draw(mesh);
                     mesh.RenderInfo.PopShader();
                 }
-
-                q.RenderInfo.PushShader(sun.ShadowShader);
-                context.Draw(q);
-                q.RenderInfo.PopShader();
-
                 sun.EndShadowPass(context);
+
+                if (mesh != null && !textureSetLoaded)
+                {
+                    if (mesh.Material.AlbedoMap != null)
+                    {
+                        mesh.Material.AlbedoMap.Dispose();
+                        mesh.Material.AlbedoMap = null;
+                    }
+                    if (mesh.Material.EmissionMap != null)
+                    {
+                        mesh.Material.EmissionMap.Dispose();
+                        mesh.Material.EmissionMap = null;
+                    }
+                    if (mesh.Material.SpecularMap != null)
+                    {
+                        mesh.Material.SpecularMap.Dispose();
+                        mesh.Material.SpecularMap = null;
+                    }
+                    if (mesh.Material.RoughnessMap != null)
+                    {
+                        mesh.Material.RoughnessMap.Dispose();
+                        mesh.Material.RoughnessMap = null;
+                    }
+                    if (mesh.Material.NormalMap != null)
+                    {
+                        mesh.Material.NormalMap.Dispose();
+                        mesh.Material.NormalMap = null;
+                    }
+
+                    if (s.AlbedoMap) mesh.Material.AlbedoMap = ImageTextureSource.Create(s.AlbedoMapFile, 0, true, context);
+                    if (s.EmissiveMap) mesh.Material.EmissionMap = ImageTextureSource.Create(s.EmissiveMapFile, 0, true, context);
+                    if (s.ReflectivityMap) mesh.Material.SpecularMap = ImageTextureSource.Create(s.ReflectivityMapFile, 0, true, context);
+                    if (s.RoughnessMap) mesh.Material.RoughnessMap = ImageTextureSource.Create(s.RoughnessMapFile, 0, true, context);
+                    if (s.NormalMap) mesh.Material.NormalMap = ImageTextureSource.Create(s.NormalMapFile, 0, true, context);
+                    textureSetLoaded = true;
+                }
+
 
                 g.Bind(context);
                 context.ClearColor(0, 0, 0, 0);
                 context.ClearDepth();
 
-
+                context.Draw(sphere);
                 if (mesh != null)
                 {
                     mesh.Shader["ShadowMap"] = sun.GetShadowMap();
@@ -157,16 +179,10 @@ namespace Kokoro.EssencePainter.Editor
                     mesh.Shader["ReflectivePosMap"] = sun.GetPositions();
                     context.Draw(mesh);
                 }
-                q.Shader["ShadowMap"] = sun.GetShadowMap();
-                q.Shader["sWVP"] = sun.ShadowSpace;
-                q.Shader["ReflectiveColMap"] = sun.GetColors();
-                q.Shader["ReflectivePosMap"] = sun.GetPositions();
-                context.Draw(q);
 
                 g.UnBind(context);
 
                 lights.ApplyLights(g, context);
-
                 context.SwapBuffers();
             }
         }
@@ -175,7 +191,6 @@ namespace Kokoro.EssencePainter.Editor
         {
             if (ResourcesLoaded)
             {
-                context.Camera.Update(interval, context);
             }
         }
     }

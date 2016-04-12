@@ -99,6 +99,7 @@ namespace Kokoro2.Engine.HighLevel.Cameras
             Up = new Vector3(sin_LR_ * sin_Up_, cos_Up_, cos_LR_ * sin_Up_);
 
             View = Matrix4.LookAt(Position + TargetPosition, TargetPosition, Up);
+            Direction = Vector3.Normalize(-2 * TargetPosition - Position);
 
             base.Update(interval, Context);
         }

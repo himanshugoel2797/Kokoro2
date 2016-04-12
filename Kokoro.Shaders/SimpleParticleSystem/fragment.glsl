@@ -15,15 +15,31 @@ uniform sampler2D PosData;
 uniform sampler2D dVData;
 uniform vec3 Impulse;
 uniform float DeltaTime;
+uniform vec3 EmitterPosition;
 
 float rand(vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+vec3 sphericalRand(vec3 a)
+{
+	float theta = 2 * 3.14159 * rand(a.xy);
+    float phi = acos(2 * rand(a.xz) - 1.0);
+    return vec3(cos(theta) * sin(phi), sin(theta) * sin(phi), cos(phi));
 }
 
 void main(){
 	c_dVData = texture2D(dVData, UV);
 	c_posData = texture2D(PosData, UV);
 
-	c_posData.xyz = min(vec3(1), c_posData.xyz + c_dVData.xyz * DeltaTime);
-	c_dVData.xyz = Impulse * c_dVData.w * DeltaTime * rand(c_posData.xy);
+	c_posData.xyz = c_posData.xyz + c_dVData.xyz * DeltaTime;
+	c_dVData.xyz = Impulse * c_dVData.w * DeltaTime;
+	c_posData.w = c_posData.w + 0.005;
+	if(c_posData.w > 1){
+		c_posData.xyz = EmitterPosition + sphericalRand(gl_FragCoord.zyx)  * 0.0025;
+		c_posData.w = -rand(c_posData.xy);
+		c_dVData.xyz = sphericalRand(gl_FragCoord.xyz) * 0.0025;
+		c_dVData.w = 0.2 + rand(c_dVData.xy);
+
+	}
 }

@@ -18,5 +18,12 @@ namespace Kokoro.EssencePainter.Editor
         public bool ReflectivityMap { get; set; }
         public bool RoughnessMap { get; set; }
         public bool NormalMap { get; set; }
+        public bool EmissiveMap { get; set; }
+
+        public string AlbedoMapFile { get; set; }
+        public string ReflectivityMapFile { get; set; }
+        public string RoughnessMapFile { get; set; }
+        public string NormalMapFile { get; set; }
+        public string EmissiveMapFile { get; set; }
     }
 }

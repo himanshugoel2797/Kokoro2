@@ -10,6 +10,7 @@ uniform sampler2D specularData;
 uniform sampler2D worldData;
 uniform sampler2D envMap;
 uniform sampler2D depthMap;
+uniform sampler2D bloomMap;
 uniform vec3 EyePos;
 uniform mat4 View;
 uniform mat4 Projection;
@@ -42,7 +43,8 @@ void main(){
 	vec4 vis = vec4(0);
     vec3 refNorm = (Projection * View * vec4(reflect(v, n), 0)).rgb;
     refNorm = 0.5 * refNorm + 0.5;
-    vis = texture2D(colorMap, refNorm.xy);
+	vec2 uv_c = refNorm.xy;
+    vis = texture2D(colorMap, uv_c);// + texture2D(bloomMap, uv_c) * 0.25f;
     reflection = vis;
 }
 

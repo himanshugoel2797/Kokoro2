@@ -135,7 +135,7 @@ namespace Kokoro2.OpenGL.PC
 
             for (int i = 0; i < variables.Count; i++)
             {
-                if (!variables[i].dirty) continue;
+                if (!variables[i].dirty | variables[i].pos == -1) continue;
                 else variables[i] = new shaderVars()
                 {
                     metadata = variables[i].metadata,
@@ -199,7 +199,7 @@ namespace Kokoro2.OpenGL.PC
                 {
                     case VarType.Texture:
                         //GL.ProgramUniform1(context.EngineObjects[ID, this.GetType()], variables[i].pos, 0);
-                        (variables[i].obj as Texture)?.UnBind(variables[i].metadata);
+                        if(variables[i].pos != -1)(variables[i].obj as Texture)?.UnBind(variables[i].metadata);
                         break;
                     default:
                         break;

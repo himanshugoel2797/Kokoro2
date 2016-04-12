@@ -42,6 +42,7 @@
             this.widthLbl = new System.Windows.Forms.Label();
             this.heightLbl = new System.Windows.Forms.Label();
             this.createBtn = new System.Windows.Forms.Button();
+            this.emissionMapEnabledBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.widthSelector)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.heightSelector)).BeginInit();
             this.SuspendLayout();
@@ -193,7 +194,7 @@
             // 
             // createBtn
             // 
-            this.createBtn.Location = new System.Drawing.Point(314, 191);
+            this.createBtn.Location = new System.Drawing.Point(314, 206);
             this.createBtn.Name = "createBtn";
             this.createBtn.Size = new System.Drawing.Size(75, 23);
             this.createBtn.TabIndex = 12;
@@ -201,11 +202,22 @@
             this.createBtn.UseVisualStyleBackColor = true;
             this.createBtn.Click += new System.EventHandler(this.createBtn_Click);
             // 
+            // emissionMapEnabledBox
+            // 
+            this.emissionMapEnabledBox.AutoSize = true;
+            this.emissionMapEnabledBox.Location = new System.Drawing.Point(12, 173);
+            this.emissionMapEnabledBox.Name = "emissionMapEnabledBox";
+            this.emissionMapEnabledBox.Size = new System.Drawing.Size(91, 17);
+            this.emissionMapEnabledBox.TabIndex = 13;
+            this.emissionMapEnabledBox.Text = "Emission Map";
+            this.emissionMapEnabledBox.UseVisualStyleBackColor = true;
+            // 
             // NewTextureDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(401, 226);
+            this.ClientSize = new System.Drawing.Size(401, 241);
+            this.Controls.Add(this.emissionMapEnabledBox);
             this.Controls.Add(this.createBtn);
             this.Controls.Add(this.heightLbl);
             this.Controls.Add(this.widthLbl);
@@ -246,5 +258,6 @@
         private System.Windows.Forms.Label widthLbl;
         private System.Windows.Forms.Label heightLbl;
         private System.Windows.Forms.Button createBtn;
+        private System.Windows.Forms.CheckBox emissionMapEnabledBox;
     }
 }

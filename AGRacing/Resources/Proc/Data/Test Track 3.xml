@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<TrackData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Test Track 3</Name>
+  <modelFile>Resources/Proc/Track_Vis/track_2.ko</modelFile>
+  <collisionMesh>Resources/Proc/Track_Path/track_2_col.ko</collisionMesh>
+  <textureFile>Resources/Proc/Tex/track1_1.dfc</textureFile>
+  <path>Resources/Proc/Track_Path/track_2_Path.ko</path>
+  <Reverse>true</Reverse>
+</TrackData>

@@ -2,10 +2,10 @@
 
 // Interpolated values from the vertex shaders
 in vec3 vDirection;
-
+in vec2 UV;
 
 // Ouput data
-layout(location = 2) out vec4 color;
+layout(location = 0) out vec4 color;
 
 uniform vec3 EyePos;
 uniform vec3 EyeDir;
@@ -114,11 +114,10 @@ vec3 atmosphere(vec3 r, vec3 r0, vec3 pSun, float iSun, float rPlanet, float rAt
 
 void main(){
 	vec3 eyeDir = EyeDir;
-	eyeDir.y = 0;
-
+	
 	color.rgb = atmosphere(
-        normalize(vDirection + eyeDir),           // normalized ray direction
-         vec3(0,6371500,0) + EyePos,               // ray origin
+        normalize(vDirection - EyeDir),           // normalized ray direction
+         vec3(0,6372800,0) + EyePos,               // ray origin
         uSunPos,                        // position of the sun
         22.0,                           // intensity of the sun
         6371e3,                         // radius of the planet in meters

@@ -46,7 +46,7 @@ namespace Kokoro2.OpenGL.PC
             boundBuffers[BufferTarget.UniformBuffer][0].Push(0);
 
             boundTextures = new List<Dictionary<TextureTarget, Stack<int>>>();
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 12; i++)
             {
                 boundTextures.Add(new Dictionary<TextureTarget, Stack<int>>());
                 boundTextures[i][TextureTarget.Texture2D] = new Stack<int>();
@@ -137,17 +137,15 @@ namespace Kokoro2.OpenGL.PC
         #region Framebuffer State
         public static void BindFramebuffer(int id)
         {
-            //if (framebuffers.Count == 0) framebuffers.Push(0);
+            if (framebuffers.Count == 0) framebuffers.Push(0);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, id);
-            //if (framebuffers.Peek() != id || id == 0) GL.BindFramebuffer(FramebufferTarget.Framebuffer, id);
-            //framebuffers.Push(id);
+            framebuffers.Push(id);
         }
 
         public static void UnbindFramebuffer()
         {
-            BindFramebuffer(0);
-            //framebuffers.Pop();
-            //BindFramebuffer(framebuffers.Pop());
+            framebuffers.Pop();
+            BindFramebuffer(framebuffers.Pop());
         }
         #endregion
     }

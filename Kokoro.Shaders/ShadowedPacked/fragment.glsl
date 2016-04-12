@@ -9,10 +9,12 @@ in vec3 norm;
 layout(location = 0) out vec4 worldPos;
 layout(location = 1) out vec4 normDat;
 layout(location = 2) out vec4 color;
+layout(location = 3) out vec4 bloom;
 // Values that stay constant for the whole mesh.
 uniform sampler2D AlbedoMap;
 uniform sampler2D PackedMap;
 uniform sampler2D ShadowMap;
+uniform sampler2D EmissionMap;
 uniform sampler2D ReflectivePosMap;
 uniform vec3 EyePos;
 
@@ -66,10 +68,11 @@ vec3 perturb_normal( vec3 N, vec3 V, vec3 pert, vec2 texcoord )
 void main(){
     vec3 shad = shadowCoord.xyz / shadowCoord.w;
     shad = 0.5 * shad + 0.5;
-    float f_moment = texture2D(ShadowMap, shad.xy).r;
-    float s_moment = f_moment * f_moment;//texture2D(ReflectivePosMap, shad.xy).a;
-    float vis = s_moment / (s_moment + (gl_FragCoord.z - f_moment) * (gl_FragCoord.z - f_moment));
-    vis = pow(vis, 3);
+    //float f_moment = texture2D(ShadowMap, shad.xy).r;
+    //float s_moment = f_moment * f_moment;//texture2D(ReflectivePosMap, shad.xy).a;
+    //float vis = s_moment / (s_moment + (gl_FragCoord.z - f_moment) * (gl_FragCoord.z - f_moment));
+    float vis = 1;
+	vis = pow(vis, 3);
     vec3 v = normalize(worldCoord - EyePos);
 
 	vec4 tmp = texture2D(PackedMap, UV);
@@ -79,7 +82,7 @@ void main(){
 
     normDat.rg = encode(normalize(n.xyz));
     normDat.ba = tmp.ba;
-
+	bloom = texture(EmissionMap, UV) * 5;
     worldPos.rgb = worldCoord;
     worldPos.a = vis;
     color = texture2D(AlbedoMap, UV);

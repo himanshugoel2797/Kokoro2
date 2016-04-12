@@ -7,9 +7,31 @@ using System.IO;
 
 using Kokoro2.Math;
 using Kokoro2.Engine.Shaders;
+using System.Xml.Serialization;
 
 namespace Kokoro2.Engine
 {
+    public struct TextureSet
+    {
+        public string Name { get; set; }
+        public string File { get; set; }
+
+        public int Width { get; set; }
+        public int Height { get; set; }
+
+        public bool AlbedoMap { get; set; }
+        public bool ReflectivityMap { get; set; }
+        public bool RoughnessMap { get; set; }
+        public bool NormalMap { get; set; }
+        public bool EmissiveMap { get; set; }
+
+        public string AlbedoMapFile { get; set; }
+        public string ReflectivityMapFile { get; set; }
+        public string RoughnessMapFile { get; set; }
+        public string NormalMapFile { get; set; }
+        public string EmissiveMapFile { get; set; }
+    }
+
     public class Material
     {
         public string Name { get; set; }
@@ -18,6 +40,7 @@ namespace Kokoro2.Engine
         public Texture RoughnessMap { get; set; }
         public Texture NormalMap { get; set; }
         public Texture PackedMap { get; set; }
+        public Texture EmissionMap { get; set; }
 
         private static ShaderProgram texPackShader;
         private static FrameBuffer texPackBuffer;
@@ -56,6 +79,24 @@ namespace Kokoro2.Engine
         public static Texture PackTextures(Material m, GraphicsContext c)
         {
             return PackTextures(m.NormalMap, m.RoughnessMap, m.SpecularMap, c);
+        }
+
+        public static Material Load(string file, GraphicsContext c)
+        {
+            XmlSerializer s = new XmlSerializer(typeof(TextureSet));
+            TextureSet s0;
+            using (Stream strm = File.OpenRead(file)) s0 = (TextureSet)s.Deserialize(strm);
+
+            Material m = new Material();
+            m.Name = s0.Name;
+
+            if (s0.AlbedoMap) m.AlbedoMap = ImageTextureSource.Create("Resources/Proc/Tex/" + Path.GetFileName(s0.AlbedoMapFile), 0, true, c);
+            if (s0.ReflectivityMap) m.SpecularMap = ImageTextureSource.Create("Resources/Proc/Tex/" + Path.GetFileName(s0.ReflectivityMapFile), 0, false, c);
+            if (s0.NormalMap) m.NormalMap = ImageTextureSource.Create("Resources/Proc/Tex/" + Path.GetFileName(s0.NormalMapFile), 0, false, c);
+            if (s0.RoughnessMap) m.RoughnessMap = ImageTextureSource.Create("Resources/Proc/Tex/" + Path.GetFileName(s0.RoughnessMapFile), 0, false, c);
+            if (s0.EmissiveMap) m.EmissionMap = ImageTextureSource.Create("Resources/Proc/Tex/" + Path.GetFileName(s0.EmissiveMapFile), 0, false, c);
+
+            return m;
         }
     }
 }
