@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="Editor\EditorScene.cs" />
     <Compile Include="Editor\PaintAction.cs" />
-    <Compile Include="Editor\TextureSet.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -24,6 +24,8 @@ namespace Kokoro2.Engine
             }
         }
 
+        public int ShaderStackDepth { get { return ShaderQueue.Count; } }
+
         private Stack<Shaders.ShaderProgram> ShaderQueue;
 
         public void PushShader(Shaders.ShaderProgram s)

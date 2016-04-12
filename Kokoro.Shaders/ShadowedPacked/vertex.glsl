@@ -31,7 +31,7 @@ void main(){
 
 	worldCoord = tmp.xyz;
 	//worldCoord = (World * vec4(vertexPosition_modelspace, 1)).xyz;
-	norm = (vec4(normal, 0)).xyz;
+	norm = (World * vec4(normal, 0)).xyz;
 	
     gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * Fcoef - 1.0;
 	flogz = 1.0 + gl_Position.w;

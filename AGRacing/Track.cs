@@ -41,8 +41,9 @@ namespace AGRacing
             Name = data.Name;
             trackModel = new VertexMesh(data.modelFile, false, context);
             trackModel.Material = Material.Load(data.textureFile, context);
+            trackModel.Material.PackedMap = Material.PackTextures(trackModel.Material, context);
             trackModel.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(context, VertexShader.Load("ShadowedPacked", context), FragmentShader.Load("ShadowedPacked", context)));
-
+            Reverse = data.Reverse;
 
 
             trackPath = VertexMesh.GetVertices(data.path, false);
@@ -159,6 +160,7 @@ namespace AGRacing
             context.FaceCulling = CullMode.Off;
             sun.SetupShadowPass(context);
             trackModel.RenderInfo.PushShader(sun.ShadowShader);
+            trackModel.DrawMode = DrawMode.Triangles;
             context.Draw(trackModel);
             trackModel.RenderInfo.PopShader();
 
@@ -175,7 +177,6 @@ namespace AGRacing
             context.FaceCulling = CullMode.Back;
 
             gbuf.Bind(context);
-
             context.ClearDepth();
 
             for (int i = 0; i < ships.Length; i++)
@@ -196,7 +197,6 @@ namespace AGRacing
             trackModel.Shader["ReflectiveColMap"] = sun.GetColors();
             trackModel.Shader["ReflectivePosMap"] = sun.GetPositions();
             context.Draw(trackModel);
-
 
             gbuf.UnBind(context);
 

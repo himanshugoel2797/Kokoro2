@@ -12,17 +12,11 @@ namespace Kokoro2.Engine.Shaders
     {
         internal TessellationEvalShader eval;
         internal TessellationControlShader control;
-
-        public void SetPatchSize(int num)
-        {
-            base.aSetPatchSize(num);
-        }
-
+        
         public TessellationShader(string controlShader, string evalShader, GraphicsContext c) : base("", ShaderTypes.TessellationComb, c)
         {
             eval = new TessellationEvalShader(evalShader, c);
             control = new TessellationControlShader(controlShader, c);
-            SetPatchSize(3);
         }
 
         public static TessellationShader Load(string controlShaderName, string evalShaderName, GraphicsContext c)

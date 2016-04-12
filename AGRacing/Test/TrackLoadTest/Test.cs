@@ -39,7 +39,7 @@ namespace AGRacing.Test.TrackLoadTest
                 context.DepthFunction = DepthFunc.LEqual;
                 //context.DepthClamp = true;
                 context.Camera = new FirstPersonCamera(context, Vector3.Zero, Vector3.UnitX);
-                //context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
+                context.Camera = new FollowPointCamera(context, Vector3.Zero, Vector3.UnitX);
                 //context.Camera = new ArcBallCamera(context, Vector3.Zero, Vector3.UnitX);
                 //(context.Camera as ArcBallCamera).Pannable = true;
                 //context.Wireframe = true;
@@ -62,9 +62,6 @@ namespace AGRacing.Test.TrackLoadTest
                 context.ClearDepth();
 
                 track.Draw(context);
-                context.DepthFunction = DepthFunc.Always;
-                
-                context.DepthFunction = DepthFunc.LEqual;
                 context.SwapBuffers();
             }
         }

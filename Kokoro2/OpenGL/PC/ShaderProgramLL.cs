@@ -34,7 +34,18 @@ namespace Kokoro2.OpenGL.PC
 
             for (int i = 0; i < shaders.Length; i++)
             {
-                GL.AttachShader(id, c.EngineObjects[shaders[i].ID, shaders[i].GetType()]);
+                if (shaders[i].GetShaderType() != ShaderTypes.TessellationComb)
+                {
+                    GL.AttachShader(id, c.EngineObjects[shaders[i].ID, shaders[i].GetType()]);
+                }
+                else
+                {
+                    Shader a = (shaders[i] as TessellationShader).eval;
+                    Shader b = (shaders[i] as TessellationShader).control;
+
+                    GL.AttachShader(id, c.EngineObjects[a.ID, shaders[i].GetType()]);
+                    GL.AttachShader(id, c.EngineObjects[b.ID, shaders[i].GetType()]);
+                }
             }
 
             GL.LinkProgram(id);
@@ -56,7 +67,19 @@ namespace Kokoro2.OpenGL.PC
 
             for (int i = 0; i < shaders.Length; i++)
             {
-                GL.DetachShader(id, c.EngineObjects[shaders[i].ID, shaders[i].GetType()]);
+                if (shaders[i].GetShaderType() != ShaderTypes.TessellationComb)
+                {
+                    GL.DetachShader(id, c.EngineObjects[shaders[i].ID, shaders[i].GetType()]);
+                }
+                else
+                {
+
+                    Shader a = (shaders[i] as TessellationShader).eval;
+                    Shader b = (shaders[i] as TessellationShader).control;
+
+                    GL.DetachShader(id, c.EngineObjects[a.ID, shaders[i].GetType()]);
+                    GL.DetachShader(id, c.EngineObjects[b.ID, shaders[i].GetType()]);
+                }
             }
 
             c.Disposing += Dispose;
@@ -69,7 +92,18 @@ namespace Kokoro2.OpenGL.PC
 
             for (int i = 0; i < shaders.Length; i++)
             {
-                GL.AttachShader(id, c.EngineObjects[shaders[i].ID, shaders[i].GetType()]);
+                if (shaders[i].GetShaderType() != ShaderTypes.TessellationComb)
+                {
+                    GL.AttachShader(id, c.EngineObjects[shaders[i].ID, shaders[i].GetType()]);
+                }
+                else
+                {
+                    Shader a = (shaders[i] as TessellationShader).eval;
+                    Shader b = (shaders[i] as TessellationShader).control;
+
+                    GL.AttachShader(id, c.EngineObjects[a.ID, shaders[i].GetType()]);
+                    GL.AttachShader(id, c.EngineObjects[b.ID, shaders[i].GetType()]);
+                }
             }
 
             GL.TransformFeedbackVaryings(id, transformVars.Length, transformVars, TransformFeedbackMode.SeparateAttribs);
@@ -92,7 +126,19 @@ namespace Kokoro2.OpenGL.PC
 
             for (int i = 0; i < shaders.Length; i++)
             {
-                GL.DetachShader(id, c.EngineObjects[shaders[i].ID, shaders[i].GetType()]);
+                if (shaders[i].GetShaderType() != ShaderTypes.TessellationComb)
+                {
+                    GL.DetachShader(id, c.EngineObjects[shaders[i].ID, shaders[i].GetType()]);
+                }
+                else
+                {
+
+                    Shader a = (shaders[i] as TessellationShader).eval;
+                    Shader b = (shaders[i] as TessellationShader).control;
+
+                    GL.DetachShader(id, c.EngineObjects[a.ID, shaders[i].GetType()]);
+                    GL.DetachShader(id, c.EngineObjects[b.ID, shaders[i].GetType()]);
+                }
             }
 
             c.Disposing += Dispose;
@@ -199,7 +245,7 @@ namespace Kokoro2.OpenGL.PC
                 {
                     case VarType.Texture:
                         //GL.ProgramUniform1(context.EngineObjects[ID, this.GetType()], variables[i].pos, 0);
-                        if(variables[i].pos != -1)(variables[i].obj as Texture)?.UnBind(variables[i].metadata);
+                        if (variables[i].pos != -1) (variables[i].obj as Texture)?.UnBind(variables[i].metadata);
                         break;
                     default:
                         break;

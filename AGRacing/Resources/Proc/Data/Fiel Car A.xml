@@ -4,11 +4,11 @@
   <modelFile>Resources/Proc/Car_Vis/car1_1.ko</modelFile>
   <textureFile>Resources/Proc/Tex/car1_1.dfc</textureFile>
   <Scale>0.5</Scale>
-  <Mass>10</Mass>
+  <Mass>100</Mass>
   <frontDirection>
     <X>0</X>
     <Y>0</Y>
-    <Z>0</Z>
+    <Z>-1</Z>
   </frontDirection>
   <rotation>
     <X>0</X>

@@ -68,13 +68,15 @@ namespace AGRacing
             Mass = craft.Mass;
             Mesh = new VertexMesh(craft.modelFile, false, c);
             Mesh.Material = Material.Load(craft.textureFile, c);
+            Mesh.Material.PackedMap = Material.PackTextures(Mesh.Material, c);
             Mesh.RenderInfo.PushShader(new ShaderProgram(c, VertexShader.Load("ShadowedPacked", c), FragmentShader.Load("ShadowedPacked", c)));
+            
 
             ps = new ParticleSystem[craft.particleEmitterLocations.Length];
             for (int i = 0; i < ps.Length; i++)
             {
                 ps[i] = new ParticleSystem(256, c);
-                ps[i].EmitterBoxLocation = craft.particleEmitterLocations[i];
+                ps[i].EmitterBoxLocation = craft.particleEmitterLocations[i] * Scale;
                 ps[i].Material = Material.Load(craft.particleEmitterTextures[i], c);
             }
 
@@ -147,13 +149,12 @@ namespace AGRacing
 
         public void Draw(GraphicsContext context)
         {
+            
             context.Draw(Mesh);
 
 
 #if DEBUG
-            context.Wireframe = true;
             //colVis.Draw(context);
-            context.Wireframe = false;
 #endif
         }
 
@@ -285,7 +286,7 @@ namespace AGRacing
         }
 
         public bool isGrounded = false;
-        const float height = 3.0f, force = 30;
+        const float height = 3.0f, force = 60;
         private void CalcAG(ShipRayLocations l, Track t)
         {
             float dist;

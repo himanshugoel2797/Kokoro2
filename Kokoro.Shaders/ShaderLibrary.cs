@@ -49,6 +49,11 @@ namespace Kokoro2.Shaders
                 "Shadowed/vertex.glsl",
                 "Shadowed/fragment.glsl",
 
+                "ShadowedTess/vertex.glsl",
+                "ShadowedTess/fragment.glsl",
+                "ShadowedTess/tessControl.glsl",
+                "ShadowedTess/tessEval.glsl",
+
                 "SimpleParticleSystem/vertex.glsl",
                 "SimpleParticleSystem/fragment.glsl",
 
@@ -60,6 +65,11 @@ namespace Kokoro2.Shaders
 
                 "ShadowedPacked/vertex.glsl",
                 "ShadowedPacked/fragment.glsl",
+
+                "ShadowedPackedTess/vertex.glsl",
+                "ShadowedPackedTess/fragment.glsl",
+                "ShadowedPackedTess/tessControl.glsl",
+                "ShadowedPackedTess/tessEval.glsl",
 
                 "PackGlossRoughNorm/vertex.glsl",
                 "PackGlossRoughNorm/fragment.glsl",

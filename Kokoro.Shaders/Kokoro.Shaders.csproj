@@ -123,6 +123,10 @@
     <EmbeddedResource Include="ParticleRenderer\vertex.glsl" />
     <EmbeddedResource Include="ParticleSystemInitializer\fragment.glsl" />
     <EmbeddedResource Include="ParticleSystemInitializer\vertex.glsl" />
+    <EmbeddedResource Include="ShadowedPackedTess\fragment.glsl" />
+    <EmbeddedResource Include="ShadowedPackedTess\vertex.glsl" />
+    <EmbeddedResource Include="ShadowedPackedTess\tessEval.glsl" />
+    <EmbeddedResource Include="ShadowedPackedTess\tessControl.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ShaderLibrary.cs" />
