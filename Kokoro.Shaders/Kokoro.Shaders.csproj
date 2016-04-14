@@ -127,6 +127,8 @@
     <EmbeddedResource Include="ShadowedPackedTess\vertex.glsl" />
     <EmbeddedResource Include="ShadowedPackedTess\tessEval.glsl" />
     <EmbeddedResource Include="ShadowedPackedTess\tessControl.glsl" />
+    <EmbeddedResource Include="SSGI\fragment.glsl" />
+    <EmbeddedResource Include="SSGI\vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ShaderLibrary.cs" />

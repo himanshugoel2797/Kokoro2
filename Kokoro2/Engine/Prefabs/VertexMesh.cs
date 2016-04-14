@@ -146,6 +146,20 @@ namespace Kokoro2.Engine.Prefabs
             return tmp.Mesh[0].Vertices;
         }
 
+        public static float[] GetUVs(string filename, bool useVFS = false)
+        {
+            Model_m tmp = null;
+            if (useVFS)
+            {
+                tmp = Serializer.Deserialize<Model_m>(VFS.FSReader.OpenFile(filename, false));
+            }
+            else
+            {
+                tmp = Serializer.Deserialize<Model_m>(System.IO.File.OpenRead(filename));
+            }
+            return tmp.Mesh[0].uvs;
+        }
+
         public static float[] GetNormals(string filename, bool useVFS = false)
         {
             Model_m tmp = null;

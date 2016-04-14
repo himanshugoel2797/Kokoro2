@@ -80,6 +80,9 @@ namespace Kokoro2.Shaders
                 "SSR/vertex.glsl",
                 "SSR/fragment.glsl",
 
+                "SSGI/vertex.glsl",
+                "SSGI/fragment.glsl",
+
                 "PointLight/vertex.glsl",
                 "PointLight/fragment.glsl",
 

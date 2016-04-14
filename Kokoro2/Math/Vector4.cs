@@ -1221,5 +1221,30 @@ namespace Kokoro2.Math
         {
             return new BEPUutilities.Vector4(t.X, t.Y, t.Z, t.W);
         }
+
+        public static Vector4 UnProject(ref Matrix4 projection, Matrix4 view, int viewportWidth, int viewportHeight, Vector2 mouse)
+        {
+            Vector4 vec;
+
+            vec.X = 2.0f * mouse.X / (float)viewportWidth - 1;
+            vec.Y = -(2.0f * mouse.Y / (float)viewportHeight + 1);
+            vec.Z = 0;
+            vec.W = 1.0f;
+
+            Matrix4 viewInv = Matrix4.Invert(view);
+            Matrix4 projInv = Matrix4.Invert(projection);
+
+            Vector4.Transform(ref vec, ref projInv, out vec);
+            Vector4.Transform(ref vec, ref viewInv, out vec);
+
+            if (vec.W > float.Epsilon || vec.W < float.Epsilon)
+            {
+                vec.X /= vec.W;
+                vec.Y /= vec.W;
+                vec.Z /= vec.W;
+            }
+
+            return vec;
+        }
     }
 }

@@ -143,12 +143,16 @@
     <Compile Include="Engine\HighLevel\Lights\DirectionalLight.cs" />
     <Compile Include="Engine\HighLevel\Lights\PointLight.cs" />
     <Compile Include="Engine\HighLevel\Rendering\GBuffer.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\GIObject.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\GIWorld.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\GI_IntersectionTests.cs" />
     <Compile Include="Engine\HighLevel\Rendering\Grass.cs" />
     <Compile Include="Engine\HighLevel\Rendering\LightPass.cs" />
     <Compile Include="Engine\HighLevel\Rendering\ParticleSystem.cs" />
     <Compile Include="Engine\HighLevel\Rendering\RayCaster.cs" />
     <Compile Include="Engine\HighLevel\Rendering\TextureBlurFilter.cs" />
     <Compile Include="Engine\HighLevel\Rendering\Voxelizer.cs" />
+    <Compile Include="Engine\HighLevel\Rendering\VoxelOctree.cs" />
     <Compile Include="Engine\HighLevel\Voxel\VoxelCollection.cs" />
     <Compile Include="Engine\HighLevel\Voxel\VoxelChunk.cs" />
     <Compile Include="Engine\HighLevel\Voxel\VoxelRenderer.cs" />

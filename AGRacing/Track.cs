@@ -29,6 +29,8 @@ namespace AGRacing
         FullScreenQuad fsq;
         DirectionalLight sun;
         LightPass lights;
+        GIWorld giWorld;
+        int meshID;
 
 #if DEBUG
         Model collisionVis;
@@ -51,6 +53,11 @@ namespace AGRacing
             float[] verts = VertexMesh.GetVertices(data.collisionMesh, false);
             int[] indices = VertexMesh.GetIndices(data.collisionMesh, false);
 
+            giWorld = new GIWorld();
+
+            GIObjectGenerator v = new GIObjectGenerator();
+            meshID = giWorld.AddObject(v.Generate(trackModel.Bound, verts, VertexMesh.GetUVs(data.collisionMesh), VertexMesh.GetNormals(data.collisionMesh), trackModel.Material.AlbedoMap.ToBMP(), indices));
+
             ships = new Ship[8];
 
             phys = new PhysicsWorld();
@@ -59,11 +66,12 @@ namespace AGRacing
             collisionMesh = new MobileMesh(verts, indices, 1, MobileMesh.Solidity.Clockwise);
             phys.AddEntity(collisionMesh);
 
-            sun = new DirectionalLight(context, -Vector3.UnitY);
+            sun = new DirectionalLight(context, -Vector3.UnitY * 0.75f + Vector3.UnitX * 0.25f);
             sun.ShadowResolution = 1024;
             sun.CastShadows = true;
             sun.InitializeShadowBuffer(context);
             sun.ShadowBoxSize = new BoundingBox(trackModel.Bound.Min, trackModel.Bound.Max);
+            giWorld.InjectLight(sun);
 
             context.WindowResized += (con) =>
             {
@@ -212,6 +220,7 @@ namespace AGRacing
         {
             sun.ShadowBoxLocation = context.Camera.Position;
             phys.Update(interval / 1000d);
+            giWorld.Update(context);
 
             for (int i = 0; i < ships.Length; i++)
             {

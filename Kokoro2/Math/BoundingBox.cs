@@ -125,7 +125,7 @@ namespace Kokoro2.Math
             // If we get here, then we know all the points were actually contained, therefore result is Contains
             return ContainmentType.Contains;
         }
-        
+
         public ContainmentType Contains(Vector3 point)
         {
             ContainmentType result;
@@ -212,6 +212,20 @@ namespace Kokoro2.Math
                 new Vector3(this.Max.X, this.Min.Y, this.Min.Z),
                 new Vector3(this.Min.X, this.Min.Y, this.Min.Z)
             };
+        }
+
+        public Vector3 this[int i]
+        {
+            get
+            {
+                if (i == 0) return Min;
+                else return Max;
+            }
+            set
+            {
+                if (i == 0) Min = value;
+                else Max = value;
+            }
         }
 
         public void GetCorners(Vector3[] corners)
