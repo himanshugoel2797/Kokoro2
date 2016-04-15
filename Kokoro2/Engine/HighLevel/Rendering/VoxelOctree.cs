@@ -26,6 +26,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         public VoxelTree Left, Right;
         public Axis EntryAxis;
         public Dictionary<Vector3, VoxelData> Voxels;
+        public VoxelData[] VoxelValues;
         public float Center;
         public float Side;
 
@@ -58,9 +59,11 @@ namespace Kokoro2.Engine.HighLevel.Rendering
                 float toLeft = 0, toRight = 0;
                 float maxExtent = float.NegativeInfinity, minExtent = float.PositiveInfinity;
 
-                for (int i = 1; i < Voxels.Count; i++)
+                var voxData = Voxels.Values.ToArray();
+
+                for (int i = 1; i < voxData.Length; i++)
                 {
-                    var tmp = Voxels.Values.ElementAt(i);
+                    var tmp = voxData[i];
 
                     if (tmp.Position[(int)EntryAxis] > maxExtent) maxExtent = tmp.Position[(int)EntryAxis];
                     if (tmp.Position[(int)EntryAxis] < minExtent) minExtent = tmp.Position[(int)EntryAxis];
@@ -141,22 +144,28 @@ namespace Kokoro2.Engine.HighLevel.Rendering
                 float intersectionDist = float.PositiveInfinity;
                 int index = -1;
 
-                for (int i = 0; i < Voxels.Values.Count; i++)
+                if (VoxelValues == null) VoxelValues = Voxels.Values.ToArray();
+                var voxData = VoxelValues;
+
+                BoundingBox b2 = new BoundingBox();
+
+                for (int i = 0; i < voxData.Length; i++)
                 {
-                    BoundingBox b2 = new BoundingBox(Voxels.Values.ElementAt(i).Position - Vector3.One * vSide * 0.5f, Voxels.Values.ElementAt(i).Position + Vector3.One * vSide * 0.5f);
+                    b2.Min = voxData[i].Position - Vector3.One * vSide * 0.5f;
+                    b2.Max = voxData[i].Position + Vector3.One * vSide * 0.5f;
                     if (GI_IntersectionTests.intersect(b2, p, d))
                     {
-                        float dist = (Voxels.Values.ElementAt(i).Position - p).LengthSquared;
+                        float dist = (voxData[i].Position - p).LengthSquared;
                         if (dist < intersectionDist)
                         {
                             intersectionDist = dist;
                             index = i;
-                            data = Voxels.Values.ElementAt(i);
+                            data = voxData[i];
                         }
                     }
                 }
 
-                return index == -1;
+                return index != -1;
             }
 
             if (prevOption == null)

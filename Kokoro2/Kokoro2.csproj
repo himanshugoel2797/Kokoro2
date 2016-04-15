@@ -142,6 +142,7 @@
     <Compile Include="Engine\HighLevel\Lights\BasicLight.cs" />
     <Compile Include="Engine\HighLevel\Lights\DirectionalLight.cs" />
     <Compile Include="Engine\HighLevel\Lights\PointLight.cs" />
+    <Compile Include="Engine\HighLevel\Lights\SphericalHarmonicsSolver.cs" />
     <Compile Include="Engine\HighLevel\Rendering\GBuffer.cs" />
     <Compile Include="Engine\HighLevel\Rendering\GIObject.cs" />
     <Compile Include="Engine\HighLevel\Rendering\GIWorld.cs" />

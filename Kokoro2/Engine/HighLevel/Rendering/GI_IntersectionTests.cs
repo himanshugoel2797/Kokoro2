@@ -11,35 +11,32 @@ namespace Kokoro2.Engine.HighLevel.Rendering
     {
         internal static bool intersect(BoundingBox b, Vector3 ro, Vector3 rd)
         {
-            Vector3 invdir = new Vector3(1 / rd.X, 1 / rd.Y, 1 / rd.Z);
+            Vector3 invdir = new Vector3(1f / rd.X, 1f / rd.Y, 1 / rd.Z);
 
-            float tmin, tmax, tymin, tymax, tzmin, tzmax;
+            double tmin, tmax;
+            
+            double tx1 = (b.Min.X - ro.X) * invdir.X;
+            double ty1 = (b.Min.Y - ro.Y) * invdir.Y;
+            double tz1 = (b.Min.Z - ro.Z) * invdir.Z;
 
-            int[] sign = new int[] { invdir.X < 0 ? 1 : 0, invdir.Y < 0 ? 1 : 0, invdir.Z < 0 ? 1 : 0 };
 
-            tmin = (b[sign[0]].X - ro.X) * invdir.X;
-            tmax = (b[1 - sign[0]].X - ro.X) * invdir.X;
-            tymin = (b[sign[1]].Y - ro.Y) * invdir.Y;
-            tymax = (b[1 - sign[1]].Y - ro.Y) * invdir.Y;
+            double tx2 = (b.Max.X - ro.X) * invdir.X;
+            double ty2 = (b.Max.Y - ro.Y) * invdir.Y;
+            double tz2 = (b.Max.Z - ro.Z) * invdir.Z;
 
-            if ((tmin > tymax) || (tymin > tmax))
-                return false;
-            if (tymin > tmin)
-                tmin = tymin;
-            if (tymax < tmax)
-                tmax = tymax;
+            double txmin = System.Math.Min(tx1, tx2);
+            double txmax = System.Math.Max(tx1, tx2);
 
-            tzmin = (b[sign[2]].Z - ro.Z) * invdir.Z;
-            tzmax = (b[1 - sign[2]].Z - ro.Z) * invdir.Z;
+            double tymin = System.Math.Min(ty1, ty2);
+            double tymax = System.Math.Max(ty1, ty2);
 
-            if ((tmin > tzmax) || (tzmin > tmax))
-                return false;
-            if (tzmin > tmin)
-                tmin = tzmin;
-            if (tzmax < tmax)
-                tmax = tzmax;
+            double tzmin = System.Math.Min(tz1, tz2);
+            double tzmax = System.Math.Max(tz1, tz2);
 
-            return true;
+            tmin = System.Math.Max(txmin, System.Math.Max(tymin, tzmin));
+            tmax = System.Math.Min(txmax, System.Math.Min(tymax, tzmax));
+
+            return (tmax < tmin && tmax >= 0);
         }
 
         internal static bool IsIntersecting(BoundingBox box, Vector3 a, Vector3 b, Vector3 c, Vector3 n)

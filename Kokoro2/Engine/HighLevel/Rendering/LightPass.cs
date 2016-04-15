@@ -104,7 +104,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
             //Precalculate PBR data
             sky = new FrameBuffer(960, 540, c);
-            sky.Add("Color", FramebufferTextureSource.Create(sky.Width, sky.Height, 0, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
+            sky.Add("Color", FramebufferTextureSource.Create(sky.Width, sky.Height, -1, PixelComponentType.RGBA16f, PixelType.Float, c), FrameBufferAttachments.ColorAttachment0, c);
             fsq2 = new FullScreenQuad(c);
             atmosphereShader = new ShaderProgram(c, VertexShader.Load("Atmosphere", c), FragmentShader.Load("Atmosphere", c));
             fsq2.RenderInfo.PushShader(atmosphereShader);
@@ -161,6 +161,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             atmosphereShader["uSunPos"] = -GILight.Direction;
             c.Draw(fsq2);
             sky.UnBind(c);
+
+            sky["Color"].UpdateMipMaps();
 
             g.Bind(c);
             skyAddFSQ.RenderInfo.PushShader(skyFSQGbuffer);
@@ -307,7 +309,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
 
             //Now, blur and blend the shadow map on top of the lighting, then blend in the bloom
-            outShader["DiffuseMap"] = g["Normal"];
+            outShader["DiffuseMap"] = sky["Color"];
             outShader["LitMap"] = lightBuffer["Lit"];
             outShader["BloomMap"] = b1;
             outShader["ShadowMap"] = b0;

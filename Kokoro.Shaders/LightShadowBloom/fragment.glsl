@@ -28,9 +28,10 @@ vec3 Uncharted2Tonemap(vec3 x)
 
 
 void main(){
+	float weight = min(texture(giBuffer, UV).r, texture(ShadowMap, UV).a);
+
     color = (texture(LitMap, UV) + texture(BloomMap, UV));
-    color *= texture(giBuffer, UV);
-    // * mix(1.0, 0.5, texture(ShadowMap, UV).a);
+    color *= weight;
 	color *= 1.25;
     // Hardcoded Exposure Adjustment
 	color = color/(1+color);

@@ -68,12 +68,16 @@ vec3 perturb_normal( vec3 N, vec3 V, vec3 pert, vec2 texcoord )
 void main(){
     vec3 shad = shadowCoord.xyz / shadowCoord.w;
     shad = 0.5 * shad + 0.5;
-    //float f_moment = texture2D(ShadowMap, shad.xy).r;
+    float f_moment = texture2D(ShadowMap, shad.xy).r;
     //float s_moment = f_moment * f_moment;//texture2D(ReflectivePosMap, shad.xy).a;
     //float vis = s_moment / (s_moment + (gl_FragCoord.z - f_moment) * (gl_FragCoord.z - f_moment));
-    float vis = 1;
-	vis = pow(vis, 3);
-    vec3 v = normalize(worldCoord - EyePos);
+    //float vis = 1;
+	//vis = pow(vis, 3);
+    
+	float vis = mix(0.2f, 1.0f, step(shad.z, f_moment + 0.005f));
+	if(shad.z >= 1)vis = 1;
+
+	vec3 v = normalize(worldCoord - EyePos);
 
 	vec4 tmp = texture2D(PackedMap, UV);
 

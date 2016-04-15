@@ -48,6 +48,8 @@ namespace AGRacing
         private IShipController controller;
         private BaseEntity collisionMesh;
 
+        public GIObject g;
+
         private ParticleSystem[] ps;
 
         public ShaderProgram Shader
@@ -72,7 +74,7 @@ namespace AGRacing
             Mesh.RenderInfo.PushShader(new ShaderProgram(c, VertexShader.Load("ShadowedPacked", c), FragmentShader.Load("ShadowedPacked", c)));
 
             //GIObjectGenerator v = new GIObjectGenerator();
-            //v.Generate(Mesh.Bound, VertexMesh.GetVertices(craft.modelFile), VertexMesh.GetUVs(craft.modelFile), VertexMesh.GetNormals(craft.modelFile), Mesh.Material.AlbedoMap.ToBMP(), VertexMesh.GetIndices(craft.modelFile));
+            //g = v.Generate(Mesh.Bound, VertexMesh.GetVertices(craft.modelFile), VertexMesh.GetUVs(craft.modelFile), VertexMesh.GetNormals(craft.modelFile), Mesh.Material.AlbedoMap.ToBMP(), VertexMesh.GetIndices(craft.modelFile));
 
             ps = new ParticleSystem[craft.particleEmitterLocations.Length];
             for (int i = 0; i < ps.Length; i++)

@@ -17,12 +17,14 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         private List<GIObject> objects;
         private List<DirectionalLight> dLights;
         private List<PointLight> pLights;
+        Bitmap bmp;
 
         public GIWorld()
         {
             objects = new List<GIObject>();
             dLights = new List<DirectionalLight>();
             pLights = new List<PointLight>();
+            bmp = new Bitmap(96, 54);
         }
 
         public void Update(GraphicsContext c)
@@ -31,7 +33,8 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             //Ray cast at a low resolution and upload that as a texture each frame seems reasonable
 
             //Recalculate the scene lighting by raycasting the scene from the camera's PoV
-            Bitmap bmp = new Bitmap(96, 54);
+                    Graphics g = Graphics.FromImage(bmp);
+                    g.Clear(Color.White);
 
             Matrix4 iVP = Matrix4.Invert(c.Camera.Projection * c.Camera.View);
 
@@ -41,6 +44,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
                 {
                     //Calculate the NDC coordinates and apply an Inverse ProjView transformation to determine the ray direction
                     //Perform ray tracing using this info
+
 
                     Vector4 ndc = new Vector4((float)x / bmp.Width * 2 - 1.0f, -(float)y / bmp.Height * 2 + 1.0f, -1, 1);
                     //Vector4 worldPosRay = Vector4.Transform(ndc, iVP);
@@ -59,11 +63,14 @@ namespace Kokoro2.Engine.HighLevel.Rendering
                         if (objects[i].Voxels.RayCast(c.Camera.Position, worldPosRayDir, objects[i].VoxelSide, out result))
                         {
                             //Console.WriteLine("Hit!");
+                            bmp.SetPixel(x, y, Color.FromArgb(255, (int)(result.Color.X), (int)(result.Color.Y), (int)(result.Color.Z)));
                         }
                     }
 
                 }
             }
+
+            bmp.Save("tmp.png");
 
         }
 

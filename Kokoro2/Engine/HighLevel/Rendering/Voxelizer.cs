@@ -17,7 +17,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
         {
             VoxelTree root = new VoxelTree();
             int voxelCnt = 0;
-            float BlockEdge = (bound.Max - bound.Min).Length / 512; //Each mesh is voxelized to a 256x256x256 dataset, keeps the voxelization speed high
+            float BlockEdge = (bound.Max - bound.Min).Length / 64; //Each mesh is voxelized to a 256x256x256 dataset, keeps the voxelization speed high
 
             Vector3 bSize = bound.Max - bound.Min;
 

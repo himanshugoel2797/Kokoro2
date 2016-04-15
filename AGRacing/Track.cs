@@ -151,10 +151,10 @@ namespace AGRacing
             var t = s.GetPhysicsEntity();
             t.Position = s.Position;
             phys.AddEntity(t);
-
+            //giWorld.AddObject(s.g);
             Vector3 min, max;
             s.GetBounds(out min, out max);
-            sun.ShadowBoxSize = new BoundingBox(min, max);
+            //sun.ShadowBoxSize = new BoundingBox(min * 10, max * 10);
 
         }
 
@@ -218,9 +218,9 @@ namespace AGRacing
 
         public void Update(double interval, GraphicsContext context)
         {
-            sun.ShadowBoxLocation = context.Camera.Position;
+            sun.ShadowBoxLocation = ships[0].Position;
             phys.Update(interval / 1000d);
-            giWorld.Update(context);
+            //giWorld.Update(context);
 
             for (int i = 0; i < ships.Length; i++)
             {
