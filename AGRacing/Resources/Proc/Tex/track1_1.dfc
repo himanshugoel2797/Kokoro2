@@ -10,8 +10,8 @@
   <NormalMap>true</NormalMap>
   <EmissiveMap>true</EmissiveMap>
   <AlbedoMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\track_1_1_tex.png</AlbedoMapFile>
-  <ReflectivityMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\track_specular.png</ReflectivityMapFile>
-  <RoughnessMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\track_roughness.png</RoughnessMapFile>
-  <NormalMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\track_normal.jpg</NormalMapFile>
-  <EmissiveMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\track_emit.png</EmissiveMapFile>
+  <ReflectivityMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\track_1_1_spec.png</ReflectivityMapFile>
+  <RoughnessMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\track_1_1_roughness.png</RoughnessMapFile>
+  <NormalMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\track_1_1_norm.png</NormalMapFile>
+  <EmissiveMapFile>C:\Users\Himanshu\Source\Repos\Kokoro2\AGRacing\Resources\Proc\Tex\track_1_1_emit.png</EmissiveMapFile>
 </TextureSet>

@@ -12,14 +12,73 @@ namespace Kokoro.ContentPipeline
 {
     public class ModelConvert
     {
+        private static Matrix4 ToCustom(Matrix4x4 r)
+        {
+            Matrix4 n0 = new Matrix4();
+
+            n0.M11 = r.A1;
+            n0.M12 = r.B1;
+            n0.M13 = r.C1;
+            n0.M14 = r.D1;
+
+            n0.M21 = r.A2;
+            n0.M22 = r.B2;
+            n0.M23 = r.C2;
+            n0.M24 = r.D2;
+
+            n0.M31 = r.A3;
+            n0.M32 = r.B3;
+            n0.M33 = r.C3;
+            n0.M34 = r.D3;
+
+            n0.M41 = r.A4;
+            n0.M42 = r.B4;
+            n0.M43 = r.C4;
+            n0.M44 = r.D4;
+
+            return n0;
+        }
+
         public static byte[] Process(string filename)
         {
-            float[][] bounds = new float[2][];
-            bounds[0] = new float[3];
-            bounds[1] = new float[3];
+            List<float[][]> bounds = new List<float[][]>();
 
             AssimpContext context = new AssimpContext();
             Scene model = context.ImportFile(filename, PostProcessSteps.GenerateSmoothNormals | PostProcessSteps.ImproveCacheLocality | PostProcessSteps.OptimizeMeshes | PostProcessSteps.RemoveRedundantMaterials);
+            SceneGraph sc = null;
+
+            if (model.MeshCount > 1)
+            {
+                sc = new SceneGraph();
+
+                Action<SceneGraph, Node> scBuild = null;
+                scBuild = (a, n) =>
+                {
+                    a.Transform = ToCustom(n.Transform);
+
+                    if (n.HasMeshes)
+                    {
+                        a.Objects = new int[n.MeshCount];
+
+                        for (int i = 0; i < n.MeshCount; i++)
+                        {
+                            a.Objects[i] = n.MeshIndices[i];
+                        }
+                    }
+
+                    if (n.HasChildren)
+                    {
+                        a.Children = new SceneGraph[n.ChildCount];
+                        for (int i = 0; i < n.ChildCount; i++)
+                        {
+                            a.Children[i] = new SceneGraph();
+                            scBuild(a.Children[i], n.Children[i]);
+                        }
+                    }
+                };
+
+                scBuild(sc, model.RootNode);
+            }
 
             string baseDir = Path.GetDirectoryName(filename);
 
@@ -50,8 +109,9 @@ namespace Kokoro.ContentPipeline
                 texs.Add(t);
                 #endregion
 
-                bounds[0] = new float[] { m.Vertices[0].X, m.Vertices[0].Y, m.Vertices[0].Z };
-                bounds[1] = new float[] { m.Vertices[0].X, m.Vertices[0].Y, m.Vertices[0].Z };
+                bounds.Add(new float[2][]);
+                bounds[bounds.Count - 1][0] = new float[] { m.Vertices[0].X, m.Vertices[0].Y, m.Vertices[0].Z };
+                bounds[bounds.Count - 1][1] = new float[] { m.Vertices[0].X, m.Vertices[0].Y, m.Vertices[0].Z };
 
                 isLine.Add(m.FaceCount == 0);
 
@@ -63,12 +123,12 @@ namespace Kokoro.ContentPipeline
                     vertices[v + 1] = m.Vertices[(v - (v % 3)) / 3].Y;
                     vertices[v + 2] = m.Vertices[(v - (v % 3)) / 3].Z;
 
-                    if (vertices[v] < bounds[0][0]) bounds[0][0] = vertices[v];
-                    if (vertices[v + 1] < bounds[0][1]) bounds[0][1] = vertices[v + 1];
-                    if (vertices[v + 2] < bounds[0][2]) bounds[0][2] = vertices[v + 2];
-                    if (vertices[v] > bounds[1][0]) bounds[1][0] = vertices[v];
-                    if (vertices[v + 1] > bounds[1][1]) bounds[1][1] = vertices[v + 1];
-                    if (vertices[v + 2] > bounds[1][2]) bounds[1][2] = vertices[v + 2];
+                    if (vertices[v] < bounds[bounds.Count - 1][0][0]) bounds[bounds.Count - 1][0][0] = vertices[v];
+                    if (vertices[v + 1] < bounds[bounds.Count - 1][0][1]) bounds[bounds.Count - 1][0][1] = vertices[v + 1];
+                    if (vertices[v + 2] < bounds[bounds.Count - 1][0][2]) bounds[bounds.Count - 1][0][2] = vertices[v + 2];
+                    if (vertices[v] > bounds[bounds.Count - 1][1][0]) bounds[bounds.Count - 1][1][0] = vertices[v];
+                    if (vertices[v + 1] > bounds[bounds.Count - 1][1][1]) bounds[bounds.Count - 1][1][1] = vertices[v + 1];
+                    if (vertices[v + 2] > bounds[bounds.Count - 1][1][2]) bounds[bounds.Count - 1][1][2] = vertices[v + 2];
                 }
                 Vertices.Add(vertices);
                 #endregion
@@ -189,7 +249,7 @@ namespace Kokoro.ContentPipeline
             }
 
             return FinalProcess(texs.ToArray(), Vertices.ToArray(), UV.ToArray(), Normals.ToArray(),
-                Indices.ToArray(), texs.ToArray(), bounds, vweights, vbones, SkeletonBones.ToArray(), isLine.ToArray());
+                Indices.ToArray(), texs.ToArray(), bounds.ToArray(), vweights, vbones, SkeletonBones.ToArray(), isLine.ToArray(), sc);
             #endregion
         }
 
@@ -222,6 +282,9 @@ namespace Kokoro.ContentPipeline
 
             [ProtoMember(9)]
             public bool isLine;
+
+            [ProtoMember(10)]
+            public float[] BoundingBox;
         }
 
         [ProtoContract]
@@ -245,25 +308,38 @@ namespace Kokoro.ContentPipeline
             public float[] Skeletons;
         }
 
+        [ProtoContract]
+        class SceneGraph
+        {
+            [ProtoMember(1)]
+            public SceneGraph[] Children;
+
+            [ProtoMember(2)]
+            public Matrix4 Transform;
+
+            [ProtoMember(3)]
+            public int[] Objects;
+        }
 
         [ProtoContract]
         class Model
         {
+            [ProtoMember(3)]
+            public SceneGraph Scene;
+
             [ProtoMember(1)]
             public MeshInfo[] Mesh;
-
-            [ProtoMember(2)]
-            public float[] BoundingBox;
 
         }
 
         private static byte[] FinalProcess(string[] tex, float[][] verts, float[][] uvs, float[][] norms,
-            uint[][] indices, string[] texPaths, float[][] boundingbox, float[][][] weights = null, int[][][] bones = null, float[][][] skeleton = null, bool[] isLine = null)
+            uint[][] indices, string[] texPaths, float[][][] boundingbox, float[][][] weights = null, int[][][] bones = null, float[][][] skeleton = null, bool[] isLine = null, SceneGraph sc = null)
         {
             byte[] outdata;
 
             Model m = new Model()
             {
+                Scene = sc,
                 Mesh = new MeshInfo[indices.Length]
             };
 
@@ -276,8 +352,16 @@ namespace Kokoro.ContentPipeline
                     normals = norms[i],
                     tex = texPaths[i],
                     uvs = uvs[i],
-                    isLine = isLine[i]
+                    isLine = isLine[i],
+                    BoundingBox = new float[6]
                 };
+
+                m.Mesh[i].BoundingBox[0] = boundingbox[i][0][0];
+                m.Mesh[i].BoundingBox[1] = boundingbox[i][0][1];
+                m.Mesh[i].BoundingBox[2] = boundingbox[i][0][2];
+                m.Mesh[i].BoundingBox[3] = boundingbox[i][1][0];
+                m.Mesh[i].BoundingBox[4] = boundingbox[i][1][1];
+                m.Mesh[i].BoundingBox[5] = boundingbox[i][1][2];
 
                 if (weights[i] != null && weights[i].Length > 0)
                 {
@@ -316,13 +400,6 @@ namespace Kokoro.ContentPipeline
                 }
             }
 
-            m.BoundingBox = new float[6];
-            m.BoundingBox[0] = boundingbox[0][0];
-            m.BoundingBox[1] = boundingbox[0][1];
-            m.BoundingBox[2] = boundingbox[0][2];
-            m.BoundingBox[3] = boundingbox[1][0];
-            m.BoundingBox[4] = boundingbox[1][1];
-            m.BoundingBox[5] = boundingbox[1][2];
 
             using (MemoryStream strm = new MemoryStream())
             {

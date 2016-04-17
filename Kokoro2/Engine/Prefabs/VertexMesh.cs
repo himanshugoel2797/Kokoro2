@@ -12,7 +12,7 @@ namespace Kokoro2.Engine.Prefabs
     {
         #region Model Structures
         [ProtoContract]
-        class MeshInfo_m
+        internal class MeshInfo_m
         {
             [ProtoMember(1)]
             public float[] Vertices;
@@ -41,43 +41,78 @@ namespace Kokoro2.Engine.Prefabs
 
             [ProtoMember(9)]
             public bool isLine;
+
+            [ProtoMember(10)]
+            public float[] BoundingBox;
         }
 
         [ProtoContract]
-        class Weight_m
+        internal class Weight_m
         {
             [ProtoMember(1)]
             public float[] Weights;
         }
 
         [ProtoContract]
-        class Bone_m
+        internal class Bone_m
         {
             [ProtoMember(1)]
             public int[] Bones;
         }
 
         [ProtoContract]
-        class Skeleton_m
+        internal class Skeleton_m
         {
             [ProtoMember(1)]
             public float[] Skeletons;
         }
 
-
         [ProtoContract]
-        class Model_m
+        internal class SceneGraph_m
         {
             [ProtoMember(1)]
-            public MeshInfo_m[] Mesh;
+            public SceneGraph_m[] Children;
 
             [ProtoMember(2)]
-            public float[] BoundingBox;
+            public Matrix4 Transform;
+
+            [ProtoMember(3)]
+            public int[] Objects;
+        }
+
+
+        [ProtoContract]
+        internal class Model_m
+        {
+            [ProtoMember(3)]
+            public SceneGraph_m Scene;
+
+            [ProtoMember(1)]
+            public MeshInfo_m[] Mesh;
 
         }
         #endregion
 
         private bool animatedMesh;
+
+        internal VertexMesh(MeshInfo_m m, GraphicsContext c) : base(c)
+        {
+            Buffer.Bind();
+            SetIndices(m.indices, 0);
+            SetUVs(m.uvs, 0);
+            SetVertices(m.Vertices, 0);
+            SetNormals(m.normals, 0);
+
+            if (m.isLine) DrawMode = DrawMode.Lines;
+            Buffer.UnBind();
+
+            Bound = new BoundingBox()
+            {
+                Min = new Math.Vector3(m.BoundingBox[0], m.BoundingBox[1], m.BoundingBox[2]),
+                Max = new Math.Vector3(m.BoundingBox[3], m.BoundingBox[4], m.BoundingBox[5])
+            };
+        }
+
 
         public VertexMesh(string filename, bool animated, GraphicsContext c, bool useVFS = false) : base(c)
         {
@@ -107,8 +142,8 @@ namespace Kokoro2.Engine.Prefabs
 
             Bound = new BoundingBox()
             {
-                Min = new Math.Vector3(tmp.BoundingBox[0], tmp.BoundingBox[1], tmp.BoundingBox[2]),
-                Max = new Math.Vector3(tmp.BoundingBox[3], tmp.BoundingBox[4], tmp.BoundingBox[5])
+                Min = new Math.Vector3(tmp.Mesh[0].BoundingBox[0], tmp.Mesh[0].BoundingBox[1], tmp.Mesh[0].BoundingBox[2]),
+                Max = new Math.Vector3(tmp.Mesh[0].BoundingBox[3], tmp.Mesh[0].BoundingBox[4], tmp.Mesh[0].BoundingBox[5])
             };
 
         }

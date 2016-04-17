@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 
 using OpenTK.Graphics.OpenGL4;
 using OpenTK;
+using OpenTK.Audio.OpenAL;
 using OpenTK.Input;
 using System.Windows.Forms;
 using System.Drawing;
+using OpenTK.Audio;
 
 namespace Kokoro2.OpenGL.PC
 {
@@ -47,6 +49,7 @@ namespace Kokoro2.OpenGL.PC
             Window.ParentForm.Move += Window_Move;
             //Window.ParentForm.ResizeBegin += ParentForm_ResizeBegin;
             //Window.ParentForm.ResizeEnd += ParentForm_ResizeEnd;
+            audioContext = new AudioContext();
 
             inited = true;
             //Depth Test is always enabled, it's a matter of what the depth function is
@@ -405,6 +408,15 @@ namespace Kokoro2.OpenGL.PC
 
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
             return bmp;
+        }
+        #endregion
+
+        #region Audio Stuff
+        AudioContext audioContext;
+
+        internal AudioContext getContext()
+        {
+            return audioContext;
         }
         #endregion
     }

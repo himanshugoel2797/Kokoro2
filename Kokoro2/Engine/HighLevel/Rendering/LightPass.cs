@@ -95,7 +95,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             var ssrTex = FramebufferTextureSource.Create(ssrBuffer.Width, ssrBuffer.Height, -1, PixelComponentType.RGBA16f, PixelType.Float, c);
             ssrTex.FilterMode = TextureFilter.Linear;
             ssrBuffer.Add("SSR", ssrTex, FrameBufferAttachments.ColorAttachment0, c);
-            ssrPass = new TextureBlurFilter(ssrBuffer.Width * 2, ssrBuffer.Height * 2, PixelComponentType.RGBA16f, c);
+            ssrPass = new TextureBlurFilter(ssrBuffer.Width, ssrBuffer.Height, PixelComponentType.RGBA16f, c);
 
             bloomPass = new TextureBlurFilter(width, height, PixelComponentType.RGBA16f, c);
             bloomPass.BlurRadius = 0.0015f * 960 / width;
@@ -201,6 +201,9 @@ namespace Kokoro2.Engine.HighLevel.Rendering
 
             ssrBuffer["SSR"].UpdateMipMaps();
             ssrBuffer["SSR"].FilterMode = TextureFilter.Linear;
+            g["Color"].FilterMode = TextureFilter.Linear;
+            g["Normal"].FilterMode = TextureFilter.Linear;
+            g["WorldPos"].FilterMode = TextureFilter.Linear;
 
             g["WorldPos"].WrapX = false;
             g["WorldPos"].WrapY = false;
@@ -254,6 +257,7 @@ namespace Kokoro2.Engine.HighLevel.Rendering
                 c.Draw(dLightPrim);
             }
 
+            #region Point Lights
             var p = c.FaceCulling;
             c.FaceCulling = CullMode.Back;
             c.DepthFunction = DepthFunc.LEqual;
@@ -297,10 +301,13 @@ namespace Kokoro2.Engine.HighLevel.Rendering
             c.Blend = false;
             c.FaceCulling = p;
             c.DepthWrite = true;
+            #endregion
+
             lightBuffer.UnBind(c);
 
+
             var b0 = shadowPass.ApplyBlur(g["WorldPos"], c);
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < 4; i++)
             {
                 b0 = shadowPass.ApplyBlur(b0, c);
             }

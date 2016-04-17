@@ -13,8 +13,6 @@ namespace Kokoro2.Engine.HighLevel.Lights
     {
         public bool CastShadows { get; set; }
         public int ShadowResolution { get; set; }
-
-        public Vector3 AmbientColor { get; set; }
         public Vector3 LightColor { get; set; }
 
         public Matrix4 ShadowSpace { get; protected set; }
@@ -43,9 +41,8 @@ namespace Kokoro2.Engine.HighLevel.Lights
         protected BasicLight(GraphicsContext context)
         {
             shadowShader = new ShaderProgram(context, VertexShader.Load("ShadowMap", context), FragmentShader.Load("ShadowMap", context));
-            AmbientColor = new Vector3(0.2f, 0.2f, 0.3f);
             LightColor = Vector3.One;
-            ShadowResolution = 4096;
+            ShadowResolution = 1024;
             InitializeShadowBuffer(context);
         }
 
@@ -76,7 +73,7 @@ namespace Kokoro2.Engine.HighLevel.Lights
             {
                 passSetup = true;
                 prevCullMode = context.FaceCulling;
-                context.FaceCulling = CullMode.Off;
+                context.FaceCulling = CullMode.Front;
                 ShadowSpace = GetShadowMapMatrix(context);
                 ShadowShader["sWVP"] = GetShadowShaderMatrix(context);
                 shadowBuffer.Bind(context);

@@ -106,7 +106,7 @@ vec4 o_cooktorr(vec3 n, vec3 v, vec3 l, float f0, float r, vec4 spec, vec4 dif)
     float k = r * 0.797884;
 	//fresnel *= 0.04;
 
-	float geometric = ggx_t(nDotH, nDotV, r) * ggx_t(nDotL, nDotL, r);
+	float geometric = 0;//ggx_t(nDotH, nDotV, r) * ggx_t(nDotL, nDotL, r);
 	geometric = 1 / mix(nDotV, 1, k) * 1/ mix(nDotL, 1, k);
 
     vec4 rs = spec * fresnel * roughness * geometric * 0.101321184;

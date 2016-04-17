@@ -47,6 +47,7 @@ namespace AGRacing
             trackModel.RenderInfo.PushShader(new Kokoro2.Engine.Shaders.ShaderProgram(context, VertexShader.Load("ShadowedPacked", context), FragmentShader.Load("ShadowedPacked", context)));
             Reverse = data.Reverse;
 
+            trackModel.RenderInfo.World = Matrix4.Scale(5);
 
             trackPath = VertexMesh.GetVertices(data.path, false);
 
@@ -63,10 +64,10 @@ namespace AGRacing
             phys = new PhysicsWorld();
             phys.Gravity = new Vector3(0, -30f, 0);
 
-            collisionMesh = new MobileMesh(verts, indices, 1, MobileMesh.Solidity.Clockwise);
+            collisionMesh = new MobileMesh(verts, indices, 5, MobileMesh.Solidity.Clockwise);
             phys.AddEntity(collisionMesh);
 
-            sun = new DirectionalLight(context, -Vector3.UnitY * 0.75f + Vector3.UnitX * 0.25f);
+            sun = new DirectionalLight(context, -Vector3.UnitY * 0.85f + Vector3.UnitX * 0.15f);
             sun.ShadowResolution = 1024;
             sun.CastShadows = true;
             sun.InitializeShadowBuffer(context);
@@ -81,6 +82,14 @@ namespace AGRacing
                 lights.GILight = sun;
                 lights.EnvironmentMap = ImageTextureSource.Create("Resources/Proc/Tex/envMap.jpg", 0, true, con);
                 gbuf = new GBuffer((int)con.WindowSize.X, (int)con.WindowSize.Y, con);
+
+                for(int i  = 0; i< 20; i++)
+                {
+                    PointLight p = new PointLight(con);
+                    p.Position = GetPosition(0);
+                    p.LightColor = Vector3.One;
+                    //lights.AddLight(p);
+                }
             };
 
             lights = new LightPass((int)context.WindowSize.X, (int)context.WindowSize.Y, context);
@@ -104,7 +113,7 @@ namespace AGRacing
             if (Reverse) b = (trackPath.Length / 3 - 1) - b;
 
             b *= 3;
-            return new Vector3(trackPath[b + 0], trackPath[b + 1], trackPath[b + 2]);
+            return new Vector3(trackPath[b + 0] * 5, trackPath[b + 1] * 5, trackPath[b + 2] * 5);
         }
 
         public int GetPointCount()
@@ -165,7 +174,6 @@ namespace AGRacing
 
         public void Draw(GraphicsContext context)
         {
-            context.FaceCulling = CullMode.Off;
             sun.SetupShadowPass(context);
             trackModel.RenderInfo.PushShader(sun.ShadowShader);
             trackModel.DrawMode = DrawMode.Triangles;
@@ -182,7 +190,6 @@ namespace AGRacing
                 }
             }
             sun.EndShadowPass(context);
-            context.FaceCulling = CullMode.Back;
 
             gbuf.Bind(context);
             context.ClearDepth();

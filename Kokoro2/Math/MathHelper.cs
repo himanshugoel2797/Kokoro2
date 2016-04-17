@@ -73,6 +73,15 @@ namespace Kokoro2.Math
 
         #endregion
 
+        public static double Fract(double i)
+        {
+            return i - System.Math.Truncate(i);
+        }
+
+        public static float Fract(float i)
+        {
+            return (float)Fract((double)i);
+        }
         #region Public Members
 
         #region NextPowerOfTwo

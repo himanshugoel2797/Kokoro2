@@ -63,6 +63,8 @@ namespace AGRacing.Test.TrackLoadTest
 
                 track.Draw(context);
                 context.SwapBuffers();
+
+                if (Kokoro2.Engine.Input.Keyboard.IsKeyPressed(Kokoro2.Engine.Input.Key.F6)) context.GrabScreenshot().Save("screenshot.png");
             }
         }
 

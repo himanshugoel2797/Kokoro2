@@ -128,16 +128,16 @@ poissonDisk[63] = vec2(-0.178564, -0.596057);
 	
 	float ao = depth;
 	vec3 active_samples = vec3(0);
-	for(int i = 0; i < 64; i++)
+	for(int i = 0; i < 16; i++)
 	{
-		vec2 uv_c = UV + poissonDisk[i] * 0.025;
+		vec2 uv_c = UV + poissonDisk[i] * 0.007;
 
 		float d_a = texture2D(depthMap, uv_c).r;
 		vec3 n_a = decode(texture2D(normData, uv_c).xy);
 		active_samples += max(0.3, dot(n_a, -giLightDirection)) * step(depth, d_a);
 	}
 
-	reflection = vec4(active_samples/32, 1);
+	reflection = vec4(active_samples/8, 1);
 }
 
 

@@ -123,6 +123,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\AudioSource.cs" />
     <Compile Include="Engine\BitmapTextureSource.cs" />
     <Compile Include="Engine\CubeMapTextureSource.cs" />
     <Compile Include="Engine\DepthTextureSource.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Engine\HighLevel\Font.cs" />
     <Compile Include="Engine\HighLevel\Lights\BasicLight.cs" />
     <Compile Include="Engine\HighLevel\Lights\DirectionalLight.cs" />
+    <Compile Include="Engine\HighLevel\Lights\PhysicalDirectionalLight.cs" />
     <Compile Include="Engine\HighLevel\Lights\PointLight.cs" />
     <Compile Include="Engine\HighLevel\Lights\SphericalHarmonicsSolver.cs" />
     <Compile Include="Engine\HighLevel\Rendering\GBuffer.cs" />
@@ -180,6 +182,7 @@
     <Compile Include="Engine\Prefabs\HighResQuad.cs" />
     <Compile Include="Engine\Prefabs\InputDataMesh.cs" />
     <Compile Include="Engine\Prefabs\Quad.cs" />
+    <Compile Include="Engine\Prefabs\Scene.cs" />
     <Compile Include="Engine\Prefabs\Sphere.cs" />
     <Compile Include="Engine\Prefabs\VertexMesh.cs" />
     <Compile Include="Engine\RenderInfo.cs" />
@@ -194,10 +197,13 @@
     <Compile Include="Engine\VertexBatch.cs" />
     <Compile Include="Math\BoundingBox.cs" />
     <Compile Include="Math\BoundingFrustum.cs" />
+    <Compile Include="Math\ColorTools.cs" />
     <Compile Include="Math\ContainmentType.cs" />
     <Compile Include="Math\Plane.cs" />
     <Compile Include="Math\PlaneIntersectionType.cs" />
     <Compile Include="Math\Vector2I.cs" />
+    <Compile Include="OpenGL\PC\AudioBufferLL.cs" />
+    <Compile Include="OpenGL\PC\AudioSourceLL.cs" />
     <Compile Include="OpenGL\PC\BindingManager.cs" />
     <Compile Include="Physics\BEPUBody.cs" />
     <Compile Include="Engine\Physics\PhysicsWorld.cs" />
