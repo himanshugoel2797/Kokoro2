@@ -36,7 +36,6 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.printPreviewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -70,9 +69,7 @@
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.contentTabs = new System.Windows.Forms.TabControl();
             this.meshesTab = new System.Windows.Forms.TabPage();
-            this.meshTreeView = new System.Windows.Forms.TreeView();
-            this.lightsTab = new System.Windows.Forms.TabPage();
-            this.lightTreeView = new System.Windows.Forms.TreeView();
+            this.objectTreeView = new System.Windows.Forms.TreeView();
             this.scriptsTab = new System.Windows.Forms.TabPage();
             this.scriptTreeView = new System.Windows.Forms.TreeView();
             this.scenesTab = new System.Windows.Forms.TabPage();
@@ -86,15 +83,16 @@
             this.addMesh = new System.Windows.Forms.ToolStripButton();
             this.addScript = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-            this.pbrViewer = new System.Windows.Forms.ToolStripButton();
             this.textureTool = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
+            this.showEngineOutput = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.framerateLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.updaterateLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.openPrj = new System.Windows.Forms.OpenFileDialog();
             this.frameUpdater = new System.Windows.Forms.Timer(this.components);
-            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
-            this.showEngineOutput = new System.Windows.Forms.ToolStripButton();
+            this.addSoundSourceBtn = new System.Windows.Forms.ToolStripButton();
+            this.createScene = new System.Windows.Forms.ToolStripButton();
             this.menuStrip1.SuspendLayout();
             this.toolsContainer.ContentPanel.SuspendLayout();
             this.toolsContainer.TopToolStripPanel.SuspendLayout();
@@ -115,7 +113,6 @@
             this.splitContainer3.SuspendLayout();
             this.contentTabs.SuspendLayout();
             this.meshesTab.SuspendLayout();
-            this.lightsTab.SuspendLayout();
             this.scriptsTab.SuspendLayout();
             this.scenesTab.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -143,7 +140,6 @@
             this.openToolStripMenuItem,
             this.toolStripSeparator,
             this.saveToolStripMenuItem,
-            this.saveAsToolStripMenuItem,
             this.toolStripSeparator1,
             this.printToolStripMenuItem,
             this.printPreviewToolStripMenuItem,
@@ -159,7 +155,7 @@
             this.newToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newToolStripMenuItem.Text = "&New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -169,14 +165,14 @@
             this.openToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(143, 6);
+            this.toolStripSeparator.Size = new System.Drawing.Size(149, 6);
             // 
             // saveToolStripMenuItem
             // 
@@ -184,19 +180,14 @@
             this.saveToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveToolStripMenuItem.Text = "&Save";
-            // 
-            // saveAsToolStripMenuItem
-            // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.saveAsToolStripMenuItem.Text = "Save &As";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(143, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // printToolStripMenuItem
             // 
@@ -204,7 +195,7 @@
             this.printToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.printToolStripMenuItem.Name = "printToolStripMenuItem";
             this.printToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.printToolStripMenuItem.Text = "&Print";
             // 
             // printPreviewToolStripMenuItem
@@ -212,18 +203,18 @@
             this.printPreviewToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("printPreviewToolStripMenuItem.Image")));
             this.printPreviewToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.printPreviewToolStripMenuItem.Name = "printPreviewToolStripMenuItem";
-            this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.printPreviewToolStripMenuItem.Text = "Print Pre&view";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(143, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             // 
             // editToolStripMenuItem
@@ -245,20 +236,20 @@
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.undoToolStripMenuItem.Text = "&Undo";
             // 
             // redoToolStripMenuItem
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.redoToolStripMenuItem.Text = "&Redo";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(141, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(149, 6);
             // 
             // cutToolStripMenuItem
             // 
@@ -266,7 +257,7 @@
             this.cutToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.cutToolStripMenuItem.Text = "Cu&t";
             // 
             // copyToolStripMenuItem
@@ -275,7 +266,7 @@
             this.copyToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.copyToolStripMenuItem.Text = "&Copy";
             // 
             // pasteToolStripMenuItem
@@ -284,18 +275,18 @@
             this.pasteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.pasteToolStripMenuItem.Text = "&Paste";
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(141, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(149, 6);
             // 
             // selectAllToolStripMenuItem
             // 
             this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.selectAllToolStripMenuItem.Text = "Select &All";
             // 
             // toolsToolStripMenuItem
@@ -469,7 +460,6 @@
             // 
             this.contentTabs.Alignment = System.Windows.Forms.TabAlignment.Right;
             this.contentTabs.Controls.Add(this.meshesTab);
-            this.contentTabs.Controls.Add(this.lightsTab);
             this.contentTabs.Controls.Add(this.scriptsTab);
             this.contentTabs.Controls.Add(this.scenesTab);
             this.contentTabs.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -482,41 +472,23 @@
             // 
             // meshesTab
             // 
-            this.meshesTab.Controls.Add(this.meshTreeView);
+            this.meshesTab.Controls.Add(this.objectTreeView);
             this.meshesTab.Location = new System.Drawing.Point(4, 4);
             this.meshesTab.Name = "meshesTab";
             this.meshesTab.Padding = new System.Windows.Forms.Padding(3);
             this.meshesTab.Size = new System.Drawing.Size(385, 474);
             this.meshesTab.TabIndex = 0;
-            this.meshesTab.Text = "Meshes";
+            this.meshesTab.Text = "Objects";
             this.meshesTab.UseVisualStyleBackColor = true;
             // 
-            // meshTreeView
+            // objectTreeView
             // 
-            this.meshTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.meshTreeView.Location = new System.Drawing.Point(3, 3);
-            this.meshTreeView.Name = "meshTreeView";
-            this.meshTreeView.Size = new System.Drawing.Size(379, 468);
-            this.meshTreeView.TabIndex = 0;
-            // 
-            // lightsTab
-            // 
-            this.lightsTab.Controls.Add(this.lightTreeView);
-            this.lightsTab.Location = new System.Drawing.Point(4, 4);
-            this.lightsTab.Name = "lightsTab";
-            this.lightsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.lightsTab.Size = new System.Drawing.Size(385, 474);
-            this.lightsTab.TabIndex = 1;
-            this.lightsTab.Text = "Lights";
-            this.lightsTab.UseVisualStyleBackColor = true;
-            // 
-            // lightTreeView
-            // 
-            this.lightTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lightTreeView.Location = new System.Drawing.Point(3, 3);
-            this.lightTreeView.Name = "lightTreeView";
-            this.lightTreeView.Size = new System.Drawing.Size(379, 468);
-            this.lightTreeView.TabIndex = 1;
+            this.objectTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.objectTreeView.Location = new System.Drawing.Point(3, 3);
+            this.objectTreeView.Name = "objectTreeView";
+            this.objectTreeView.Size = new System.Drawing.Size(379, 468);
+            this.objectTreeView.TabIndex = 0;
+            this.objectTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.objectTreeView_AfterSelect);
             // 
             // scriptsTab
             // 
@@ -555,6 +527,7 @@
             this.sceneTreeView.Name = "sceneTreeView";
             this.sceneTreeView.Size = new System.Drawing.Size(379, 468);
             this.sceneTreeView.TabIndex = 0;
+            this.sceneTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.sceneTreeView_AfterSelect);
             // 
             // curObjProperties
             // 
@@ -563,6 +536,7 @@
             this.curObjProperties.Name = "curObjProperties";
             this.curObjProperties.Size = new System.Drawing.Size(412, 478);
             this.curObjProperties.TabIndex = 2;
+            this.curObjProperties.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.curObjProperties_PropertyValueChanged);
             // 
             // toolStrip1
             // 
@@ -571,17 +545,18 @@
             this.PlayPauseGame,
             this.StopGame,
             this.toolStripSeparator6,
+            this.createScene,
+            this.addSoundSourceBtn,
             this.addLight,
             this.addMesh,
             this.addScript,
             this.toolStripSeparator7,
-            this.pbrViewer,
             this.textureTool,
             this.toolStripSeparator8,
             this.showEngineOutput});
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(245, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(237, 25);
             this.toolStrip1.TabIndex = 0;
             // 
             // PlayPauseGame
@@ -617,6 +592,7 @@
             this.addLight.Size = new System.Drawing.Size(23, 22);
             this.addLight.Text = "toolStripButton3";
             this.addLight.ToolTipText = "Add New Light";
+            this.addLight.Click += new System.EventHandler(this.addLight_Click);
             // 
             // addMesh
             // 
@@ -642,15 +618,6 @@
             this.toolStripSeparator7.Name = "toolStripSeparator7";
             this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
             // 
-            // pbrViewer
-            // 
-            this.pbrViewer.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.pbrViewer.Image = ((System.Drawing.Image)(resources.GetObject("pbrViewer.Image")));
-            this.pbrViewer.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.pbrViewer.Name = "pbrViewer";
-            this.pbrViewer.Size = new System.Drawing.Size(23, 22);
-            this.pbrViewer.Text = "Open Mesh Preview/Convert tool";
-            // 
             // textureTool
             // 
             this.textureTool.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -660,6 +627,22 @@
             this.textureTool.Size = new System.Drawing.Size(23, 22);
             this.textureTool.Text = "Launch Texture Conversion tool";
             this.textureTool.ToolTipText = "Launch Texture Conversion tool";
+            this.textureTool.Click += new System.EventHandler(this.textureTool_Click);
+            // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(6, 25);
+            // 
+            // showEngineOutput
+            // 
+            this.showEngineOutput.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.showEngineOutput.Image = ((System.Drawing.Image)(resources.GetObject("showEngineOutput.Image")));
+            this.showEngineOutput.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.showEngineOutput.Name = "showEngineOutput";
+            this.showEngineOutput.Size = new System.Drawing.Size(23, 22);
+            this.showEngineOutput.Text = "Show Engine Output";
+            this.showEngineOutput.Click += new System.EventHandler(this.showEngineOutput_Click);
             // 
             // statusStrip1
             // 
@@ -696,20 +679,27 @@
             this.frameUpdater.Interval = 500;
             this.frameUpdater.Tick += new System.EventHandler(this.PerFrameInfoUpdater_Elapsed);
             // 
-            // toolStripSeparator8
+            // addSoundSourceBtn
             // 
-            this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(6, 25);
+            this.addSoundSourceBtn.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.addSoundSourceBtn.Image = ((System.Drawing.Image)(resources.GetObject("addSoundSourceBtn.Image")));
+            this.addSoundSourceBtn.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.addSoundSourceBtn.Name = "addSoundSourceBtn";
+            this.addSoundSourceBtn.Size = new System.Drawing.Size(23, 22);
+            this.addSoundSourceBtn.Text = "toolStripButton3";
+            this.addSoundSourceBtn.ToolTipText = "Add New Audio Source";
+            this.addSoundSourceBtn.Click += new System.EventHandler(this.addSoundSourceBtn_Click);
             // 
-            // showEngineOutput
+            // createScene
             // 
-            this.showEngineOutput.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.showEngineOutput.Image = ((System.Drawing.Image)(resources.GetObject("showEngineOutput.Image")));
-            this.showEngineOutput.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.showEngineOutput.Name = "showEngineOutput";
-            this.showEngineOutput.Size = new System.Drawing.Size(23, 22);
-            this.showEngineOutput.Text = "Show Engine Output";
-            this.showEngineOutput.Click += new System.EventHandler(this.showEngineOutput_Click);
+            this.createScene.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.createScene.Image = ((System.Drawing.Image)(resources.GetObject("createScene.Image")));
+            this.createScene.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.createScene.Name = "createScene";
+            this.createScene.Size = new System.Drawing.Size(23, 22);
+            this.createScene.Text = "Create Scene";
+            this.createScene.ToolTipText = "Add New Audio Source";
+            this.createScene.Click += new System.EventHandler(this.createScene_Click);
             // 
             // Form1
             // 
@@ -747,7 +737,6 @@
             this.splitContainer3.ResumeLayout(false);
             this.contentTabs.ResumeLayout(false);
             this.meshesTab.ResumeLayout(false);
-            this.lightsTab.ResumeLayout(false);
             this.scriptsTab.ResumeLayout(false);
             this.scenesTab.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
@@ -767,7 +756,6 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem printPreviewToolStripMenuItem;
@@ -801,7 +789,6 @@
         private System.Windows.Forms.ToolStripButton addLight;
         private System.Windows.Forms.ToolStripButton addMesh;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator7;
-        private System.Windows.Forms.ToolStripButton pbrViewer;
         private System.Windows.Forms.ToolStripButton textureTool;
         private System.Windows.Forms.ToolStripStatusLabel framerateLabel;
         private System.Windows.Forms.ToolStripStatusLabel updaterateLabel;
@@ -815,9 +802,7 @@
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.TabControl contentTabs;
         private System.Windows.Forms.TabPage meshesTab;
-        private System.Windows.Forms.TreeView meshTreeView;
-        private System.Windows.Forms.TabPage lightsTab;
-        private System.Windows.Forms.TreeView lightTreeView;
+        private System.Windows.Forms.TreeView objectTreeView;
         private System.Windows.Forms.TabPage scriptsTab;
         private System.Windows.Forms.TreeView scriptTreeView;
         private System.Windows.Forms.TabPage scenesTab;
@@ -826,5 +811,7 @@
         private System.Windows.Forms.Timer frameUpdater;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator8;
         private System.Windows.Forms.ToolStripButton showEngineOutput;
+        private System.Windows.Forms.ToolStripButton addSoundSourceBtn;
+        private System.Windows.Forms.ToolStripButton createScene;
     }
 }

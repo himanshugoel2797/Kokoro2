@@ -13,6 +13,14 @@ namespace Kokoro.IDE.Project
         public string Name { get; set; }
         public string Description { get; set; }
         public string SaveDir { get; set; }
+        
+        public Scene CurrentScene { get; set; }
+        public List<Scene> Scenes { get; set; }
+
+        public ProjectInfo()
+        {
+            Scenes = new List<Scene>();
+        }
 
         public void SaveProject()
         {
@@ -26,7 +34,7 @@ namespace Kokoro.IDE.Project
 
             ProjectInfo pI = null;
             XmlSerializer deserializer = new XmlSerializer(typeof(ProjectInfo));
-            using (FileStream f = File.Create(hgFile)) pI = (ProjectInfo)deserializer.Deserialize(f);
+            using (FileStream f = File.OpenRead(hgFile)) pI = (ProjectInfo)deserializer.Deserialize(f);
 
             return pI;
         }

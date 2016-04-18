@@ -36,6 +36,7 @@ namespace Kokoro2.OpenGL.PC
             ID = c.EngineObjects.RegisterObject(AL.GenSource());
 
             AL.Source(c.EngineObjects[ID, this.GetType()], ALSourcei.Buffer, c.EngineObjects[buffer.ID, buffer.GetType()]);
+            
         }
 
         #region IDisposable Support

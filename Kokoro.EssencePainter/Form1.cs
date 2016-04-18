@@ -118,8 +118,16 @@ namespace Kokoro.EssencePainter
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            context.Stop();
-            context.Dispose();
+            if (MessageBox.Show("Exit?", "Exit?", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+            {
+                e.Cancel = false;
+                context.Stop();
+                context.Dispose();
+            }
+            else
+            {
+                e.Cancel = true;
+            }
         }
 
         private void openTextureToolStripMenuItem_Click(object sender, EventArgs e)
