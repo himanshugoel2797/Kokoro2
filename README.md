@@ -1,4 +1,4 @@
 # Kokoro Game Engine
-<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Akane and Kokoro Game Engines</span>
+3D Game Engine - This version is obsolete, latest version available at https://github.com/himanshugoel2797/Kokoro4
 
-Reworking and cleaning up the engine code to make it function as the base for a WipEout style racing game.
+<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Akane and Kokoro Game Engines</span>
